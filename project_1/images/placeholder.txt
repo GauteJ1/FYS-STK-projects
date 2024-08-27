@@ -1,0 +1,4 @@
+Folder for images and models produced by code.
+All plots, models etc. should be saved to this file or its subfiles.
+
+This placeholder file is added in order to push the folder to git, should be removed before delivery.

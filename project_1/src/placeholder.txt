@@ -1,0 +1,4 @@
+Folder for code.
+Placeholder added in order to push file to git.
+
+This file should be removed before delivery.
