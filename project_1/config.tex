@@ -1,0 +1,111 @@
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{wrapfig}
+\usepackage{array} 
+\usepackage{listings}
+\usepackage[para,online,flushleft]{threeparttablex}
+% \usepackage{booktabs,dcolumn}
+\usepackage{color}
+\usepackage{comment}
+\usepackage{mathtools}
+
+\usepackage{siunitx} % Units
+
+\usepackage{textpos}
+% \usepackage{booktabs}
+\usepackage{multirow,bigdelim}
+\usepackage{tikz}
+\usepackage{dsfont}
+% \usepackage{subfigure}
+\usepackage{float}
+% \usepackage{caption}
+% \usepackage{subcaption}
+\usepackage{subfig}
+\def\subfigure{\subfloat}
+\usepackage{pgfplots}
+\usepackage{microtype}
+% \usepackage{tabularx}
+
+\usepackage{subcaption}
+
+
+
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath} % Required for advanced math typesetting
+\usepackage{amsfonts} % Required for extended math font support
+\usepackage{amssymb} % Required for additional math symbols
+
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs} % For prettier tables
+
+
+% #############
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+% #############
+
+
+\pgfplotsset{width=\textwidth*0.5, height=\textwidth/3*0.5,compat=1.18}
+
+\usepackage[super]{nth}
+
+\usepackage{upgreek} %upalpha in Saxena2021 Reference
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=magenta,urlcolor=blue}
+
+\usepackage{lipsum}
+%\usepackage{cuted} % for oneline equations
+
+
+
+\usepackage{xcolor}
+%\newcommand{\contrib}[1]{\textcolor{red}{#1}}
+%\newcommand{\comment}[1]{\textcolor{blue}{#1}}
+
+%\newcommand{\WN}[1]{{\color{red} #1}}
+
+\makeatletter
+\def\@bibdataout@aps{%
+\immediate\write\@bibdataout{%
+@CONTROL{%
+apsrev41Control%
+\longbibliography@sw{%
+    ,author="08",editor="1",pages="1",title="0",year="1"%
+    }{%
+    ,author="08",editor="1",pages="1",title="",year="1"%
+    }%
+  }%
+}%
+\if@filesw \immediate \write \@auxout {\string \citation {apsrev41Control}}\fi
+}
+\makeatother
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator*{\compfunc}{\bigcirc}
+
+\newcommand{\R}{\mathbb{R}}
+% The good phi
+\renewcommand{\phi}{\upvarphi}
+\newcommand{\mia}[1]{\textbf{\color{magenta}{#1}}}
+\newcommand{\julie}[1]{\textbf{\color{blue}{#1}}}
+\newcommand{\gaute}[1]{\textbf{\color{orange}{#1}}}
+
+
+
+
+% \bibliographystyle{apsrev4-1}
+%\usepackage[left]{lineno}
+%\linenumbers
