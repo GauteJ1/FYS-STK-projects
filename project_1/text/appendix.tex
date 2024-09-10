@@ -1,0 +1,51 @@
+\section*{Appendix A: Source code}
+The code used for this project is available at \url{https://github.com/GauteJ1/FYS-STK-projects}. Instructions for running the code are located in \texttt{ project\_1/README.md}. The GitHub repository also contains several figures left out of the report. \gaute{(If this is the case).}
+
+\gaute{Also; remember to make the git-hub repository public before delivering}
+
+\section*{Appendix B: Pen and paper calculations}
+
+\mia{Will mention the result in the theory part, but have the calculations here, must be fixed later.}
+
+\begin{align*}
+    \fv{(\mathbf{y}-\yt)^2} & = \fv{(\mathbf{y} - \fv{\yt} + \fv{\yt} -\yt)^2} \\
+    & = \fv{(\mathbf{y} - \fv{\yt})^2} + \fv{(\fv{\yt} -\yt)^2} \\
+    & \;\;\;\; + 2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} \\
+    & = \fv{(\mathbf{f} + \boldsymbol{\epsilon} - \fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} \\
+    & = \fv{(\mathbf{f}-\fv{\yt})^2}+\fv{\boldsymbol{\epsilon}^2} \\
+    & \;\;\;\; + 2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} + \fv{(\yt - \fv{\yt})^2}  \\
+    & = \fv{(\mathbf{f}-\fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} +\fv{\boldsymbol{\epsilon}^2}\\
+    & = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
+\end{align*}
+
+In the calculations these terms are zero: 
+
+\begin{align*}
+    2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} & = 2\fv{\mathbf{y} - \fv{\yt}}\fv{\fv{\yt} -\yt} \\ 
+    & = 2\fv{\mathbf{y} - \fv{\yt}} (\fv{\yt}-\fv{\yt}) \\ 
+    & = 2\fv{\mathbf{y} - \fv{\yt}} \cdot 0 \\
+    & = 0
+\end{align*}
+
+\begin{align*}
+    2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} & =  2 \fv{(\mathbf{f}-\fv{\yt})}\fv{\boldsymbol{\epsilon}} \\
+    & = 2 \fv{(\mathbf{f}-\fv{\yt})} \cdot 0 \\
+    & = 0
+\end{align*}
+
+Have also used: 
+
+\begin{align*}
+    \fv{\boldsymbol{\epsilon}} & = 0 \\
+    \fv{\boldsymbol{\epsilon}^2} & = \text{var}(\boldsymbol{\epsilon}) = \sigma^2 \\
+\end{align*}
+
+Generally: 
+
+\begin{align*}
+    \text{var}(X) & = \fv{(X-\fv{X})^2} \\
+    \text{bias}(\hat{\theta}) & = \fv{\hat{\theta}} - \theta \\
+    \fv{XY} & = \fv{X}\fv{Y} \\
+    \fv{X+Y} & = \fv{X} + \fv{Y} \\
+    \fv{a} & = a, a \in \mathbb{R}
+\end{align*}
