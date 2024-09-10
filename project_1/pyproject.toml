@@ -5,8 +5,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-version = "2024.04.12"
-name = "SINDyAutoencoders"
+version = "2024.09.10"
+name = "FYS-STK-project-1"
 dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
