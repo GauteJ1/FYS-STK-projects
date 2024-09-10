@@ -6,8 +6,10 @@ import numpy as np
 
 class DataGen:
     def __init__(
-        self, step_size: float
+        self, data_points: int = 101
     ) -> None:  # Will probably have to set other start/end points for the axes as well
+        self.data_points = data_points
+        step_size = 1 / (data_points - 1)
         x = np.arange(0, 1, step_size)
         y = np.arange(0, 1, step_size)
         x, y = np.meshgrid(x, y)
@@ -15,10 +17,16 @@ class DataGen:
         self.y = y
 
     def plot_data(
-        self, z: np.ndarray[float], z_lim: tuple[float, float] = (-1, 1)
+        self,
+        z: np.ndarray[float],
+        z_lim: tuple[float, float] = (-1, 1),
+        title: str = "Data",
+        save: bool = False
     ) -> None:
         x = self.x
         y = self.y
+
+        plt.style.use("src/plot_settings.mplstyle")
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
@@ -33,15 +41,21 @@ class DataGen:
         ax.zaxis.set_major_locator(LinearLocator(10))
         ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
 
+        ax.set_title(title)
+
         # Add a color bar which maps values to colors.
         fig.colorbar(surf, shrink=0.5, aspect=5)
+        fig.tight_layout()
+
+        if save:
+            file_path = ""
 
         plt.show()
 
 
 class FrankeDataGen(DataGen):
-    def __init__(self, step_size: float) -> None:
-        super().__init__(step_size)
+    def __init__(self, data_points: int = 101) -> None:
+        super().__init__(data_points)
         self.__generate_data()
 
     def __generate_data(self) -> None:
@@ -59,15 +73,15 @@ class FrankeDataGen(DataGen):
     def get_data(self) -> np.ndarray[float]:
         return self.z
 
-    def plot_data(self) -> None:
+    def plot_data(self, save: bool = False) -> None:
         z = self.z
         z_lim = (-0.10, 1.40)
-        super().plot_data(z, z_lim)
+        super().plot_data(z, z_lim, "Franke Function", save)
 
 
 class TerrainDataGen(DataGen):
-    def __init__(self, step_size: float) -> None:
-        super().__init__(step_size)
+    def __init__(self, data_points: int = 101) -> None:
+        super().__init__(data_points)
         self.__generate_data()
 
     def __generate_data(self) -> None:
@@ -76,7 +90,15 @@ class TerrainDataGen(DataGen):
     def get_data(self) -> np.ndarray[float]:
         return self.z
 
-    def plot_data(self) -> None:
+    def plot_data(self, save: bool = False) -> None:
         z = self.z
         z_lim = (-10, 10)  # TODO: set terrain data z_lim if needed
-        super().plot_data(z, z_lim)
+        super().plot_data(z, z_lim, "Terrain", save)
+
+
+if __name__ == "__main__":
+    franke = FrankeDataGen(data_points=1001)
+    franke.plot_data()
+
+    terrain = TerrainDataGen(data_points=1001)
+    terrain.plot_data()
