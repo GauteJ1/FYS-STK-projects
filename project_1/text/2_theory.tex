@@ -2,13 +2,17 @@
 
 \subsection{Linear Regression}
 
+\mia{Must say somewhere that linear regression is linear in its parameters}
+\julie{nevnt i slutten av avsnittet, men kan være hensiktsmessig å flytte først og utdype videre.}
+
 Linear regression is one of the most common methods for modeling a relationship between an input dataset and an output dataset.
-Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
+Given a dataset of $p$ input variables (commonly called predictors \mia{Vi kan vurdere om vi ønsker å referere til de som noe annet enn STk2100 boka gjør, bare input og output funker det}), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
 \begin{equation}
 \hat{Y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j},
 \end{equation}
 to model the relationship, where the scalar $\hat{Y}$ is our prediction of the response. 
-Here $\beta_0$ is the intercept, and each $\beta_j$ is the coefficient belonging to its corresponding predictor $x_j$. 
+Here $\beta_0$ is the intercept, and each $\beta_j$ is the coefficient belonging to its corresponding predictor $x_j$. \mia{Må ha konsistent bruk av beta og beta hat, her er det noe annet i ligningen enn hva som bruker i fritekst. Se kommentar lenger ned om hva som er riktig.}
+\julie{glipp her og, hadde ikke redigert draftet enda men skal være mer påpasselig!:)}
 This equation is commonly written in vector form, 
 \begin{equation}
 \hat{Y}=\boldsymbol{X}^T\boldsymbol{\beta},
@@ -17,22 +21,29 @@ or alternatively $n$ sets of data-points formatted in these parameters will be r
 \begin{equation}
 \boldsymbol{\hat{Y}}=\boldsymbol{X}^T\boldsymbol{\beta},
 \end{equation}
-where $\boldsymbol{\hat{Y}}$ is the response-vector and $\boldsymbol{X}$ is a $n\times p$ -matrix with each row an input-vector of predictors.
+\mia{Skjønner ikke hvorfor samme ligning er to ganger?}
+\julie{jeg synes selv det er redundant så planla å fjerne siste ligning / omskrive hele greien og inkludere siste steg i det å beskrive designmatrise - men det er strengt tatt ikke samme ligning. Ligning2 er output en skalar og X er en vektor her får du typ $y_i$ ved bruk av $x_1=[x_a,x_b,...,x_p]$, mens ligning 3 er output en vektor $y=[y_1,y_2,...,y_n]$ og X er en matrise der hver av radene er en vektor $x_i$ som beskrevet i forrige setning.} 
+where $\boldsymbol{\hat{Y}}$ is the response-vector and $\boldsymbol{X}$ is a $n\times p$ -matrix with each row an input-vector of predictors. 
 
-\julie{$\uparrow$ Her er jeg kollosalt usikker på rad vs kolonne osv, pls check.}  \mia{Tror vi heller må utdype hva design matrix er. Sånn blir ikke direkte riktig å si hverken kolonne eller rad. X består av bare 1 i første kolonne, deretter ulike transformasjoner av inputen i de påfølgende kolonnene, for oss polynomer. Men inputen gir kolonnene, ikke radene, for å svare på det faktiske spørsmålet. Jeg kan skrive inn dette senere om ønskelig. }
+\julie{$\uparrow$ Her er jeg kollosalt usikker på rad vs kolonne osv, pls check.}  \mia{Tror vi heller må utdype hva design matrix er. Sånn blir ikke direkte riktig å si hverken kolonne eller rad. X består av bare 1 i første kolonne, deretter ulike transformasjoner av inputen i de påfølgende kolonnene, for oss polynomer. Men inputen gir kolonnene, ikke radene, for å svare på det faktiske spørsmålet. Jeg kan skrive inn dette senere om ønskelig. } 
 
+\mia{Remark: X består ikke av 1 i første kolonne dersom vi fitter uten intercept og det gjør vi hvertfall i ridge og lasso så vi ikke straffer intercepten. Man kan helt fint gjøre det i OLS også, er dog ikke avhengig av det.}
+\mia{Det må forklares hvorfor vi tar ut intercepten og hvordan den regnes tilbake, ref ukesoppgaver uke 36}
+\julie{når vi snakker om en generell ligning for linær regresjon så er vel strengt tatt ikke designmatrisen nødvendigvis transformasjoner - kan vel være ulike inputs? eller? det som er skrevet så langt på denne seksjonen er skrevet så generelt som mulig, for å så bygge videre på spesifistet med polynom-regresjon og bruk i maskinlæring osv. Mulig jeg har misforstått designmatrise, men det jeg beskriver som parameter er det som ville vært transformasjoner i slike tilfeller.}
 As can be inferred by the equations above, linear regression bases itself on the assumption of a linear relationship between the predictors and the response.
 The ``true" model is assumed the form 
 \begin{equation}
-Y=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j}+\epsilon,
+Y=\beta_0+\sum_{j=1}^{p}x_j\beta_j+\epsilon,
 \end{equation}
 where $\epsilon$ is a \textit{error-term} or \textit{residual-term} representing all variance in the data not explainable by the linear model. 
-Any variation due to randomness, noise or things like measurement-error is included in this term. \mia{Tror vi gjerne kan nevne allerede her at vi antar $\epsilon \sim  
-\mathcal{N}(0,\sigma^2)$}
-
+Any variation due to randomness, noise or things like measurement-error is included in this term. 
+\mia{Her er det litt upresist og feil. I den sanne modellen antar vi beta uten hatt. Jeg er også litt usikker på hvordan epsilon skal tolkes. Tror vi gjerne også kan nevne allerede her at vi antar $\epsilon \sim  
+\mathcal{N}(0,\sigma^2)$
+Men den sanne y-en er koblet til de sanne betaene. y hat er koblet til beta hat. Vi prøver å få beta hat lik beta, men man vil jo aldri kunne kjenne de sanne beta-ene. Hvilket forøvrig også er verdt å nevne. Vi kan også vurdere å bruke liten y og liten y tilde slik som Morten gjør i forelesning. Må hvertfall stemme overens her og i appendix utregninger. }
+\julie{enig i at beta-hat kun hører hjemme som estimator, har kopiert litt ligninger så gikk litt fort i svingene.}
 
 \subsection{Cost-Functions \& Loss-Functions}
-The main objective when solving such a linear regression problem, is finding the ``optimal" coefficients $\boldsymbol{\beta}$ that minimizes the error-term. 
+The main objective when solving such a linear regression problem, is finding the ``optimal" coefficients $\boldsymbol{\beta}$ that minimizes the error-term. \mia{on what data and what error term, må finne ut hvor vi skal definere hva} 
 What such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
 A cost-function, $\text{Cost}(f,\mathcal{D} )$, is used to describe such a metric measuring a group of data-points, while a loss-function, $L(y, \hat{y})$, describes a metric regarding a single data-instance. 
 The cost-function can be expressed in terms of the loss function
@@ -40,18 +51,26 @@ The cost-function can be expressed in terms of the loss function
 \text{Cost}(f,\mathcal{D}) = \frac{1}{n}\sum_{i=1}^n L(y_i, \hat{y_i}).
 \end{equation}
 Through different choices of cost-function we end up with different methods for estimation and inference. 
-Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}.
+Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}. \mia{Mulig dette mp høre til et annet sted, sammen med bias-variance trade off eller etter hele det avsnittet}
 
 
 \julie{forskjellen på begrepene cost og loss er ikke diskutert i hastie, skal jeg prøve å grave frem en annen kilde? har evt denne; https://www.baeldung.com/cs/cost-vs-loss-vs-objective-function }
 
 \subsection{Ordinary least squares}
-Ordinary least squares provides an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
+Ordinary least squares provide an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
 \julie{utdyp bias med ligninger osv, kanskje dette sist egt og cost funksjon først}
 
-\subsection{Ridge Regression}
+\subsection{Penalized regression}
 
-\subsection{Lasso Regression}
+\mia{Mia will figure out a good way to structure this.}
+
+\mia{Could discuss a bit the advantages and disadvantages of the two compared to each other. Ridge best for prediction, lasso best for model selection. Could link to AIC and BIC, but probably just messy to include to more measures. Could discuss that we could have methods that are combinations of the two $\rightarrow$ elastic net. There is no gradient for lasso, but there is for ridge. Must mention here or somewhere else that it is especially important to scale when we have a penalty because the penalty is not scale invariant.}
+
+\mia{I think it could be useful with some figures in the theory, showing bias, variance, the scaling of the parameters in ride and lasso, etc. Could use either size of beta against lambda or the geometeric variant. I must think about it. }
+
+\subsubsection{Ridge Regression}
+
+\subsubsection{Lasso Regression}
 
 \subsection{Mia}
 train-test split and scaling
