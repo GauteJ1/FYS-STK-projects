@@ -1,11 +1,9 @@
 \mia{Hvor mye kilder trenger vi på dette?}
 
-\mia{Til} \julie{Julie} \mia{: Bruk begin og end equation så får vi tall på alle ligninger, kan lables så de kan referes til om nødvendig}
-
 \subsection{Linear Regression}
 
-Linear regression is one of the most common methods for modelling a relationship between an input dataset and an output dataset.
-Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]^T$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
+Linear regression is one of the most common methods for modeling a relationship between an input dataset and an output dataset.
+Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
 \begin{equation}
 \hat{Y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j},
 \end{equation}
@@ -44,7 +42,8 @@ The cost-function can be expressed in terms of the loss function
 Through different choices of cost-function we end up with different methods for estimation and inference. 
 Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}.
 
-\julie{i forbindelse med valg av cost-funksjon kan jeg nevne bias-variance trade off så vidt eller typ alludere til det og evt si at vi kommer tilbake til dette senere - hva tenker dere? eller evt kan det komme her idk vi kan se på det}
+
+\julie{forskjellen på begrepene cost og loss er ikke diskutert i hastie, skal jeg prøve å grave frem en annen kilde? har evt denne; https://www.baeldung.com/cs/cost-vs-loss-vs-objective-function }
 
 \subsection{Ordinary least squares}
 Ordinary least squares provides an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
@@ -53,6 +52,11 @@ Ordinary least squares provides an unbiased estimation - meaning the expected di
 \subsection{Ridge Regression}
 
 \subsection{Lasso Regression}
+
+\subsection{Mia}
+train-test split and scaling
+
+CV and bootstrap 
 
 \subsection{Bias-Variance Tradeoff}
 
