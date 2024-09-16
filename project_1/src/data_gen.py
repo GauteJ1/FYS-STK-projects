@@ -9,12 +9,9 @@ class DataGen:
         self, data_points: int = 101
     ) -> None:  # Will probably have to set other start/end points for the axes as well
         self.data_points = data_points
-        step_size = 1 / (data_points - 1)
-        x = np.arange(0, 1, step_size)
-        y = np.arange(0, 1, step_size)
-        x, y = np.meshgrid(x, y)
-        self.x = x
-        self.y = y
+        x = np.linspace(0, 1, data_points)
+        y = np.linspace(0, 1, data_points)
+        self.x, self.y = np.meshgrid(x, y)
 
     def plot_data(
         self,
@@ -26,7 +23,7 @@ class DataGen:
         x = self.x
         y = self.y
 
-        plt.style.use("src/plot_settings.mplstyle")
+        plt.style.use("plot_settings.mplstyle")
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
@@ -52,6 +49,8 @@ class DataGen:
 
         plt.show()
 
+    def get_data(self) -> np.ndarray[float]:
+        return
 
 class FrankeDataGen(DataGen):
     def __init__(self, data_points: int = 101) -> None:
@@ -71,6 +70,7 @@ class FrankeDataGen(DataGen):
         self.z = term1 + term2 + term3 + term4
 
     def get_data(self) -> np.ndarray[float]:
+        self.__generate_data()
         return self.z
 
     def plot_data(self, save: bool = False) -> None:
