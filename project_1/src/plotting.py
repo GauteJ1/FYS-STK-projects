@@ -102,7 +102,7 @@ class Plotting:
                 mod.fit_model(deg)
             else:
                 mod.fit_model(deg, lmbda)
-            betas = mod.opt_beta
+            betas = mod.opt_beta[:,0]
             extra_zeros = length - len(betas)
             y_data.append(list(betas) + [0] * extra_zeros)
 
@@ -166,10 +166,8 @@ class Plotting:
 
         degs, errors, biases, vars = model.bootstrap_mult_degs(min_deg=min_deg, max_deg=max_deg, samples=samples)
 
-        print(degs, errors, biases, vars)
-
         plt.plot(degs, errors, label="MSE")
-        plt.plot(degs, biases, label=r"Bias$^2$")
+        plt.plot(degs, biases, label="Bias")
         plt.plot(degs, vars, label="Var")
 
         plt.title(f"Title")

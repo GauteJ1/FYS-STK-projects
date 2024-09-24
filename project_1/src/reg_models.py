@@ -62,7 +62,7 @@ class RegModel:
                 (self.z_test - z_test_tilde).T @ (self.z_test - z_test_tilde)
             )
 
-        return MSE
+        return MSE[0, 0]
 
     def R2(self, train: bool = False) -> float:
         if train:
@@ -83,22 +83,23 @@ class RegModel:
                 @ (self.z_test - np.mean(self.z_test))
             )
 
-        return R2
+        return R2[0, 0]
 
-    def bootstrap_deg(self, degree: int, samples: int = 100):
-        self.get_preprocessed_data(degree=degree)
-        z_pred = np.zeros((self.X_test.shape[0], samples))
+    def bootstrap(self, degree: int, samples: int = 100):
+        X_train = self.X_train[:, : ((degree + 1) * (degree + 2)) // 2 - 1]
+        X_test = self.X_test[:, : ((degree + 1) * (degree + 2)) // 2 - 1]
+        z_pred = np.zeros((X_test.shape[0], samples))
         for i in range(samples):
             X_bootstrap, z_bootstrap = self.data.create_bootstrap_sampling(
-                self.X_train, self.z_train
+                X_train, self.z_train
             )
             opt_beta = self.__fit_model_on_data(X_bootstrap, z_bootstrap)
-            pred = self.X_test @ opt_beta
+            pred = X_test @ opt_beta
             z_pred[:, i] = pred.ravel()
 
-        error = np.mean(
+        mse = np.mean(
             np.mean(
-                (self.z_test.reshape(len(self.z_test), 1) - z_pred) ** 2,
+                (self.z_test - z_pred) ** 2,
                 axis=1,
                 keepdims=True,
             )
@@ -106,7 +107,7 @@ class RegModel:
         bias = np.mean((self.z_test - np.mean(z_pred, axis=1, keepdims=True)) ** 2)
         variance = np.mean(np.var(z_pred, axis=1, keepdims=True))
 
-        return error, bias, variance
+        return mse, bias, variance
 
     def bootstrap_mult_degs(
         self, min_deg: int = 0, max_deg: int = 12, samples: int = 100
@@ -116,9 +117,54 @@ class RegModel:
         bias_list = []
         variance_list = []
 
+        self.get_preprocessed_data(degree=max_deg)
+
         for deg in range(min_deg, max_deg + 1):
             deg_list.append(deg)
-            err, bias, var = self.bootstrap_deg(deg, samples)
+            err, bias, var = self.bootstrap(deg, samples)
+            error_list.append(err)
+            bias_list.append(bias)
+            variance_list.append(var)
+
+        return deg_list, error_list, bias_list, variance_list
+
+    def cross_validation(self, kfolds: int, degree: int):
+        cv_data = handler.create_cross_validation(degree=degree, kfolds=kfolds)
+
+        z_pred = np.zeros((cv_data[0][0].shape[0], kfolds))
+        for i, (X_train, X_test, z_train, z_test) in enumerate(cv_data):
+            X_bootstrap, z_bootstrap = self.data.create_bootstrap_sampling(
+                X_train, self.z_train
+            )
+            opt_beta = self.__fit_model_on_data(X_bootstrap, z_bootstrap)
+            pred = X_test @ opt_beta
+            z_pred[:, i] = pred.ravel()
+
+        mse = np.mean(
+            np.mean(
+                (self.z_test - z_pred) ** 2,
+                axis=1,
+                keepdims=True,
+            )
+        )
+        bias = np.mean((self.z_test - np.mean(z_pred, axis=1, keepdims=True)) ** 2)
+        variance = np.mean(np.var(z_pred, axis=1, keepdims=True))
+
+        return mse, bias, variance
+    
+    def cv_mult_degs(
+        self, min_deg: int = 0, max_deg: int = 12, samples: int = 100
+    ):
+        deg_list = []
+        error_list = []
+        bias_list = []
+        variance_list = []
+
+        self.get_preprocessed_data(degree=max_deg)
+
+        for deg in range(min_deg, max_deg + 1):
+            deg_list.append(deg)
+            err, bias, var = self.bootstrap(deg, samples)
             error_list.append(err)
             bias_list.append(bias)
             variance_list.append(var)
@@ -159,3 +205,8 @@ if __name__ == "__main__":
     print(f"Test MSE: {ols.MSE(False)}.")
     print(f"Train R2: {ols.R2(True)}.")
     print(f"Test R2: {ols.R2(False)}.")
+
+    err, bias, var = ols.bootstrap_deg(2)
+    print(f"MSE: {err}")
+    print(f"Bias: {bias}")
+    print(f"Variance: {var}")
