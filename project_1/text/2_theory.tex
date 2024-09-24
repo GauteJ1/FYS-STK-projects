@@ -65,12 +65,14 @@ We do not want to scale the intercept. \mia{bla bla} The intercept can be recalc
 
 \subsection{Error estimation}
 
-\subsubsection{Splitting data to avoid overfitting}
+\subsubsection{Splitting data to avoid overfitting}\label{overfitting}
 
 When training a model we want it to learn the underlying pattern of the data and not the specific training data. If we develop a too complex model that have learned the specific training data and perhaps even the noise, we have a case of overfitting. 
 
 We therefore need two datasets, a set used for training and a set used for testing. We name these two datasets "training data" and "test data". 
-We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection. 
+We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection. \mia{precise?}
+
+In practice, we look at the error rate of the training and test data. The error on the training data will continue to decrease. For the test data, we will initially see a decrease in the error. After some time of training, this will increase again. At this point, the model is overfitting to the training data and we have our stopping criteria.
 
 \plothere{Plot here of loss on training and test data to explain overfitting, as in Hastie}
 
@@ -78,22 +80,39 @@ We will use the latter to understand when the model starts learning beyond the u
 
 The metric we truly want is the loss on independent data not seen or used in any way during training. Although the test data has not been trained on, we have used it to decide on when to stop the training. Our model is therefore not completely independent of the test data. Ideally one could have separated the data into three sets to overcome this. 
 
-The error measure we truly want is the prediction error on an independent test data set: 
+The error measure we truly want is the prediction error on an independent test data set $\tau$: 
 \begin{equation}\label{error_test}
-    \text{Error}_{test} = ??
+    \text{Error}_{\tau} = \fv{L(\y,\Tilde{\y} | \tau}
 \end{equation}
 
+The training error is not a good estimate of this. As explained in sec. \ref{overfitting} we can overfit to decrease this error measure. The training error is expressed as: 
 
-However, when we use loss on the training data to quantify the performance of the model, we end up being optimistic about the error on a new independent set. 
+\begin{equation}
+    \overline{\text{err}} = \frac{1}{n}\sum_{i=0}^{n-1} L(y_i, \Tilde{y}_i)
+\end{equation}
+
+\julie{Du må hjelpe meg her, Julie}
+
 
 
 \subsection{Cross-validation and bootstrapping}
 
 Generally, we get a better model if we have more training data. \mia{cite?} When holding off some of the data for testing, we lose this data for training. We therefore want to explore methods that allow for a train-test split for the data, but still keep as much as possible for training. 
 
+\subsubsection{K-fold cross-validation}
 K-fold cross-validation is such a method. The number K must be chosen by the developer. We divide our dataset into K parts, called folds. K-1 folds are used as training data, while the remaining fold is used as test data. The procedure is repeated K times, holding out a new fold each time. The estimated error is then the mean of the K test errors. \mia{likninger om error prediction}
 
+\subsubsection{Bootstrapping}
 Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. It should have the same size as the original data set. We generate many such bootstrap samples and repeat the training. \mia{more} The error is calculated as the mean of the error. \mia{likninger om error prediction}
+
+\begin{equation}
+    \widehat{\text{Err}}^{(1)} = \frac{1}{n} \sum_{i=0}^{n-1} \frac{1}{|C_{[-i]}|} \sum_{b \in C_{[-i]}} L\left(y_i; \widehat{f}_b^*(x_i)\right)
+\end{equation}
+
+\begin{equation}
+    \widehat{\text{Err}}^{(0.632)} = 0.368 \overline{\text{err}} + 0.632 \widehat{\text{Err}}^{(1)}
+\end{equation}
+\mia{must be explain etc}
 
 
 \subsection{Ordinary least squares}
@@ -121,12 +140,25 @@ This is the general equation for penalized regression. We may have different con
 
 \subsubsection{Ridge Regression}
 
+\begin{equation}
+    \sum_{j=1}^p \beta_j^2 \leq t, 
+\end{equation}
+
+Ridge regression puts a penalty on all the $\beta$-terms except the intercept whisch is held out during training. All values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
 
 
 \mia{Uttrykket for beta, tolkning, error estimation formel}
 
 \subsubsection{Lasso Regression}
+
+\begin{equation}
+    \sum_{j=1}^p | \beta_j | \leq t, 
+\end{equation}
+
+
 \mia{Uttrykket for beta, tolkning, error estimation formel}
+
+
 
 \plothere{Sirkel og diamant}
 
@@ -191,5 +223,5 @@ The number of data points in our training data is $n$ while the prediction for t
     R^2 = 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2}
 \end{equation}
 
-$R^2$ is a measure of how much of the variance in the data the model explains. \mia{cite} The quantity is a number $\in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. 
+$R^2$ is a measure of how much of the variance in the data the model explains. \mia{cite} Furthermore $R^2 \in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. 
 
