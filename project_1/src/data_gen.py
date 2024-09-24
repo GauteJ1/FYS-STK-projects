@@ -50,7 +50,7 @@ class DataGen:
         plt.show()
 
     def get_data(self) -> np.ndarray[float]:
-        return
+        raise NotImplementedError
 
 class FrankeDataGen(DataGen):
     def __init__(self, data_points: int = 101) -> None:

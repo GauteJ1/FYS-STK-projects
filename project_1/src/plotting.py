@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 from reg_models import OLSModel, RidgeModel, LassoModel, RegModel
 from data_gen import FrankeDataGen, TerrainDataGen
@@ -14,6 +15,8 @@ class Plotting:
             data = FrankeDataGen(data_points)
 
         self.handler = DataHandler(data)
+        self.lmbdas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
+        np.random.seed(1234)
 
     def __config(self):
         plt.style.use("plot_settings.mplstyle")
@@ -49,7 +52,7 @@ class Plotting:
 
     def plot_lambda(self, model: str = "Ridge", y_axis: str = "MSE", deg: int = 2):
         self.__config()
-        lmbdas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
+        lmbdas = self.lmbdas
         y_data_train = []
         y_data_test = []
 
@@ -76,8 +79,10 @@ class Plotting:
         plt.xlabel("Lambda")
         plt.ylabel(y_axis)
 
-    def __plot_betas(self, model: str = "OLS", lmbda: float = 0.1, max_deg: int = 5):
-        x_data = list(range(1, max_deg +1))
+    def __plot_betas_deg(
+        self, model: str = "OLS", lmbda: float = 0.1, max_deg: int = 5
+    ):
+        x_data = list(range(1, max_deg + 1))
         y_data = []
 
         length = 21
@@ -92,7 +97,6 @@ class Plotting:
         else:
             raise RuntimeError(f"{model} not a valid model type.")
 
-
         for deg in x_data:
             if model == "OLS":
                 mod.fit_model(deg)
@@ -104,24 +108,24 @@ class Plotting:
 
         return x_data, y_data
 
-    def plot_betas(self, model: str = "OLS", lmbda: float = 0.1, max_deg : int = 5):
+    def plot_betas(self, model: str = "OLS", lmbda: float = 0.1, max_deg: int = 5):
         self.__config()
-        x_data, y_data = self.__plot_betas(model, lmbda, max_deg)
+        x_data, y_data = self.__plot_betas_deg(model, lmbda, max_deg)
         plt.plot(x_data, y_data)
         plt.xlabel("Degree")
         plt.ylabel(r"Values of $\beta$'s")
-        plt.title(fr"Value of $\beta$'s for {model} with $\lambda = {lmbda}$")
+        plt.title(rf"Value of $\beta$'s for {model} with $\lambda = {lmbda}$")
 
     def plot_all_betas(self, lmbda: float = 0.1, max_deg: int = 5):
         models = ["OLS", "Ridge", "Lasso"]
 
-        x_data, y_OLS = self.__plot_betas("OLS", max_deg = max_deg)
-        _, y_Ridge = self.__plot_betas("Ridge", lmbda, max_deg)
-        _, y_Lasso = self.__plot_betas("Lasso", lmbda, max_deg)
+        x_data, y_OLS = self.__plot_betas_deg("OLS", max_deg=max_deg)
+        _, y_Ridge = self.__plot_betas_deg("Ridge", lmbda, max_deg)
+        _, y_Lasso = self.__plot_betas_deg("Lasso", lmbda, max_deg)
 
-        fig, axs = plt.subplots(1,3, sharey="row")
+        fig, axs = plt.subplots(1, 3, sharey="row")
 
-        for (y_data, ax, model) in zip([y_OLS, y_Ridge, y_Lasso], axs, models):
+        for y_data, ax, model in zip([y_OLS, y_Ridge, y_Lasso], axs, models):
             ax.plot(x_data, y_data)
             ax.set_title(model)
             ax.grid()
@@ -131,6 +135,43 @@ class Plotting:
 
         fig.set_figheight(3.6)
         fig.set_figwidth(6.4)
-        fig.suptitle(fr"Value of $\beta$'s with $\lambda = {lmbda}$")
+        fig.suptitle(rf"Value of $\beta$'s with $\lambda = {lmbda}$")
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
+
+    def plot_betas_lambda(self, deg: int = 4):
+        pass
+        # TODO: Plot betas for different lambda values
+
+        # x_data = self.lmbdas
+        # ridge_data = []
+        # lasso_data = []
+
+        # length = 15
+
+        # for lmbda in x_data:
+        #     if model == "OLS":
+        #         mod.fit_model(deg)
+        #     else:
+        #         mod.fit_model(deg, lmbda)
+        #     betas = mod.opt_beta
+        #     extra_zeros = length - len(betas)
+        #     y_data.append(list(betas) + [0] * extra_zeros)
+
+        # return x_data, y_data
+
+    def plot_bias_var_bootstrap(self, samples:int=100, min_deg:int=0, max_deg:int=12):
+        handler = self.handler
+        model = OLSModel(handler)
+
+        degs, errors, biases, vars = model.bootstrap_mult_degs(min_deg=min_deg, max_deg=max_deg, samples=samples)
+
+        print(degs, errors, biases, vars)
+
+        plt.plot(degs, errors, label="MSE")
+        plt.plot(degs, biases, label=r"Bias$^2$")
+        plt.plot(degs, vars, label="Var")
+
+        plt.title(f"Title")
+        plt.legend()
+        plt.xlabel("Degree")

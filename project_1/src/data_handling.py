@@ -1,13 +1,14 @@
 from data_gen import DataGen, FrankeDataGen
 from sklearn.model_selection import train_test_split
+from sklearn.utils import resample
 import numpy as np
 
 
 class DataHandler:
     def __init__(self, data: DataGen) -> None:
-        self.x = data.x.flatten()
-        self.y = data.y.flatten()
-        self.z = data.get_data().flatten()
+        self.x = data.x.ravel()
+        self.y = data.y.ravel()
+        self.z = data.get_data().ravel()
 
     def __make_X(self, degree: int) -> np.ndarray:
         X = np.zeros((len(self.x), ((degree + 1) * (degree + 2)) // 2 - 1))
@@ -40,6 +41,12 @@ class DataHandler:
         self.z_test = z_test
 
         return X_train, X_test, z_train, z_test
+
+    def create_bootstrap_sampling(self, X_train, z_train):
+
+        X_bootstrap, z_bootstrap = resample(X_train, z_train)
+
+        return X_bootstrap, z_bootstrap
 
 
 if __name__ == "__main__":
