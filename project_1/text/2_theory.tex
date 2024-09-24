@@ -1,49 +1,42 @@
-\mia{Hvor mye kilder trenger vi på dette?}
-
 \subsection{Linear Regression}
 
-\mia{Must say somewhere that linear regression is linear in its parameters}
-\julie{nevnt i slutten av avsnittet, men kan være hensiktsmessig å flytte først og utdype videre.}
+\julie{Must say that linear regression is linear in its parameters}
 
 Linear regression is one of the most common methods for modeling a relationship between an input dataset and an output dataset.
-Given a dataset of $p$ input variables (commonly called predictors \mia{Vi kan vurdere om vi ønsker å referere til de som noe annet enn STk2100 boka gjør, bare input og output funker det}), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
+Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
 \begin{equation}
-\hat{Y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j},
+\Tilde{\y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j},
 \end{equation}
 to model the relationship, where the scalar $\hat{Y}$ is our prediction of the response. 
-Here $\beta_0$ is the intercept, and each $\beta_j$ is the coefficient belonging to its corresponding predictor $x_j$. \mia{Må ha konsistent bruk av beta og beta hat, her er det noe annet i ligningen enn hva som bruker i fritekst. Se kommentar lenger ned om hva som er riktig.}
-\julie{glipp her og, hadde ikke redigert draftet enda men skal være mer påpasselig!:)}
+Here $\beta_0$ is the intercept, and each $\beta_j$ is the coefficient belonging to its corresponding predictor $x_j$. \julie{konsistent bruk av beta og beta hat}
+
 This equation is commonly written in vector form, 
 \begin{equation}
-\hat{Y}=\boldsymbol{X}^T\boldsymbol{\beta},
+\Tilde{y}=\boldsymbol{X}^T\boldsymbol{\hat{\beta}},
 \end{equation}
-or alternatively $n$ sets of data-points formatted in these parameters will be represented as a data-set on the form
+or alternatively, $n$ sets of data points formatted in these parameters will be represented as a data set on the form
 \begin{equation}
-\boldsymbol{\hat{Y}}=\boldsymbol{X}^T\boldsymbol{\beta},
+\Tilde{\y}=\boldsymbol{X}^T\boldsymbol{\hat{\beta}},
 \end{equation}
-\mia{Skjønner ikke hvorfor samme ligning er to ganger?}
-\julie{jeg synes selv det er redundant så planla å fjerne siste ligning / omskrive hele greien og inkludere siste steg i det å beskrive designmatrise - men det er strengt tatt ikke samme ligning. Ligning2 er output en skalar og X er en vektor her får du typ $y_i$ ved bruk av $x_1=[x_a,x_b,...,x_p]$, mens ligning 3 er output en vektor $y=[y_1,y_2,...,y_n]$ og X er en matrise der hver av radene er en vektor $x_i$ som beskrevet i forrige setning.} 
-where $\boldsymbol{\hat{Y}}$ is the response-vector and $\boldsymbol{X}$ is a $n\times p$ -matrix with each row an input-vector of predictors. 
 
-\julie{$\uparrow$ Her er jeg kollosalt usikker på rad vs kolonne osv, pls check.}  \mia{Tror vi heller må utdype hva design matrix er. Sånn blir ikke direkte riktig å si hverken kolonne eller rad. X består av bare 1 i første kolonne, deretter ulike transformasjoner av inputen i de påfølgende kolonnene, for oss polynomer. Men inputen gir kolonnene, ikke radene, for å svare på det faktiske spørsmålet. Jeg kan skrive inn dette senere om ønskelig. } 
+\julie{mush into matrix form directly} 
+where $\boldsymbol{\hat{Y}}$ is the response-vector and $\boldsymbol{X}$ is a $n\times p$ -matrix with each row an input-vector of predictors. \julie{design matrix}
 
-\mia{Remark: X består ikke av 1 i første kolonne dersom vi fitter uten intercept og det gjør vi hvertfall i ridge og lasso så vi ikke straffer intercepten. Man kan helt fint gjøre det i OLS også, er dog ikke avhengig av det.}
-\mia{Det må forklares hvorfor vi tar ut intercepten og hvordan den regnes tilbake, ref ukesoppgaver uke 36}
-\julie{når vi snakker om en generell ligning for linær regresjon så er vel strengt tatt ikke designmatrisen nødvendigvis transformasjoner - kan vel være ulike inputs? eller? det som er skrevet så langt på denne seksjonen er skrevet så generelt som mulig, for å så bygge videre på spesifistet med polynom-regresjon og bruk i maskinlæring osv. Mulig jeg har misforstått designmatrise, men det jeg beskriver som parameter er det som ville vært transformasjoner i slike tilfeller.}
-As can be inferred by the equations above, linear regression bases itself on the assumption of a linear relationship between the predictors and the response.
+
+As can be inferred by the equations above, linear regression bases itself on the assumption of a linear relationship between the predictors and the response. 
 The ``true" model is assumed the form 
-\begin{equation}
-Y=\beta_0+\sum_{j=1}^{p}x_j\beta_j+\epsilon,
+\begin{equation}\label{OG_y}
+y=\beta_0+\sum_{j=1}^{p}x_j\beta_j+\epsilon,
 \end{equation}
 where $\epsilon$ is a \textit{error-term} or \textit{residual-term} representing all variance in the data not explainable by the linear model. 
-Any variation due to randomness, noise or things like measurement-error is included in this term. 
-\mia{Her er det litt upresist og feil. I den sanne modellen antar vi beta uten hatt. Jeg er også litt usikker på hvordan epsilon skal tolkes. Tror vi gjerne også kan nevne allerede her at vi antar $\epsilon \sim  
-\mathcal{N}(0,\sigma^2)$
-Men den sanne y-en er koblet til de sanne betaene. y hat er koblet til beta hat. Vi prøver å få beta hat lik beta, men man vil jo aldri kunne kjenne de sanne beta-ene. Hvilket forøvrig også er verdt å nevne. Vi kan også vurdere å bruke liten y og liten y tilde slik som Morten gjør i forelesning. Må hvertfall stemme overens her og i appendix utregninger. }
-\julie{enig i at beta-hat kun hører hjemme som estimator, har kopiert litt ligninger så gikk litt fort i svingene.}
+Any variation due to randomness, noise or things like measurement error is included in this term. \julie{antar $\epsilon \sim  
+\mathcal{N}(0,\sigma^2)$}
+\julie{Nevne at vi aldri vil kunne kjenne de sanne beta-ene.}
+
+\julie{Slenge inn uttrykkene for exp av $y_i$ og varians av $y_i$}
 
 \subsection{Cost-Functions \& Loss-Functions}
-The main objective when solving such a linear regression problem, is finding the ``optimal" coefficients $\boldsymbol{\beta}$ that minimizes the error-term. \mia{on what data and what error term, må finne ut hvor vi skal definere hva} 
+The main objective when solving such a linear regression problem, is finding the "optimal" coefficients $\boldsymbol{\beta}$ that minimizes the error-term. 
 What such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
 A cost-function, $\text{Cost}(f,\mathcal{D} )$, is used to describe such a metric measuring a group of data-points, while a loss-function, $L(y, \hat{y})$, describes a metric regarding a single data-instance. 
 The cost-function can be expressed in terms of the loss function
@@ -51,40 +44,152 @@ The cost-function can be expressed in terms of the loss function
 \text{Cost}(f,\mathcal{D}) = \frac{1}{n}\sum_{i=1}^n L(y_i, \hat{y_i}).
 \end{equation}
 Through different choices of cost-function we end up with different methods for estimation and inference. 
-Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}. \mia{Mulig dette mp høre til et annet sted, sammen med bias-variance trade off eller etter hele det avsnittet}
+
+%Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}. 
+
+%https://www.baeldung.com/cs/cost-vs-loss-vs-objective-function
+
+\julie{cite someone about the distinction cost/loss}
 
 
-\julie{forskjellen på begrepene cost og loss er ikke diskutert i hastie, skal jeg prøve å grave frem en annen kilde? har evt denne; https://www.baeldung.com/cs/cost-vs-loss-vs-objective-function }
+\subsection{Scaling of data}
+
+In order to have all predictors have an equal impact to the model, we need to scale the data. \mia{cite} If we were to have one predictor that generally had values of order $10^3$, while another had values of order $10^{-3}$, the model could miss the predictive importance of the ladder predictor. This is due to the fact that we try to minimize the loss function in training. A deviation of a small number would count much less than deviation of larger value. Therefore, it is good practice to scale all data before training. 
+
+We do not want to scale the intercept. \mia{bla bla} The intercept can be recalculated after the model fitting as Eq. \ref{bet0} shows.
+
+
+\begin{equation}\label{bet0}
+    \beta_0 = \frac{1}{n}\sum_{i=0}^{n-1}y_i - \frac{1}{n}\sum_{i=0}^{n-1}\sum_{j=1}^{p-1}X_{ij}\beta_j
+\end{equation}
+
+\subsection{Error estimation}
+
+\subsubsection{Splitting data to avoid overfitting}
+
+When training a model we want it to learn the underlying pattern of the data and not the specific training data. If we develop a too complex model that have learned the specific training data and perhaps even the noise, we have a case of overfitting. 
+
+We therefore need two datasets, a set used for training and a set used for testing. We name these two datasets "training data" and "test data". 
+We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection. 
+
+\plothere{Plot here of loss on training and test data to explain overfitting, as in Hastie}
+
+\subsubsection{Error estimation}
+
+The metric we truly want is the loss on independent data not seen or used in any way during training. Although the test data has not been trained on, we have used it to decide on when to stop the training. Our model is therefore not completely independent of the test data. Ideally one could have separated the data into three sets to overcome this. 
+
+The error measure we truly want is the prediction error on an independent test data set: 
+\begin{equation}\label{error_test}
+    \text{Error}_{test} = ??
+\end{equation}
+
+
+However, when we use loss on the training data to quantify the performance of the model, we end up being optimistic about the error on a new independent set. 
+
+
+\subsection{Cross-validation and bootstrapping}
+
+Generally, we get a better model if we have more training data. \mia{cite?} When holding off some of the data for testing, we lose this data for training. We therefore want to explore methods that allow for a train-test split for the data, but still keep as much as possible for training. 
+
+K-fold cross-validation is such a method. The number K must be chosen by the developer. We divide our dataset into K parts, called folds. K-1 folds are used as training data, while the remaining fold is used as test data. The procedure is repeated K times, holding out a new fold each time. The estimated error is then the mean of the K test errors. \mia{likninger om error prediction}
+
+Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. It should have the same size as the original data set. We generate many such bootstrap samples and repeat the training. \mia{more} The error is calculated as the mean of the error. \mia{likninger om error prediction}
+
 
 \subsection{Ordinary least squares}
 Ordinary least squares provide an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
 \julie{utdyp bias med ligninger osv, kanskje dette sist egt og cost funksjon først}
 
-\subsection{Penalized regression}
+%\mia{Could discuss a bit the advantages and disadvantages of the two compared to each other. Ridge best for prediction, lasso best for model selection. Could link to AIC and BIC, but probably just messy to include to more measures. Could discuss that we could have methods that are combinations of the two $\rightarrow$ elastic net. There is no gradient for lasso, but there is for ridge. Must mention here or somewhere else that it is especially important to scale when we have a penalty because the penalty is not scale invariant.}
 
-\mia{Mia will figure out a good way to structure this.}
+%\mia{I think it could be useful with some figures in the theory, showing bias, variance, the scaling of the parameters in ride and lasso, etc. Could use either size of beta against lambda or the geometric variant. }
 
-\mia{Could discuss a bit the advantages and disadvantages of the two compared to each other. Ridge best for prediction, lasso best for model selection. Could link to AIC and BIC, but probably just messy to include to more measures. Could discuss that we could have methods that are combinations of the two $\rightarrow$ elastic net. There is no gradient for lasso, but there is for ridge. Must mention here or somewhere else that it is especially important to scale when we have a penalty because the penalty is not scale invariant.}
+\subsection{Penalized linear regression methods}
 
-\mia{I think it could be useful with some figures in the theory, showing bias, variance, the scaling of the parameters in ride and lasso, etc. Could use either size of beta against lambda or the geometeric variant. I must think about it. }
+An extension of the ordinary least squares method is to add a penalization term. A general term for this is shrinkage methods. There are many reasons for why this is often to prefer. \mia{cite for the last statement}
+
+To perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ is invertible \mia{ref to prev eq about this}. This may not always be the case due to correlation between the predictors in the data set or if $p > n$. Then the matrix will not be full rank. 
+
+A mathematical fix to this is to add a (small) number along the diagonal: 
+\begin{equation}
+    \bet = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
+\end{equation}
+
+This is the general equation for penalized regression. We may have different constraints for the $\beta$ values and will see that this gives different properties. 
+
+\mia{Generelt om dette}
 
 \subsubsection{Ridge Regression}
 
+
+
+\mia{Uttrykket for beta, tolkning, error estimation formel}
+
 \subsubsection{Lasso Regression}
+\mia{Uttrykket for beta, tolkning, error estimation formel}
 
-\subsection{Mia}
-train-test split and scaling
+\plothere{Sirkel og diamant}
 
-CV and bootstrap 
 
 \subsection{Bias-Variance Tradeoff}
 
-\mia{I will do this part, directly related to task e) pen and paper part}
+\julie{Se på det}
+
+\subsubsection{Bias}
+The bias of an estimator is the difference between the expected value of the estimator and its true value as shown in Eq. \ref{bias}. 
+
+\begin{equation}\label{bias}
+    \text{Bias}(\hat{\bet}) = \fv{\hat{\bet}}-\bet
+\end{equation}
+
+The bias is the distance between the actual target and the prediction. If a model is overfitted the bias is low. The predictions are very close to the target in the training data set. An underfitted model however, has a high bias. In both cases, we have a model that does not capture the real underlying pattern but is rather too complex or simple respectively. 
+
+High bias entails a systematic miss of the true pattern in the data. It can easily be understood by looking at an archery target \plothere{Add a figure after variance and explain all}. 
+
+\subsubsection{Variance}
+
+The variance of an estimator is its sensitivity to fluctuations in the data sets. If the predictions vary a lot depending on which data set we train on, it has high variance. The equation for the calculation of the quantity is shown in Eq. \ref{var}. 
+
+\begin{equation}\label{var}
+    \text{Var}(\hat{\bet}) = \fv{\hat{\bet}-\fv{\hat{\bet}}^2} = \fv{\hat{\bet}^2} - \fv{\hat{\bet}}^2
+\end{equation}
+
+An overfitted model generally has high variance. \mia{cite?} As the model learns the specific training data and not the underlying pattern, it is reasonable that the model becomes very sensitive to the specific training data. 
+
+\subsubsection{The trade-off}
+
+\mia{mention that we here use OLS, but that the concepts hold in general}
+
+During training the objective is to minimize the loss function.  We can decompose the expression for the expected loss. Calculations are available in \ref{appendix}. 
 
 \begin{equation}\label{biasvar}
     \fv{(\y - \yt)^2} = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
 \end{equation}
 
+Eq. \ref{biasvar} shows how the expected loss is decomposed into a bias term, a variance term, and an irreducible error. The latter comes from $\epsilon$ in Eq. \ref{OG_y}. As the term irreducible error suggests, there is nothing for us to do with this term. We are therefore left with a bias term and a variance term. These terms are inversely related and in our to have the smallest \mia{error/loss} in total, we need to balance them. 
+
+An overfitted model has low bias, but high variance. An underfitted model has the opposite, high bias and low variance. 
 
 
+
+
+
+
+\subsection{Evaluation measures}
+
+\mia{Fill out MSE and include R2}
+
+Mean squared error, hereby MSE, is defined as: 
+
+\begin{equation}\label{mse}
+    \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
+\end{equation}
+
+The number of data points in our training data is $n$ while the prediction for the i-th data point is denoted $\Tilde{y}_i$
+
+\begin{equation}
+    R^2 = 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2}
+\end{equation}
+
+$R^2$ is a measure of how much of the variance in the data the model explains. \mia{cite} The quantity is a number $\in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. 
 
