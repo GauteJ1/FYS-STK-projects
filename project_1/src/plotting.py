@@ -15,16 +15,16 @@ class Plotting:
             data = FrankeDataGen(data_points)
 
         self.handler = DataHandler(data)
-        self.lmbdas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
+        self.lmbdas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5]
         np.random.seed(1234)
 
     def __config(self):
         plt.style.use("plot_settings.mplstyle")
         plot_utils.plot_config()
 
-    def plot_OLS(self, y_axis: str = "MSE"):
+    def plot_OLS(self, y_axis: str = "MSE", min_deg: int = 1, max_deg: int = 6):
         self.__config()
-        x_data = list(range(1, 6))
+        x_data = list(range(min_deg, max_deg + 1))
         y_data_train = []
         y_data_test = []
 
@@ -102,7 +102,7 @@ class Plotting:
                 mod.fit_model(deg)
             else:
                 mod.fit_model(deg, lmbda)
-            betas = mod.opt_beta[:,0]
+            betas = mod.opt_beta[:, 0]
             extra_zeros = length - len(betas)
             y_data.append(list(betas) + [0] * extra_zeros)
 
@@ -139,36 +139,99 @@ class Plotting:
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
 
-    def plot_betas_lambda(self, deg: int = 4):
-        pass
-        # TODO: Plot betas for different lambda values
+    def plot_betas_lambda(self, model: str = "OLS", deg: int = 3):
+        x_data = self.lmbdas
+        y_data = []
 
-        # x_data = self.lmbdas
-        # ridge_data = []
-        # lasso_data = []
+        length = 21
 
-        # length = 15
+        mod: RegModel
+        if model == "OLS":
+            mod = OLSModel(self.handler)
+        elif model == "Ridge":
+            mod = RidgeModel(self.handler)
+        elif model == "Lasso":
+            mod = LassoModel(self.handler)
+        else:
+            raise RuntimeError(f"{model} not a valid model type.")
 
-        # for lmbda in x_data:
-        #     if model == "OLS":
-        #         mod.fit_model(deg)
-        #     else:
-        #         mod.fit_model(deg, lmbda)
-        #     betas = mod.opt_beta
-        #     extra_zeros = length - len(betas)
-        #     y_data.append(list(betas) + [0] * extra_zeros)
+        for lmbda in x_data:
+            if model == "OLS":
+                mod.fit_model(deg)
+            else:
+                mod.fit_model(deg, lmbda)
+            betas = mod.opt_beta[:, 0]
+            extra_zeros = length - len(betas)
+            y_data.append(list(betas) + [0] * extra_zeros)
 
-        # return x_data, y_data
+        plt.plot(x_data, y_data)
+        plt.xlabel(r"$\lambda$")
+        plt.ylabel(r"Values of $\beta$'s")
+        plt.xscale("log")
+        plt.title(rf"Value of $\beta$'s for {model} with $deg = {deg}$")
 
-    def plot_bias_var_bootstrap(self, samples:int=100, min_deg:int=0, max_deg:int=12):
+    def plot_bias_var_bootstrap(
+        self, samples: int = 100, min_deg: int = 1, max_deg: int = 10
+    ):
         handler = self.handler
         model = OLSModel(handler)
 
-        degs, errors, biases, vars = model.bootstrap_mult_degs(min_deg=min_deg, max_deg=max_deg, samples=samples)
+        degs, errors, biases, vars = model.bootstrap_mult_degs(
+            min_deg=min_deg, max_deg=max_deg, samples=samples
+        )
 
         plt.plot(degs, errors, label="MSE")
         plt.plot(degs, biases, label="Bias")
         plt.plot(degs, vars, label="Var")
+
+        plt.title(f"Title")
+        plt.legend()
+        plt.xlabel("Degree")
+
+    def plot_mse_bootstrap(
+        self, samples: int = 100, min_deg: int = 1, max_deg: int = 12
+    ):
+
+        handler = self.handler
+        model = OLSModel(handler)
+
+        degs, errors, biases, vars = model.bootstrap_mult_degs(
+            min_deg=min_deg, max_deg=max_deg, samples=samples
+        )
+
+        plt.plot(degs, errors, label="MSE")
+
+        plt.title(f"Title")
+        plt.legend()
+        plt.xlabel("Degree")
+
+    def plot_mse_cv(
+        self,
+        kfolds: int = 5,
+        min_deg: int = 1,
+        max_deg: int = 12,
+        model: str = "OLS",
+        lmbda: float = 0,
+    ):
+        handler = self.handler
+
+        if model == "OLS":
+            model = OLSModel(handler)
+            degs, errors = model.cv_mult_degs(
+                min_deg=min_deg, max_deg=max_deg, kfolds=kfolds
+            )
+        elif model == "Ridge":
+            model = RidgeModel(handler)
+            degs, errors = model.cv_mult_degs(
+                min_deg=min_deg, max_deg=max_deg, kfolds=kfolds, lmbda=lmbda
+            )
+        elif model == "Lasso":
+            model = LassoModel(handler)
+            degs, errors = model.cv_mult_degs(
+                min_deg=min_deg, max_deg=max_deg, kfolds=kfolds, lmbda=lmbda
+            )
+
+        plt.plot(degs, errors, label="MSE")
 
         plt.title(f"Title")
         plt.legend()

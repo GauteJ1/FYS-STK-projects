@@ -10,14 +10,23 @@ class DataHandler:
         n = len(self.x)
         self.y = data.y.ravel()
         self.z = data.get_data().ravel().reshape(n, 1)
+        self.test_size = 0.2
+        (
+            self.x_train,
+            self.x_test,
+            self.y_train,
+            self.y_test,
+            self.z_train,
+            self.z_test,
+        ) = train_test_split(self.x, self.y, self.z, test_size=self.test_size)
 
-    def __make_X(self, degree: int) -> np.ndarray:
-        X = np.zeros((len(self.x), ((degree + 1) * (degree + 2)) // 2 - 1))
+    def __make_X(self, x, y, degree: int) -> np.ndarray:
+        X = np.zeros((len(x), ((degree + 1) * (degree + 2)) // 2 - 1))
         index = 0
         for i in range(degree):
             deg = i + 1
             for y_deg in range(0, deg + 1):
-                X[:, index] = self.x ** (deg - y_deg) * self.y**y_deg
+                X[:, index] = x ** (deg - y_deg) * y**y_deg
                 index += 1
         return X
 
@@ -34,20 +43,26 @@ class DataHandler:
     def preprocess(
         self, test_size: float = 0.2, scaling: str = "None", degree: int = 2
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        X = self.__make_X(degree)
+        if test_size != self.test_size:
+            self.test_size = test_size
+            (
+                self.x_train,
+                self.x_test,
+                self.y_train,
+                self.y_test,
+                self.z_train,
+                self.z_test,
+            ) = train_test_split(self.x, self.y, self.z, test_size=self.test_size)
 
-        X_train, X_test, z_train, z_test = train_test_split(
-            X, self.z, test_size=test_size
-        )
+        X_train = self.__make_X(self.x_train, self.y_train, degree)
+        X_test = self.__make_X(self.x_test, self.y_test, degree)
 
         X_train, X_test = self.__scale(X_train, X_test, scaling)
 
         self.X_train = X_train
         self.X_test = X_test
-        self.z_train = z_train
-        self.z_test = z_test
 
-        return X_train, X_test, z_train, z_test
+        return X_train, X_test, self.z_train, self.z_test
 
     def create_bootstrap_sampling(self, X_train, z_train):
 
@@ -55,9 +70,9 @@ class DataHandler:
 
         return X_bootstrap, z_bootstrap
 
-    def create_cross_validation(self, degree: int, kfolds: int):
+    def create_cross_validation(self, degree: int, kfolds: int = 5):
         z = self.z
-        X = self.__make_X(degree)
+        X = self.__make_X(self.x, self.y, degree)
 
         kf = KFold(n_splits=kfolds, shuffle=True)
 
