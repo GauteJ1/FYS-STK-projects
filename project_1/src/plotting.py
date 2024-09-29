@@ -1,10 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns 
 
 from reg_models import OLSModel, RidgeModel, LassoModel, RegModel
 from data_gen import FrankeDataGen, TerrainDataGen
 from data_handling import DataHandler
 import plot_utils
+
+
+sns.set(palette="bright")
 
 
 class Plotting:
@@ -181,12 +185,12 @@ class Plotting:
         )
 
         plt.plot(degs, errors, label="MSE")
-        plt.plot(degs, biases, label="Bias")
+        plt.plot(degs, biases, label=r"Bias$^2$")
         plt.plot(degs, vars, label="Var")
 
-        plt.title(f"Title")
+        plt.title(f"Bias-variance tradeoff")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Degree of complexity")
 
     def plot_mse_bootstrap(
         self, samples: int = 100, min_deg: int = 1, max_deg: int = 12
