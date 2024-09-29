@@ -35,7 +35,7 @@ Any variation due to randomness, noise or things like measurement error is inclu
 
 \julie{Slenge inn uttrykkene for exp av $y_i$ og varians av $y_i$}
 
-\subsection{Cost-Functions \& Loss-Functions}
+\subsection{Cost- \& Loss-Functions}
 The main objective when solving such a linear regression problem, is finding the "optimal" coefficients $\boldsymbol{\beta}$ that minimizes the error-term. 
 What such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
 A cost-function, $\text{Cost}(f,\mathcal{D} )$, is used to describe such a metric measuring a group of data-points, while a loss-function, $L(y, \hat{y})$, describes a metric regarding a single data-instance. 
@@ -54,9 +54,9 @@ Through different choices of cost-function we end up with different methods for 
 
 \subsection{Scaling of data}
 
-In order to have all predictors have an equal impact to the model, we need to scale the data. \mia{cite} If we were to have one predictor that generally had values of order $10^3$, while another had values of order $10^{-3}$, the model could miss the predictive importance of the ladder predictor. This is due to the fact that we try to minimize the loss function in training. A deviation of a small number would count much less than deviation of larger value. Therefore, it is good practice to scale all data before training. 
+In order to have all predictors have an equal impact to the model, we need to scale the data \citep[p. 398]{hastie}. If we were to have one predictor that generally had values of order $10^3$, while another had values of order $10^{-3}$, the model could miss the predictive importance of the ladder predictor. This is due to the fact that we try to minimize the loss function in training. A deviation of a small number would count much less than deviation of larger value. Therefore, it is good practice to scale all data before training. 
 
-We do not want to scale the intercept. \mia{bla bla} The intercept can be recalculated after the model fitting as Eq. \ref{bet0} shows.
+We do not want to scale the intercept. \mia{cite + more} The intercept can be recalculated after the model fitting as Eq. \ref{bet0} shows.
 
 
 \begin{equation}\label{bet0}
@@ -70,7 +70,7 @@ We do not want to scale the intercept. \mia{bla bla} The intercept can be recalc
 When training a model we want it to learn the underlying pattern of the data and not the specific training data. If we develop a too complex model that have learned the specific training data and perhaps even the noise, we have a case of overfitting. 
 
 We therefore need two datasets, a set used for training and a set used for testing. We name these two datasets "training data" and "test data". 
-We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection. \mia{precise?}
+We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection.
 
 In practice, we look at the error rate of the training and test data. The error on the training data will continue to decrease. For the test data, we will initially see a decrease in the error. After some time of training, this will increase again. At this point, the model is overfitting to the training data and we have our stopping criteria.
 
@@ -82,14 +82,14 @@ The metric we truly want is the loss on independent data not seen or used in any
 
 The error measure we truly want is the prediction error on an independent test data set $\tau$: 
 \begin{equation}\label{error_test}
-    \text{Error}_{\tau} = \fv{L(\y,\Tilde{\y} | \tau}
+    \text{Error}_{\tau} = \fv{L(\y,\hat{f}(\boldsymbol{x})) | \tau}
 \end{equation}
 
 The training error is not a good estimate of this. As explained in sec. \ref{overfitting} we can overfit to decrease this error measure. The training error is expressed as: 
 
 \begin{equation}
     \overline{\text{err}} = \frac{1}{n}\sum_{i=0}^{n-1} L(y_i, \Tilde{y}_i)
-\end{equation}
+\end{equation} 
 
 \julie{Du må hjelpe meg her, Julie}
 
@@ -100,24 +100,43 @@ The training error is not a good estimate of this. As explained in sec. \ref{ove
 Generally, we get a better model if we have more training data. \mia{cite?} When holding off some of the data for testing, we lose this data for training. We therefore want to explore methods that allow for a train-test split for the data, but still keep as much as possible for training. 
 
 \subsubsection{K-fold cross-validation}
-K-fold cross-validation is such a method. The number K must be chosen by the developer. We divide our dataset into K parts, called folds. K-1 folds are used as training data, while the remaining fold is used as test data. The procedure is repeated K times, holding out a new fold each time. The estimated error is then the mean of the K test errors. \mia{likninger om error prediction}
+K-fold cross-validation is such a method. The number K must be chosen by the developer. We divide our dataset into K parts $\mathcal{F}_k$, called folds. K-1 folds are used as training data, while the remaining fold is used as test data. When the k-th fold is held out, we train model $f^{-k}$. 
+The procedure is repeated K times, holding out a new fold each time. The estimated error is then the mean of the K test errors as shown in Eq. \ref{cv}.
+
+\begin{equation}\label{cv}
+    CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{-k}({x}_i)\right) 
+\end{equation}
+
+There are both advantages and disadvantages of this method. For a high K it is quite computationally costly. Another disadvantage is that there is no clear choice of K. There is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV). It will lead to an unbiased error measure, but the variance will be quite large. \mia{cite}
+
+One advantage of cross-validation is that more data is left for training. Another advantages is that the error (Eq. \ref{cv}) closer to the true generalization error measure (Eq. \ref{error_test} )because we average over many different models.  \mia{fill in ones prev sec is done}
+
 
 \subsubsection{Bootstrapping}
-Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. It should have the same size as the original data set. We generate many such bootstrap samples and repeat the training. \mia{more} The error is calculated as the mean of the error. \mia{likninger om error prediction}
+Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. It should have the same size as the original data set, $n$. We generate many such bootstrap samples and repeat the training. 
+This is meant to simulate new experiments.\mia{cite} 
+For the b-th bootstrap sample we obtain model $\hat{f}_b$. 
+
+The error could calculated as the mean of the error:
 
 \begin{equation}
-    \widehat{\text{Err}}^{(1)} = \frac{1}{n} \sum_{i=0}^{n-1} \frac{1}{|C_{[-i]}|} \sum_{b \in C_{[-i]}} L\left(y_i; \widehat{f}_b^*(x_i)\right)
+    \widehat{\text{Err}}^{(1)} = \frac{1}{n} \sum_{i=0}^{n-1} \frac{1}{|C_{[-i]}|} \sum_{b \in C_{[-i]}} L\left(y_i; \hat{f}_b(x_i)\right)
 \end{equation}
 
+However, this might be too optimistic. \mia{why?} On average we have 63.2\% of the original observations in a bootstrap sample. This corresponds to 36.8\% not beeing in the bootstrap sample at all. \mia{more} This correct error measure for bootstrapping is therefore: 
+
 \begin{equation}
-    \widehat{\text{Err}}^{(0.632)} = 0.368 \overline{\text{err}} + 0.632 \widehat{\text{Err}}^{(1)}
+    BS_{error} = 0.368 \overline{\text{err}} + 0.632 \widehat{\text{Err}}^{(1)}
 \end{equation}
-\mia{must be explain etc}
 
 
 \subsection{Ordinary least squares}
 Ordinary least squares provide an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
 \julie{utdyp bias med ligninger osv, kanskje dette sist egt og cost funksjon først}
+
+\begin{equation}\label{betaols}
+    \hat{\bet}_{\text{OLS}} = \betta
+\end{equation}
 
 %\mia{Could discuss a bit the advantages and disadvantages of the two compared to each other. Ridge best for prediction, lasso best for model selection. Could link to AIC and BIC, but probably just messy to include to more measures. Could discuss that we could have methods that are combinations of the two $\rightarrow$ elastic net. There is no gradient for lasso, but there is for ridge. Must mention here or somewhere else that it is especially important to scale when we have a penalty because the penalty is not scale invariant.}
 
@@ -125,39 +144,46 @@ Ordinary least squares provide an unbiased estimation - meaning the expected dis
 
 \subsection{Penalized linear regression methods}
 
-An extension of the ordinary least squares method is to add a penalization term. A general term for this is shrinkage methods. There are many reasons for why this is often to prefer. \mia{cite for the last statement}
+An extension of the ordinary least squares method is to add a penalization term. A general term for this is shrinkage methods. There are many reasons why this is often preferred. \mia{cite for the last statement}
 
-To perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ is invertible \mia{ref to prev eq about this}. This may not always be the case due to correlation between the predictors in the data set or if $p > n$. Then the matrix will not be full rank. 
+Firstly, to perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set or if $p > n$. Then the matrix will not be full rank. 
 
 A mathematical fix to this is to add a (small) number along the diagonal: 
-\begin{equation}
+\begin{equation}\label{pen}
     \bet = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
 \end{equation}
 
-This is the general equation for penalized regression. We may have different constraints for the $\beta$ values and will see that this gives different properties. 
+Secondly, these methods also reduce overfitting. \mia{cite}
 
-\mia{Generelt om dette}
+Eq. \ref{pen} is the general equation for penalized regression. The parameter $\lambda$ controls the regularization. Furthermore, we have different types of penalties. Two types are the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. We will see that different types of penalties give different properties and interpretations.
 
 \subsubsection{Ridge Regression}
+
+In Ridge regression, an L2-norm penalty is used. This amounts to the following cost-function: 
+
+\begin{equation}
+     C(\bet) = \frac{1}{n} \sum_{i=0}^{n-1} \left( y_i - \sum_{j=0}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=0}^{p-1} \beta_j^2 
+\end{equation}
+
+
 
 \begin{equation}
     \sum_{j=1}^p \beta_j^2 \leq t, 
 \end{equation}
 
-Ridge regression puts a penalty on all the $\beta$-terms except the intercept whisch is held out during training. All values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
-
-
-\mia{Uttrykket for beta, tolkning, error estimation formel}
+Ridge regression puts a penalty on all the $\beta$-terms except the intercept which is held out during training. All values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
 
 \subsubsection{Lasso Regression}
+
+\begin{equation}
+     C(\bet) = \frac{1}{n} \sum_{i=0}^{n-1} \left( y_i - \sum_{j=0}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=0}^{p-1} |\beta_j|
+\end{equation}
 
 \begin{equation}
     \sum_{j=1}^p | \beta_j | \leq t, 
 \end{equation}
 
-
-\mia{Uttrykket for beta, tolkning, error estimation formel}
-
+\subsubsection{Comparison}
 
 
 \plothere{Sirkel og diamant}
@@ -192,7 +218,7 @@ An overfitted model generally has high variance. \mia{cite?} As the model learns
 
 \mia{mention that we here use OLS, but that the concepts hold in general}
 
-During training the objective is to minimize the loss function.  We can decompose the expression for the expected loss. Calculations are available in \ref{appendix}. 
+During training the objective is to minimize the loss function.  We can decompose the expression for the expected loss. Calculations are available in \hyperref[appendixB]{appendix B}.
 
 \begin{equation}\label{biasvar}
     \fv{(\y - \yt)^2} = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
@@ -209,15 +235,13 @@ An overfitted model has low bias, but high variance. An underfitted model has th
 
 \subsection{Evaluation measures}
 
-\mia{Fill out MSE and include R2}
-
 Mean squared error, hereby MSE, is defined as: 
 
 \begin{equation}\label{mse}
     \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
 \end{equation}
 
-The number of data points in our training data is $n$ while the prediction for the i-th data point is denoted $\Tilde{y}_i$
+The number of data points in our training data is $n$ while the prediction for the i-th data point is denoted $\Tilde{y}_i$. MSE is a popular \mia{cite} error measure for linear regression models. 
 
 \begin{equation}
     R^2 = 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2}
