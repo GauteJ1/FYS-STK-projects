@@ -18,7 +18,7 @@ class DataGen:
         z: np.ndarray[float],
         z_lim: tuple[float, float] = (-1, 1),
         title: str = "Data",
-        save: bool = False
+        save_path: str = "None"
     ) -> None:
         x = self.x
         y = self.y
@@ -43,18 +43,17 @@ class DataGen:
         # Add a color bar which maps values to colors.
         fig.colorbar(surf, shrink=0.5, aspect=5)
         fig.tight_layout()
-
-        if save:
-            file_path = ""
-
+        if save_path != "None":
+            plt.savefig(save_path)
         plt.show()
 
     def get_data(self) -> np.ndarray[float]:
         raise NotImplementedError
 
 class FrankeDataGen(DataGen):
-    def __init__(self, data_points: int = 101) -> None:
+    def __init__(self, data_points: int = 101, noise: bool = False) -> None:
         super().__init__(data_points)
+        self.noise = noise
         self.__generate_data()
 
     def __generate_data(self) -> None:
@@ -67,16 +66,23 @@ class FrankeDataGen(DataGen):
         )
         term4 = -0.2 * np.exp(-((9 * self.x - 4) ** 2) - (9 * self.y - 7) ** 2)
 
-        self.z = term1 + term2 + term3 + term4
+        if self.noise:
+            self.z = term1 + term2 + term3 + term4 + 0.1*np.random.normal(0, 1, (term1.shape))
+
+        else:
+            self.z = term1 + term2 + term3 + term4
 
     def get_data(self) -> np.ndarray[float]:
         self.__generate_data()
         return self.z
 
-    def plot_data(self, save: bool = False) -> None:
+    def plot_data(self, save_path: str =  "None") -> None:
         z = self.z
         z_lim = (-0.10, 1.40)
-        super().plot_data(z, z_lim, "Franke Function", save)
+        if self.noise:
+            super().plot_data(z, z_lim, "Franke Function with noise", save_path)
+        else:
+            super().plot_data(z, z_lim, "Franke Function", save_path)
 
 
 class TerrainDataGen(DataGen):
@@ -90,10 +96,26 @@ class TerrainDataGen(DataGen):
     def get_data(self) -> np.ndarray[float]:
         return self.z
 
-    def plot_data(self, save: bool = False) -> None:
+    def plot_data(self, save_path: str = "None") -> None:
         z = self.z
         z_lim = (-10, 10)  # TODO: set terrain data z_lim if needed
-        super().plot_data(z, z_lim, "Terrain", save)
+        super().plot_data(z, z_lim, "Terrain", save_path)
+
+class Poly1D(DataGen):
+    def __init__(self, data_points: int = 101, save_path: str = "tbd") -> None:
+        self.data_points = data_points
+        self.x = np.linspace(0, 1, data_points)
+        self.__generate_data()
+
+    def __generate_data(self) -> None:
+        self.z = self.x**11 - self.x**2 - 2*self.x + 4
+
+    def get_data(self) -> np.ndarray[float]:
+        return self.z
+
+    def plot_data(self, save: bool = False) -> None:
+        raise NotImplementedError
+
 
 
 if __name__ == "__main__":

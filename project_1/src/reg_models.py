@@ -42,8 +42,6 @@ class RegModel:
         self.fit_model_on_data(
             self.X_train,
             self.z_train,
-            ridge_lambda=ridge_lambda,
-            lasso_lambda=lasso_lambda,
         )
 
     def MSE(self, train: bool = False) -> float:
@@ -145,16 +143,16 @@ class RegModel:
 
     def cv_mult_degs(self, min_deg: int = 1, max_deg: int = 12, kfolds: int = 5):
         deg_list = []
-        variance_list = []
+        err_list = []
 
         self.get_preprocessed_data(degree=max_deg)
 
         for deg in range(min_deg, max_deg + 1):
             deg_list.append(deg)
             err = self.cross_validation(deg, kfolds)
-            variance_list.append(var)
+            err_list.append(err)
 
-        return deg_list, variance_list
+        return deg_list, err
 
 
 class OLSModel(RegModel):
@@ -162,7 +160,11 @@ class OLSModel(RegModel):
         super().__init__(data)
 
     def fit_model(self, degree: int):
-        return super().fit_model(degree=degree)
+        self.get_preprocessed_data(degree=degree)
+        self.fit_model_on_data(
+            self.X_train,
+            self.z_train,
+        )
 
     def fit_model_on_data(
         self, X_train, z_train
@@ -178,7 +180,12 @@ class RidgeModel(RegModel):
         super().__init__(data)
 
     def fit_model(self, degree: int, lmbda: float):
-        return super().fit_model(degree=degree, ridge_lambda=lmbda)
+        self.get_preprocessed_data(degree=degree)
+        self.fit_model_on_data(
+            self.X_train,
+            self.z_train,
+            lmbda=lmbda
+        )
 
     def cross_validation(self, kfolds: int, degree: int, lmbda: float):
         return super().cross_validation(
@@ -196,7 +203,12 @@ class LassoModel(RegModel):
         super().__init__(data)
 
     def fit_model(self, degree: int, lmbda: float):
-        return super().fit_model(degree=degree, lasso_lambda=lmbda)
+        self.get_preprocessed_data(degree=degree)
+        self.fit_model_on_data(
+            self.X_train,
+            self.z_train,
+            lmbda=lmbda
+        )
 
     def cross_validation(self, kfolds: int, degree: int, lmbda: float):
         return super().cross_validation(

@@ -3,8 +3,8 @@ import numpy as np
 import seaborn as sns 
 
 from reg_models import OLSModel, RidgeModel, LassoModel, RegModel
-from data_gen import FrankeDataGen, TerrainDataGen
-from data_handling import DataHandler
+from data_gen import FrankeDataGen, TerrainDataGen, Poly1D
+from data_handling import DataHandler, DataHandler1D
 import plot_utils
 
 
@@ -12,15 +12,22 @@ sns.set(palette="bright")
 
 
 class Plotting:
-    def __init__(self, data_points: int = 51, real_data: bool = False):
-        if real_data:
+    def __init__(self, data_points: int = 51, data: str = "Franke", seed: int = 41):
+        if data == "1D":
+            data = Poly1D(data_points)
+            self.handler = DataHandler1D(data)
+        elif data == "Terrain":
             data = TerrainDataGen(data_points)
-        else:
+            self.handler = DataHandler(data)
+        elif data == "Franke":
             data = FrankeDataGen(data_points)
+            self.handler = DataHandler(data)
+        elif data == "Franke_Noise":
+            data = FrankeDataGen(data_points, noise=True)
+            self.handler = DataHandler(data)
 
-        self.handler = DataHandler(data)
         self.lmbdas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5]
-        np.random.seed(1234)
+        np.random.seed(seed)
 
     def __config(self):
         plt.style.use("plot_settings.mplstyle")
@@ -107,6 +114,7 @@ class Plotting:
             else:
                 mod.fit_model(deg, lmbda)
             betas = mod.opt_beta[:, 0]
+            print(deg, betas)
             extra_zeros = length - len(betas)
             y_data.append(list(betas) + [0] * extra_zeros)
 
