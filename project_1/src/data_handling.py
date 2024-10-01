@@ -113,9 +113,10 @@ class DataHandler1D:
     def __scale(self, X_train, X_test, scaling: str = "None"):
         if scaling == "Mean":
             means = [np.mean(X_train[:, i]) for i in range(len(X_train[0]))]
+            stds = [np.std(X_train[:, i]) for i in range(len(X_train[0]))]
             for i in range(len(X_train[0])):
-                X_train[:, i] -= means[i]
-                X_test[:, i] -= means[i]
+                X_train[:, i] = (means[i]-X_train[:, i])/stds[i]
+                X_test[:, i] = (means[i]-X_test[:, i])/stds[i]
             return X_train, X_test
         else:
             return X_train, X_test
