@@ -80,7 +80,7 @@ In practice, we look at the error rate of the training and test data. The error 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=1\linewidth]{project_1/images/bias_var_bootstrap.png}\label{plot_overfit}
+\includegraphics[width=1\linewidth]{project_1/figures/bias_var_bootstrap.png}\label{plot_overfit}
 \caption{\mia{must insert the correct image}}
 \label{train_test_overfit}
 \end{figure}
@@ -135,7 +135,7 @@ The error could calculated as the mean of the error:
     \widehat{\text{Err}}^{(1)} = \frac{1}{n} \sum_{i=0}^{n-1} \frac{1}{|C_{[-i]}|} \sum_{b \in C_{[-i]}} L\left(y_i; \hat{f}_b(x_i)\right)
 \end{equation}
 
-However, this might be too optimistic \citep[p. 251]{hastie}. On average we have 63.2\% of the original observations in a bootstrap sample. This corresponds to 36.8\% not being in the bootstrap sample at all. \mia{more} This correct error measure for bootstrapping is therefore: 
+However, this might be too optimistic. On average we have 63.2\% of the original observations in a bootstrap sample. This corresponds to 36.8\% not being in the bootstrap sample at all. \mia{more} This correct error measure for bootstrapping is therefore \citep[p. 251]{hastie}: 
 
 \begin{equation}
     BS_{error} = 0.368 \overline{\text{err}} + 0.632 \widehat{\text{Err}}^{(1)}
