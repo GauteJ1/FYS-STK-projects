@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
+from PIL import Image
 
 
 class DataGen:
@@ -98,7 +99,9 @@ class TerrainDataGen(DataGen):
         self.__generate_data()
 
     def __generate_data(self) -> None:
-        pass  # TODO: Implement generation of terrain data
+        image = Image.open('../SRTM_data_Norway_1.tif')
+        data = np.array(image)
+        self.z = data[:self.data_points, :self.data_points]
 
     def get_data(self) -> np.ndarray[float]:
         return self.z
