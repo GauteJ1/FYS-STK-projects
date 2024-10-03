@@ -1,4 +1,4 @@
-\documentclass[aps,rmp,reprint,amsmath,amssymb,longbibliography,twocolumn,floatfix]{revtex4-1}
+\documentclass[aps,rmp,reprint,amsmath,amssymb,twocolumn,floatfix]{revtex4-1}
 
 % Include the configuration file
 \input{project_1/config}
@@ -26,7 +26,7 @@
 \section{Theory}
 \input{project_1/text/2_theory}
 
-\section{Computational Experiments}
+\section{Method}
 \input{project_1/text/3_methods}
 
 \section{Results}
@@ -39,9 +39,11 @@
 \input{project_1/text/6_conclusion}
 
 \newpage
+\addcontentsline{toc}{section}{\protect\numberline{}References}
 \bibliography{project_1/References} % add references to this file
 
 \appendix
+\section{Appendices}
 \label{appendix}
 \input{project_1/text/appendix}
 

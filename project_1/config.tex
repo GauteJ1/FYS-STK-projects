@@ -46,7 +46,8 @@
 % #############
 \usepackage{titlesec}
 
-\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
 
 \titleformat{\paragraph}
 {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
@@ -100,6 +101,8 @@ apsrev41Control%
 \newcommand{\R}{\mathbb{R}}
 % The good phi
 \renewcommand{\phi}{\upvarphi}
+
+% Fill in-commands
 \newcommand{\mia}[1]{\textbf{\color{magenta}{#1}}}
 \newcommand{\julie}[1]{\textbf{\color{teal}{#1}}}
 \newcommand{\gaute}[1]{\textbf{\color{orange}{#1}}}
@@ -115,8 +118,7 @@ apsrev41Control%
 \newcommand{\bet}[0]{\boldsymbol{\beta}}
 \newcommand{\betta}[0]{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}}
 
-
-
-% \bibliographystyle{apsrev4-1}
-%\usepackage[left]{lineno}
-%\linenumbers
+% Limit table of contents depth
+\makeatletter
+\def\l@subsubsection#1#2{}
+\makeatother
