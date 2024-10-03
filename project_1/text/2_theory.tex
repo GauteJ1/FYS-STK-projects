@@ -76,10 +76,11 @@ Testing a model on the same data it's trained on could give a false impression o
 We therefore need (at least) two datasets; a set used for training and a set used for testing, to give us a more impartial evaluation of the model. The two datasets are named respectively "training data" and "test data". As can be inferred by the names, we use the training data in the training (or \textit{fitting}) of the model, while the test set is used to evaluate the performance of our final chosen model. 
 Additionally one can choose to include a "validation" set in the split; this validation set would then be applied in the model selection phase.
 
-An important concept in train/test splitting is to \textbf{never} touch the test-set before the final evaluation. The test-set is supposed to act as never-before seen data for the model, and given a limited data set it's the closest one gets to an impartial assessment. 
+An important concept in train-test splitting is to \textbf{never} touch the test-set before the final evaluation. The test-set is supposed to act as never-before seen data for the model, and given a limited data set it's the closest one gets to an impartial assessment. 
 If using a scaler, fitting of the scaler should be done after the split and solely on the training data - and this scaler, fit to the training data, then applied to the test data when testing. 
 
 Splitting data is an important tool to help avoid \textit{overfitting} and \textit{underfitting} of the model, and ensure a more generalizable fit. Overfitting and underfitting is elaborated further in  section G; "\textit{Bias-Variance Tradeoff}".
+\julie{KILDER}
 % We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection.
 
 % If we develop a too complex model that gets specialized to the training data and perhaps even noise, we get a case of \textit{overfitting}. 
@@ -118,21 +119,22 @@ Splitting data is an important tool to help avoid \textit{overfitting} and \text
 
 \subsection{Resampling methods}
 
-Generally, we want as much data as possible for the training of a model. When holding off some of the data for testing, we lose this data for training. We therefore want to explore methods that allow for a train-test split for the data, but still keep as much as possible for training. 
+Generally, we want as much data as possible for the training of a model. When holding off some of the data for testing, we lose this data for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training. 
 
 \subsubsection{K-fold cross-validation}
-K-fold cross-validation is such a method. The number K must be chosen by the developer. We divide our dataset into K parts $\mathcal{F}_k$, called folds. K-1 folds are used as training data, while the remaining fold is used as test data. When the k-th fold is held out, we train model $f^{k}$. 
-The procedure is repeated K times, holding out a new fold each time. The estimated error is then the mean of the K test errors as shown in Eq. \ref{cv}. \citep[p. 241]{hastie}
+\textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. We divide our dataset into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
+The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation we get an estimated error as the mean of the $K$ test errors as shown in Eq. \ref{cv}. \citep[p. 241]{hastie}
 
 
 \begin{equation}\label{cv}
     CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{k}({x}_i)\right) 
 \end{equation}
 
-There are both advantages and disadvantages of this method. For a high K it is quite computationally costly. Another disadvantage is that there is no clear choice of K. There is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV). It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
+There is both advantages and disadvantages of this method. The maifor a high $K$ it is quite computationally costly. Another disadvantage is that there is no clear choice of $K$. There is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
-One advantage of cross-validation is that more data is left for training. Another advantages is that the error (Eq. \ref{cv}) closer to the true generalization error measure because we average over many different models. \mia{cite}
+On the other hand an advantage of cross-validation is having a bigger training set, while maintaining  is left for training. Another advantage is that the estimated error (Eq. \ref{cv}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to higher degree taking into account randomness associated with data-selection. \mia{cite}
 
+\julie{se over siste setningene igjen}
 
 \subsubsection{Bootstrapping}
 Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. Every bootstrap sample should have the same size as the original data set, $n$. We generate many such samples and repeat the training. The total number of samples is denoted by B. This is meant to simulate new experiments.\mia{cite} 
