@@ -108,7 +108,9 @@ class TerrainDataGen(DataGen):
 
     def plot_data(self, save_path: str = "None") -> None:
         z = self.z
-        z_lim = (-10, 10)  # TODO: set terrain data z_lim if needed
+        min_lim = np.min(z)*0.9
+        max_lim = np.max(z)*1.1
+        z_lim = (min_lim, max_lim)  
         super().plot_data(z, z_lim, "Terrain", save_path)
 
 
