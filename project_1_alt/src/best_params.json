@@ -1,0 +1,1 @@
+{"best_params_ridge_franke": {"best_lambda": 7, "best_degree": 0.004}, "best_params_lasso_franke": {"best_lambda": 6.000000000000001e-05, "best_degree": 9}, "best_params_ridge_terrain": {"best_lambda": 1, "best_degree": 0.4}, "best_params_lasso_terrain": {"best_lambda": 7.000000000000001e-05, "best_degree": 1}}
