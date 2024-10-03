@@ -123,18 +123,19 @@ Generally, we want as much data as possible for the training of a model. When ho
 
 \subsubsection{K-fold cross-validation}
 \textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. We divide our dataset into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
-The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation we get an estimated error as the mean of the $K$ test errors as shown in Eq. \ref{cv}. \citep[p. 241]{hastie}
+The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv}. \citep[p. 241]{hastie}
 
 
 \begin{equation}\label{cv}
     CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{k}({x}_i)\right) 
 \end{equation}
 
-There is both advantages and disadvantages of this method. The maifor a high $K$ it is quite computationally costly. Another disadvantage is that there is no clear choice of $K$. There is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
+There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train-set. 
+The estimated error (Eq. \ref{cv}) will also be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. \mia{cite} \julie{KILDER}
 
-On the other hand an advantage of cross-validation is having a bigger training set, while maintaining  is left for training. Another advantage is that the estimated error (Eq. \ref{cv}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to higher degree taking into account randomness associated with data-selection. \mia{cite}
+On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
-\julie{se over siste setningene igjen}
+\julie{KILDER}
 
 \subsubsection{Bootstrapping}
 Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. Every bootstrap sample should have the same size as the original data set, $n$. We generate many such samples and repeat the training. The total number of samples is denoted by B. This is meant to simulate new experiments.\mia{cite} 
