@@ -1,8 +1,24 @@
 \mia{Will move stuff down to discussion, but simpler to write in the same section for now}
 
-\subsubsection{Franke function}
+\subsection{Hyperparamters}
 
-\begin{figure}
+Through grid search the best combination of $\lambda$- and degree-values where found to be: 
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Franke Function} & \textbf{Terrain Data} \\ \hline
+        \textbf{Ridge} & lambda, degree & lambda, degree \\ \hline
+        \textbf{Lasso} & lambda, degree & lambda, degree \\ \hline
+    \end{tabular}
+    \caption{Best $\lambda$ values}
+    \label{tab:my_label}
+\end{table}
+
+\subsection{Franke function}
+
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise.pdf}
     \caption{Caption}
@@ -13,16 +29,14 @@ Fig. \ref{fig:mseols} shows how the error initially decreases as the degree of c
 
 We furthermore notice how at around degree = 9, the test error reaches its minimum. The error increases as the polynomial degree is increased by one. We use the test error to choose the optimal degree of complexity. In this case, polynomials of degree up to nine is the best. The training error continues to decrease. This is due to overfitting and the fact that OLS is designed to minimize the MSE. 
 
-%At around degree = 11, the MSE for both the training and test data set increases substantially. This may initially seem wrong. The OLS is inherently designed to minimize MSE and in theory, we would expect it to continue to decrease infinitely. The problem we encounter here is numerical precision. At this point we look at very small numbers to the power of 12. This becomes numbers smaller than $10^{15}$, the numbers we can represent on our computers. 
-
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_R2_Franke_Noise.pdf}
     \caption{Caption}
     \label{fig:r2ols}
 \end{figure}
 
-$R^2$ \mia{more more}
+The $R^2$ value increases as higher degree polynomials are introduced to the ordinary least squares model, as shown in Fig. \ref{fig:r2ols}. This is reasonable as we likely need higher degree polynomials to explain more variance in the data. The increase in $R^2$ halters at around degree equal to 10. At this point, introducing higher degree polynoimals does not help explain further variance in the data. The value of $R^2$ for the test data is lower then the one for the training data. This might be a sign that the model does not generalize well. \mia{back this up}
 
 \begin{figure}
     \centering
@@ -38,7 +52,25 @@ $R^2$ \mia{more more}
     \label{fig:lasso_betas}
 \end{figure}
 
-The $\beta$'s values for our Ridge- and Lasso regression models are presented in fig. \ref{fig:ridge_betas} and fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Both dark blue lines are at a zero value at approximately $\lambda = 10^0 = 1$, while all but yellow and purple have reached zero when $\lambda \approx 10$. 
+The $\beta$'s values for our Ridge- and Lasso regression models are presented in fig. \ref{fig:ridge_betas} and fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_bootstrap.pdf}
+    \caption{\mia{this is the wrong plot, should be mse ols for bootstrapping, train and test}}
+    \label{fig:olsfrankebootstrap}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_CV_k10.pdf}
+    \caption{\mia{consider to have a combined plot for K = 5,7,10 in stead}}
+    \label{fig:cvk10franke}
+\end{figure}
+
+\mia{ comparing bootstrap to cross validation for franke function here}
+
+\mia{discussion on the choice of K}
 
 \begin{figure}[h!]
     \centering
@@ -47,41 +79,23 @@ The $\beta$'s values for our Ridge- and Lasso regression models are presented in
     \label{bias_var_trade}
 \end{figure}
 
-For the OLS model trained with bootstrapping, fig. \ref{bias_var_trade} shows how the MSE can be decomposed into a bias and variance term. 
+For the OLS model trained with bootstrapping, fig. \ref{bias_var_trade} shows how the MSE can be decomposed into a bias and a variance term. The bias is initially high, but the variance is low. This is typical for an underfitted model. As the complexity is increases, the bias goes down, whereas the variance increases. The lowest MSE is reached at some trade-off between the two. In our case the minimal MSE is found at \mia{insert}. As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. This is a sign of a overfitted model.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_CV_k10.pdf}
-    \caption{Caption}
-    \label{fig:frankek10}
-\end{figure}
-
-\mia{more more}
-
-\mia{cv versus bootstrap}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_bootstrap.pdf}
-    \caption{Caption}
-    \label{fig:olsfrankebootstrap}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_CV_k10.pdf}
-    \caption{Caption}
-    \label{fig:cvk10franke}
-\end{figure}
-
-\subsubsection{Terrain data function}
-
-
+\subsection{Terrain data}
 
 \plothere{OLS, Ridge and Lasso for terrain data}
 
+\mia{which one is the best one, why might that be}
+
 \plothere{OLS, Ridge and Lasso for terrain data with CV}
+
+\mia{which one is the best one, why might that be}
 
 \plothere{OLS, Ridge and Lasso for terrain data with bootstrap}
 
+\mia{which one is the best one, why might that be}
+
+\mia{which one of the methods give the absolute lowest value for MSE -> our best method yey}
+
+\mia{discussion of which to trust the most}
 

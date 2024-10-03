@@ -119,7 +119,8 @@ Splitting data is an important tool to help avoid \textit{overfitting} and \text
 
 \subsection{Resampling methods}
 
-Generally, we want as much data as possible for the training of a model. When holding off some of the data for testing, we lose this data for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training. 
+When training models, error estimation is crucial both for model selection and model assessment. Without a good metric for the performance of the model it is impossible to gauge how well fit a model actually is.
+Generally, we want as much data as possible for the training of a model. When holding off some of the data for testing, we lose this data for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training and giving us a better error estimation.
 
 \subsubsection{K-fold cross-validation}
 \textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. We divide our dataset into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
@@ -131,27 +132,26 @@ The procedure is repeated $K$ times, holding out a new fold each time. For k-fol
 \end{equation}
 
 There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train-set. 
-The estimated error (Eq. \ref{cv}) will also be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. \mia{cite} \julie{KILDER}
+The estimated error (Eq. \ref{cv}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. \mia{cite} \julie{KILDER}
 
 On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
 \julie{KILDER}
 
 \subsubsection{Bootstrapping}
-Bootstrapping is a method where we draw with replacement from the original data to have a new data set for training. Every bootstrap sample should have the same size as the original data set, $n$. We generate many such samples and repeat the training. The total number of samples is denoted by B. This is meant to simulate new experiments.\mia{cite} 
+Bootstrapping is a general term for another method of resampling where one draws with replacement from the original dataset, creating a "new" dataset for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. We generate many such samples and repeat the training for each of them. The total number of samples is denoted by B. 
 For the b-th bootstrap sample we obtain model $\hat{f}_b$ \citep[p. 249]{hastie}.
 
-The error could calculated as the mean of the error:
+Using bootstrap we get a possible estimation of the error calculated as the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
 
 \begin{equation}
     BS_{error} = \frac{1}{n}\frac{1}{B}\sum_{i=0}^{n-1}\sum_{b=1}^{B} L\left(y_i, \hat{f}_b(x_i)\right)
 \end{equation}
+\
 
-\mia{more}
-
-%\begin{equation}
+% \begin{equation}
 %    \widehat{\text{Err}}^{(1)} = \frac{1}{n} \sum_{i=0}^{n-1} \frac{1}{|C_{[-i]}|} \sum_{b \in C_{[-i]}} L\left(y_i; \hat{f}_b(x_i)\right)
-%\end{equation}
+% \end{equation}
 
 %However, this might be too optimistic. On average we have 63.2\% of the original observations in a bootstrap sample. This corresponds to 36.8\% not being in the bootstrap sample at all. \mia{more} This correct error measure for bootstrapping is therefore \citep[p. 251]{hastie}: 
 
@@ -159,25 +159,44 @@ The error could calculated as the mean of the error:
     %BS_{error} = 0.368 \overline{\text{err}} + 0.632 \widehat{\text{Err}}^{(1)}
 %\end{equation}
 
+\subsection{Evaluation measures}
+
+The \emph{mean squared error} (MSE) is a popular error measure for linear regression models, and is defined as: 
+
+\begin{equation}\label{mse}
+    \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
+\end{equation}
+
+$n$ denotes the number of data points in our training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$.
+
+
+$R^2$ is a measure of how much of the variance in the data the model explains. %\mia{cite} 
+\begin{equation}
+    R^2 = 1 - \frac{RSS}{TSS}= 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2},
+\end{equation}
+
+$R^2 \in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. \mia{cite}
 
 \subsection{Ordinary least squares}
 
-Ordinary least squares is a linear regression method where we seek to minimize the following cost function:
+\textit{Ordinary least squares} is a linear regression method where we seek to minimize the following cost function:
 
 \begin{equation}\label{cost_ols}
-    C(\bet) = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
+    C(\bet) = \sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
 \end{equation}
 
-From Eq. \ref{cost_ols} we can derive the equation for the optimal $\bet$. This is done by taking the derivate of the cost function wrt. $\bet$ and finding the minimum. The optimal $\bet$ in OLS is shown in Eq. \ref{betaols}. 
+Comparing the expression above to Eq. \ref{mse}, we see how the OLS regression method is inherently designed to minimize MSE.
+
+From Eq. \ref{cost_ols} we can derive the equation for the optimal $\bet$. This is done by taking the derivate of the cost function wrt. $\bet$ and finding the minimum. The optimal $\bet$ for OLS is shown in Eq. \ref{betaols}. 
 
 \begin{equation}\label{betaols}
     \hat{\bet}_{\text{OLS}} = \betta = \boldsymbol{H}\y
 \end{equation}
 
-The $\boldsymbol{H}$ is popularly called the Hessian matrix. The Hessian matrix for OLS specifically is stated in Eq. \ref{betaols}, but the term "Hessian matrix" can be used for any linear regression method.
+The $\boldsymbol{H}$ is popularly called the Hessian matrix. The Hessian matrix for OLS specifically is stated in Eq. \ref{betaols}, but the term "Hessian matrix" generally describes a square matrix of double derivatives.
 
 
-Ordinary least squares provide an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
+Ordinary least squares provides an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
 
 \begin{equation}
     \fv{\hat{\bet}_{OLS}} = \bet
@@ -187,7 +206,7 @@ Ordinary least squares provide an unbiased estimation - meaning the expected dis
    \text{var}(\hat{\bet_{OLS}}) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \end{equation}
 
-OLS regression is invariant to the scaling of the data.
+OLS regression is invariant to scaling of the data.
 
 %\mia{Could discuss a bit the advantages and disadvantages of the two compared to each other. Ridge best for prediction, lasso best for model selection. Could link to AIC and BIC, but probably just messy to include to more measures. Could discuss that we could have methods that are combinations of the two $\rightarrow$ elastic net. There is no gradient for lasso, but there is for ridge. Must mention here or somewhere else that it is especially important to scale when we have a penalty because the penalty is not scale invariant.}
 
@@ -195,39 +214,40 @@ OLS regression is invariant to the scaling of the data.
 
 \subsection{Penalized linear regression methods}
 
-An extension of the ordinary least squares method is to add a penalization term. A general term for this is shrinkage methods. There are many reasons why this is often preferred. \mia{cite for the last statement}
+An extension of the ordinary least squares method is to add a penalization term to the cost-function. There are many reasons why this is often preferred. 
 
-Firstly, to perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set or if $p > n$. Then the matrix will not be full rank. 
-
-A mathematical fix to this is to add a (small) number along the diagonal: 
+Firstly, to perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set, or if $p > n$. In these cases the matrix will not be full rank, i.e. not invertible. 
+A mathematical fix to this is to add a (small) number $\lambda$ along the diagonal: 
 \begin{equation}\label{pen}
     \bet = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
 \end{equation}
 
-Secondly, these methods also reduce overfitting. \mia{cite (Morten)}
+These methods also help to reduce overfitting. \mia{cite (Morten)} In a sense we're normally penalizing "too good of a fit", meaning it's harder for models too get to specialized to specifics in the training data.
 
-Eq. \ref{pen} is the general equation for penalized regression. The parameter $\lambda$ controls the regularization. Furthermore, we have different types of penalties. Two types are the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. We will see that different types of penalties give different properties and interpretations.
+Eq. \ref{pen} is the general equation for the coefficients in penalized regression, where the parameter $\lambda$ controls the regularization. Among the many types of choices for penalization metrics we have the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. Different types of penalties yields in different properties and interpretations related to the resulting models.
 
 \subsubsection{Ridge Regression}\label{ridge_sec}
 
-In Ridge regression, an L2-norm penalty is used. This amounts to the following cost-function (Eq. \ref{ridge}) and constraint on the $\beta$'s (Eq. \ref{ridge_constraint}):
+In Ridge regression, the L2-norm penalty gives us the following cost-function (Eq. \ref{ridge}):
 
 \begin{equation}\label{ridge}
-     C(\bet) = \frac{1}{n} \sum_{i=0}^{n-1} \left( y_i - \sum_{j=1}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=1}^{p-1} \beta_j^2 
+     C(\bet) = \sum_{i=0}^{n-1} \left( y_i - \sum_{j=1}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=1}^{p-1} \beta_j^2 
 \end{equation}
 
 
 
+
+This can alternatively be expressed as Eq. \ref{ridge_alt} and \ref{ridge_constraint}, where the restraint on $\bet$ is explicitly stated. Here the value of t is directly related to the value of $\lambda$ \citep[p. 63]{hastie}.
+\begin{equation}\label{ridge_alt}
+    \sum_{i=1}^N \left(y_i - \sum_{j=1}^{p-1} X_{ij}\beta_j \right)^2
+\end{equation}
 \begin{equation}\label{ridge_constraint}
     \sum_{j=1}^p \beta_j^2 \leq t, 
 \end{equation}
 
-The value of t is directly related to the value of $\lambda$ \citep[p. 63]{hastie}.
+Ridge regression puts a penalty on all the $\beta$-terms except the intercept, which is held out during training. Had it been included, the model would depend on the chosen origin and this dependency undermines the principle of shift invariance \citep[p. 63]{hastie}.
+The value of $\beta_0$ is later calculated as Eq. \ref{bet0} shows. 
 
-The solutions produced by Ridge regression depend on the scaling of the data. It is therefore especially important to standardize the data as explained in sec. \ref{scaling}. Ridge regression puts a penalty on all the $\beta$-terms except the intercept which is held out during training. If it had been included, the model would depend on the chosen origin \citep[p. 63]{hastie}.
-The value of $\beta_0$ is later calculated as Eq. \ref{bet0} shoes. 
-
-In ridge regression, the values of $\beta_j$ are forced closer to zero, but can never be zero completely. \mia{consequences}
 
 It can be showed that $\bet_{OLS}$ and $\bet_{Ridge}$ are related as shown in Eq. \ref{ridgeOLS}. 
 
@@ -235,32 +255,51 @@ It can be showed that $\bet_{OLS}$ and $\bet_{Ridge}$ are related as shown in Eq
     \bet_{Ridge} = \frac{1}{1+\lambda}\bet_{OLS}
 \end{equation}
 
+The solutions produced by Ridge regression depend on the scaling of the data. It is therefore especially important to standardize the data as explained in sec. \ref{scaling}.
 
 
 
 \subsubsection{Lasso Regression}
 
-Lasso regression is another shrinkage method. This method uses an L1-norm penalty. We get the cost function and constraint on $\beta$ as Eq. \ref{lasso} and Eq. \ref{lasso_constraint} respectively shows. 
+Lasso regression is another penalization method. This method uses an L1-norm penalty, giving us the cost function and constraint on $\beta$ as Eq. \ref{lasso}. 
 
 \begin{equation}\label{lasso}
-     C(\bet) = \frac{1}{n} \sum_{i=0}^{n-1} \left( y_i - \sum_{j=0}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=0}^{p-1} |\beta_j|
+     C(\bet) = \sum_{i=0}^{n-1} \left( y_i - \sum_{j=0}^{p-1} X_{ij}\beta_j \right)^2 + \lambda\sum_{j=0}^{p-1} |\beta_j|
 \end{equation}
 
+Similar to Ridge regression, there is an alternative formulation, Eq. \ref{lasso_constraint} and Eq. \ref{lasso_constraint}, explicitly stating the constraint on $\bet$;
+\begin{equation}\label{lasso_alt}
+    \sum_{i=1}^N \left(y_i - \sum_{j=1}^{p-1} X_{ij}\beta_j \right)^2
+\end{equation}
 \begin{equation}\label{lasso_constraint}
     \sum_{j=1}^p | \beta_j | \leq t, 
 \end{equation}
 
 
-The value of t is directly related to the value of $\lambda$ \citep[p. 68]{hastie}.
+The value of t is again directly related to the value of $\lambda$ \citep[p. 68]{hastie}.
 
 
-As in Ridge regression, the intercept is held out. The same reasoning holds for Lasso regression and the reader is refereed to sec. \ref{ridge_sec}.
+The intercept is held out in training, by the same reasoning as for Ridge regression and the reader is refereed to sec. \ref{ridge_sec}.
 
-In Lasso regression the value of the $\beta$'s can be out to zero. If the value of $\lambda$ is suffeciently large, we will see that more coefficients become zero. Lasso is therefore also also a method for feature selection. 
 
-%\subsubsection{Comparison}
+\subsubsection{Ridge vs. Lasso}
+Both Ridge and Lasso are known as \textit{shrinkage methods}. This comes from the fact that both shrink the coefficients. Lasso additionally goes under the term \textit{selection method}, as the coefficients can be shrunk to zero resulting in only a selection of the features contributing in the model. 
+If the value of $\lambda$ is sufficiently large, we will see that more coefficients become zero. 
+In ridge regression, the values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
 
-%\plothere{Sirkel og diamant}
+The two methods, specifically the difference in how the coefficients approach zero, are nicely illustrated in figure 3.11 in \textit{The elements of statistical learning}, recreated in Fig. \ref{fig:ridge_lasso} \cite[p. 71]{hastie}. Both methods will find a solution where the error function intersects the constraint. For the circular ridge constraints, this intersection will never coincide with the axis i.e. the coefficients will always be non-zero. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/ridge-lasso.png}
+    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectivly Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function. 
+    \cite[p. 71]{hastie}
+    \mia{MIA HJELP, vet ikke hvordan dette egt bør cites. og egt heller ikke hvordan det bør beskrives.} 
+    }
+    \label{fig:ridge_lasso}
+\end{figure}
+
+
 
 \subsection{Bias-Variance Tradeoff}
 
@@ -300,22 +339,4 @@ Eq. \ref{biasvar} shows how the expected error is decomposed into a bias term, a
 An overfitted model has low bias, but high variance. An underfitted model has the opposite, high bias and low variance. In fig. \ref{train_test_overfit} this corresponds to high bias and low variance in to the left and the opposite to the right. The figure furthermore shows how there is a sweat-spot where the trade-off between the two gives the lowest possible MSE.
 
 
-\subsection{Evaluation measures}
-
-The \emph{mean squared error} (MSE) is defined as: 
-
-\begin{equation}\label{mse}
-    \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
-\end{equation}
-
-The number of data points in our training data is $n$ while the prediction for the i-th data point is denoted $\Tilde{y}_i$. MSE is a popular error measure for linear regression models. 
-
-We see how the OLS regression method is inherently designed to minimize MSE.
-
-\begin{equation}
-    R^2 = 1 - \frac{RSS}{TSS}= 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2}
-\end{equation}
-
-$R^2$ is a measure of how much of the variance in the data the model explains. %\mia{cite} 
-Furthermore $R^2 \in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. \mia{cite}
 
