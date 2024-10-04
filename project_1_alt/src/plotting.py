@@ -3,7 +3,7 @@ import numpy as np
 import seaborn as sns
 
 from reg_models import OLSModel, RidgeModel, LassoModel, RegModel
-from data_gen import FrankeDataGen, TerrainDataGen, SimpleTest
+from data_gen import FrankeDataGen, TerrainDataGen
 from data_handling import DataHandler
 
 
@@ -11,9 +11,7 @@ class Plotting:
     def __init__(self, data_points: int = 51, data: str = "Franke", seed: int = 41):
         np.random.seed(seed)
 
-        if data == "Simple":
-            data = SimpleTest(data_points)
-        elif data == "Terrain":
+        if data == "Terrain":
             data = TerrainDataGen(data_points)
         elif data == "Franke":
             data = FrankeDataGen(data_points)
@@ -22,7 +20,7 @@ class Plotting:
 
         else:
             raise RuntimeError(
-                "Not a valid data-type. Valid data-types are: \nSimple, Terrain, Franke and Franke_Noise"
+                "Not a valid data-type. Valid data-types are: \nTerrain, Franke and Franke_Noise"
             )
 
         self.handler = DataHandler(data)

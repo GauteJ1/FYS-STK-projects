@@ -16,10 +16,7 @@ class RegModel:
         self.z_test = z_test
 
     def fit_model_on_data(self, X_train, z_train, lmbda: float = 0):
-        if lmbda == 0:
-            opt_beta = np.linalg.inv(X_train.T @ X_train) @ X_train.T @ z_train
-        else:
-            opt_beta = np.linalg.inv(X_train.T @ X_train - lmbda*np.eye(len(X_train[0]))) @ X_train.T @ z_train
+        opt_beta = np.linalg.inv(X_train.T @ X_train) @ X_train.T @ z_train
 
         self.intercept = np.mean(z_train)
 
@@ -155,8 +152,17 @@ class RidgeModel(RegModel):
     def fit_simple_model(self, deg: int, lmbda: float = 0):
         return super().fit_simple_model(deg, lmbda, 0)
 
-    def fit_model_on_data(self, X, z, lmbda: float = 0):
-        return super().fit_model_on_data(X, z, lmbda)
+    def fit_model_on_data(self, X_train, z_train, lmbda: float = 0):
+        opt_beta = (
+            np.linalg.inv(X_train.T @ X_train + lmbda * np.eye(len(X_train[0])))
+            @ X_train.T
+            @ z_train
+        )
+
+        self.intercept = np.mean(z_train)
+
+        self.opt_beta = opt_beta
+        return opt_beta
 
 
 class LassoModel(RegModel):
