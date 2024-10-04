@@ -15,12 +15,11 @@ class RegModel:
         self.z_train = z_train
         self.z_test = z_test
 
-    def fit_model_on_data(self, X_train, z_train, ridge_lambda: float = 0):
-        opt_beta = np.linalg.inv(X_train.T @ X_train) @ X_train.T @ z_train
-
-        ## Apply Ridge and Lasso:
-        if ridge_lambda != 0:
-            opt_beta = opt_beta / (1 + ridge_lambda)
+    def fit_model_on_data(self, X_train, z_train, lmbda: float = 0):
+        if lmbda == 0:
+            opt_beta = np.linalg.inv(X_train.T @ X_train) @ X_train.T @ z_train
+        else:
+            opt_beta = np.linalg.inv(X_train.T @ X_train - lmbda*np.eye(len(X_train[0]))) @ X_train.T @ z_train
 
         self.intercept = np.mean(z_train)
 
@@ -50,7 +49,13 @@ class RegModel:
         bootstrap_sample = np.random.choice(list(range(N)), size=N, replace=True)
         return bootstrap_sample
 
-    def bootstrap(self, n_samples: int = 100, degree: int = 10, ridge_lambda: float = 0, lasso_lambda: float = 0):
+    def bootstrap(
+        self,
+        n_samples: int = 100,
+        degree: int = 10,
+        ridge_lambda: float = 0,
+        lasso_lambda: float = 0,
+    ):
         self.get_preprocessed_data(degree=degree)
         indices = [self.bootstrap_index(len(self.z_train)) for _ in range(n_samples)]
 
@@ -67,14 +72,26 @@ class RegModel:
 
         return preds
 
-    def MSE_bootstrap(self, n_samples: int = 100, degree: int = 10, ridge_lambda: float = 0, lasso_lambda: float = 0):
+    def MSE_bootstrap(
+        self,
+        n_samples: int = 100,
+        degree: int = 10,
+        ridge_lambda: float = 0,
+        lasso_lambda: float = 0,
+    ):
         preds = self.bootstrap(n_samples, degree, ridge_lambda, lasso_lambda)
         z_tilde = np.mean(preds, axis=0)
         MSE = self.MSE(z_tilde, self.z_test)
 
         return MSE
 
-    def R2_bootstrap(self, n_samples: int = 100, degree: int = 10, ridge_lambda: float = 0, lasso_lambda: float = 0):
+    def R2_bootstrap(
+        self,
+        n_samples: int = 100,
+        degree: int = 10,
+        ridge_lambda: float = 0,
+        lasso_lambda: float = 0,
+    ):
         preds = self.bootstrap(n_samples, degree, ridge_lambda, lasso_lambda)
         z_tilde = np.mean(preds, axis=0)
         R2 = self.R2(z_tilde, self.z_test)
@@ -155,12 +172,12 @@ class LassoModel(RegModel):
 
         self.opt_beta = np.array([[x] for x in model.coef_])
         return self.opt_beta
-    
+
     def predict(self, X):
         z_tilde = self.model.predict(X) + self.intercept
         z_tilde = np.array([[z] for z in z_tilde])
         return z_tilde
-        
+
 
 if __name__ == "__main__":
     data = SimpleTest(data_points=21)
