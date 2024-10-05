@@ -64,6 +64,7 @@ class Plotting:
             if y_axis == "MSE":
                 y_data_train.append(model.MSE(z_tilde_train, model.z_train))
                 y_data_test.append(model.MSE(z_tilde_test, model.z_test))
+            
             else:
                 y_data_train.append(model.R2(z_tilde_train, model.z_train))
                 y_data_test.append(model.R2(z_tilde_test, model.z_test))
@@ -71,9 +72,10 @@ class Plotting:
         plt.plot(x_data, y_data_train, label="Train")
         plt.plot(x_data, y_data_test, label="Test")
 
-        min_mse = min(y_data_test)
-        min_mse_deg = x_data[y_data_test.index(min_mse)]
-        plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+        if y_axis == "MSE":
+            min_mse = min(y_data_test)
+            min_mse_deg = x_data[y_data_test.index(min_mse)]
+            plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
 
         plt.title(f"{model_name}: {y_axis} for different model complexities")
         plt.legend()
@@ -110,8 +112,6 @@ class Plotting:
         plt.legend()
         plt.xlabel("Lambda")
         plt.ylabel(y_axis)
-
-    # TODO: Plot betas
 
     def __plot_betas_deg(
         self, model_name: str = "OLS", lmbda: float = 0.1, max_deg: int = 5
@@ -192,11 +192,12 @@ class Plotting:
             y_data.append(list(betas) + [0] * extra_zeros)
 
         plt.plot(x_data, y_data)
-        plt.axvline(x=opt_lambda, color="b", linestyle="--", label = "Optimal lambda")
+        plt.axvline(x=opt_lambda, color="b", linestyle="--", label = r"Optimal $\lambda$")
         plt.xlabel(r"$\lambda$")
         plt.ylabel(r"Values of $\beta$'s")
         plt.xscale("log")
         plt.title(rf"Value of $\beta$'s for {model_name} with $deg = {deg}$")
+        plt.legend()
 
     def plot_bootstrap_MSE_R2(
         self,
