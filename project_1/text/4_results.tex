@@ -33,7 +33,7 @@ We furthermore notice how at around degree = 9, the test error reaches its minim
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_R2_Franke_Noise.pdf}
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/OLS_R2_Franke_Noise.pdf}
     \caption{Caption}
     \label{fig:r2ols}
 \end{figure}
@@ -42,33 +42,20 @@ The $R^2$ value increases as higher degree polynomials are introduced to the ord
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/Ridge_Betas_lambda_Franke_Noise_const_deg.pdf}
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/Ridge_Betas_lambda_Franke_Noise_const_deg.pdf}
     \caption{\mia{Caption}}
     \label{fig:ridge_betas}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/Lasso_Betas_lambda_Franke_Noise_const_deg.pdf}
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/.pdf}
     \caption{\mia{caption}}
     \label{fig:lasso_betas}
 \end{figure}
 
 The $\beta$'s values for our Ridge- and Lasso regression models are presented in fig. \ref{fig:ridge_betas} and fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. 
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_bootstrap.pdf}
-    \caption{\mia{this is the wrong plot, should be mse ols for bootstrapping, train and test}}
-    \label{fig:olsfrankebootstrap}
-\end{figure}
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/OLS_MSE_Franke_Noise_CV_k10.pdf}
-    \caption{\mia{consider to have a combined plot for K = 5,7,10 in stead}}
-    \label{fig:cvk10franke}
-\end{figure}
 
 \mia{ comparing bootstrap to cross validation for franke function here}
 
@@ -76,7 +63,7 @@ The $\beta$'s values for our Ridge- and Lasso regression models are presented in
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/data/bias_var_Franke_Noise_bootstrap.pdf}
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/bias_var_Franke_Noise_bootstrap.pdf}
     \caption{caption}
     \label{bias_var_trade}
 \end{figure}
@@ -87,14 +74,32 @@ For the OLS model trained with bootstrapping, fig. \ref{bias_var_trade} shows ho
 
 \plothere{OLS, Ridge and Lasso for terrain data}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_Terrain_OLS.pdf}
+    \caption{caption}
+    \label{bias_var_trade}
+\end{figure}
+
 \mia{which one is the best one, why might that be}
 
 \plothere{OLS, Ridge and Lasso for terrain data with CV}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_Terrain_CV_k10.pdf}
+    \caption{caption}
+    \label{bias_var_trade}
+\end{figure}
 
 \mia{which one is the best one, why might that be}
 
 \plothere{OLS, Ridge and Lasso for terrain data with bootstrap}
-
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_bootstrap_Terrain.pdf}
+    \caption{caption}
+    \label{bias_var_trade}
+\end{figure}
 \mia{which one is the best one, why might that be}
 
 \mia{which one of the methods give the absolute lowest value for MSE -> our best method yey}
