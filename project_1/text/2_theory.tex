@@ -11,7 +11,7 @@ This equation is commonly written in vector form,
 \Tilde{\y}=\boldsymbol{X}^T\boldsymbol{\hat{\beta}},
 \end{equation}
 
-where given n different sets of input/output-variables, $\Tilde{\y}$ is the response-vector and $\boldsymbol{X}$ is a $n\times (p+1)$-matrix called the \textit{design matrix}. Here the $'+1'$ column in $\boldsymbol{X}$ is a row of ones for inclusion of the intercept in $\boldsymbol{\hat{\beta}}$, and the residual $p$ columns each of the p predictor variables. 
+where given n different sets of input/output-variables, $\Tilde{\y}$ is the response-vector and $\boldsymbol{X}$ is a $n\times (p+1)$-matrix called the \textit{design matrix}\label{design-matrix}. Here the $'+1'$ column in $\boldsymbol{X}$ is a row of ones for inclusion of the intercept in $\boldsymbol{\hat{\beta}}$, and the residual $p$ columns each of the p predictor variables. 
 
 
 The ``true" model is assumed the form 
@@ -22,21 +22,21 @@ Our linear regression models are always estimations of the equation above, and w
 $\epsilon$ is some irreducible \textit{error-term} or \textit{residual-term} representing all variance in the data not explainable by the linear model; any variation due to randomness is included in this term. It is assumed $\epsilon \sim  
 \mathcal{N}(0,\sigma^2)$, and given this assumption we get the expected value of $y_i$
 
-\begin{equation}
+\begin{equation}\label{expected_y}
     \fv{y_i} = \mathbf{X}_{i,*}\boldsymbol{\beta},
 \end{equation}
 and the variance of $y_i$
-\begin{equation}
+\begin{equation}\label{var_y}
     \text{var}(y_i) = \sigma^2.
 \end{equation}
 
 
 
-Calculations are available in \hyperref[appendixB]{appendix B}.
+Calculations of Eq. \ref{expected_y} and \ref{var_y} are available in \hyperref[appendixB]{appendix B}.
 
 \subsection{Cost- \& Loss-Functions}
 The main objective when solving such a linear regression problem, is finding the optimal coefficients $\boldsymbol{\beta}$ that minimizes an error measure between $y_i$ and $\Tilde{y_i}$. 
-What such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
+How such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
 A cost-function, $\text{Cost}(f,\mathcal{D} )$, is used to describe such a metric measuring a group of data-points, while a loss-function, $L(y, \hat{y})$, describes a metric regarding a single data-instance. 
 The cost-function can be expressed in terms of the loss function
 \begin{equation}
@@ -54,15 +54,15 @@ Through different choices of cost-function we end up with different methods for 
 
 \subsubsection{Scaling}\label{scaling}
 
-In order for all predictors to have an equal starting point when training the model, it's often necessary to scale the data \citep[p. 398]{hastie}. Having one predictor with values of order $10^3$, and another predictor with values of order $10^{-3}$, the model could miss the predictive importance of the latter. Whether or not it is necessary to scale the data, depends on the choice of cost-function; Given two predictors of different magnitudes where the same relative change has equal impact on the response, the predictor of smaller magnitude would have coefficients of inversely proportional magnitude. If a cost-function penalizes bigger coefficients, as some does, the predictor of smaller magnitude would then be penalized more than it should. To alleviate the risk of such problems, it is thus necessary for many methods that we scale all data before training. 
+In order for all parameters to have an equal starting point when training a model, it's often necessary to scale the data \citep[p. 398]{hastie}. Having one parameter with values of order $10^3$, and another parameter with values of order $10^{-3}$, the model could miss the predictive importance of the latter. Whether or not it is necessary to scale the data, depends on the choice of cost-function; Given two parameters of different magnitudes where the same relative change has equal impact on the response, the parameter of smaller magnitude would have coefficients of inversely proportional magnitude. If a cost-function penalizes bigger coefficients, as some does, the parameter of smaller magnitude would then be penalized more than it should. To alleviate the risk of such problems, it is thus necessary for many methods that we scale all data before training. 
 
-A common choice for scaling is to use the \textit{standard scaler}. This method involves subtracting the mean and dividing by the standard deviation, for each feature respectively. Each of the columns will then have mean equal to zero and a standard deviation of one after the scaling. For the i-th datapoint and the j-th feature we get the transformation as indicated in Eq. \ref{standardize} \citep[Linear Regression]{morten}.
+A common choice for scaling is to use the \textit{standard scaler}. This method involves subtracting the mean and dividing by the standard deviation, for each feature (i.e. parameter) respectively. Each of the columns will then have mean equal to zero and a standard deviation of one after the scaling. For the i-th datapoint and the j-th feature we get the transformation as indicated in Eq. \ref{standardize} \citep[Linear Regression]{morten}. Alternatively a variation of the standard scaler is sometimes used, including only subtraction of the mean and omitting the division of standard deviation.
 
 \begin{equation}\label{standardize}
     x_{ij} \rightarrow \frac{x_{ij}-\overline{x}_j}{\sigma_{x_j}}
 \end{equation}
 
-It's considered good practice to not scale the intercept, as it represents a constant term without variability and scaling it would worst case defeat it's purpose or worsen it's performance. It can be taken out during training and later be recalculated as Eq. \ref{bet0} shows \citep[Resampling methods]{morten}. We will see later how some methods would produce different results if a scaled intercept was included in the training. Taking out the intercept amounts to removing the column of 1's in the design matrix. 
+It's considered good practice to not scale the intercept, as it represents a constant term without variability and scaling it will often worsen it's performance, or defeat it's purpose entirely. It can be taken out during training and later be recalculated as Eq. \ref{bet0} shows \citep[Resampling methods]{morten}. We will later touch on how some methods would produce different results if a scaled intercept was included in the training. Taking out the intercept amounts to removing the column of 1's in the design matrix. 
 
 \begin{equation}\label{bet0}
     \beta_0 = \frac{1}{n}\sum_{i=0}^{n-1}y_i - \frac{1}{n}\sum_{i=0}^{n-1}\sum_{j=1}^{p-1}X_{ij}\beta_j
@@ -249,7 +249,7 @@ Ridge regression puts a penalty on all the $\beta$-terms except the intercept, w
 The value of $\beta_0$ is later calculated as Eq. \ref{bet0} shows. 
 
 
-It can be showed that $\bet_{OLS}$ and $\bet_{Ridge}$ are related as shown in Eq. \ref{ridgeOLS}. 
+It can be showed that $\bet_{OLS}$ and $\bet_{Ridge}$ are related as shown in Eq. \ref{ridgeOLS}. \julie{bare hvis }\mia{X er ortonormal?}
 
 \begin{equation}\label{ridgeOLS}
     \bet_{Ridge} = \frac{1}{1+\lambda}\bet_{OLS}
@@ -287,15 +287,12 @@ Both Ridge and Lasso are known as \textit{shrinkage methods}. This comes from th
 If the value of $\lambda$ is sufficiently large, we will see that more coefficients become zero. 
 In ridge regression, the values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
 
-The two methods, specifically the difference in how the coefficients approach zero, are nicely illustrated in figure 3.11 in \textit{The elements of statistical learning}, recreated in Fig. \ref{fig:ridge_lasso} \cite[p. 71]{hastie}. Both methods will find a solution where the error function intersects the constraint. For the circular ridge constraints, this intersection will never coincide with the axis i.e. the coefficients will always be non-zero. 
+The two methods, specifically the difference in how the coefficients approach zero, are illustrated in Fig. \ref{fig:ridge_lasso}. Both methods will find a solution where the error function intersects the constraint. For the circular ridge constraints, this intersection will never coincide with the axis i.e. the coefficients will always be non-zero. 
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/ridge-lasso.png}
-    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectivly Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function. 
-    \cite[p. 71]{hastie}
-    \mia{MIA HJELP, vet ikke hvordan dette egt bør cites. og egt heller ikke hvordan det bør beskrives.} 
-    }
+    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectively Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function. \cite[Taken from][]{hastie}}
     \label{fig:ridge_lasso}
 \end{figure}
 
@@ -306,13 +303,15 @@ The two methods, specifically the difference in how the coefficients approach ze
 \julie{JULIE}
 
 \subsubsection{Bias}
-The bias of an estimator is the difference between the expected value of the estimator and its true value as shown in Eq. \ref{bias}. 
+The bias of a model is the difference between the expected value of the estimator and the true value of the model we're estimating, as shown in Eq. \ref{bias}. 
 
 \begin{equation}\label{bias}
     \text{Bias}(\hat{\bet}) = \fv{\hat{\bet}}-\bet
 \end{equation}
 
-The bias is the distance between the actual target and the prediction. If a model is overfitted the bias is low. The predictions are very close to the target in the training data set. An underfitted model however, has a high bias. In both cases, we have a model that does not capture the real underlying pattern but is rather too complex or simple respectively. High bias entails a systematic miss of the true pattern in the data. %It can easily be understood by looking at an archery target \plothere{Add a figure after variance and explain all}. 
+If we were to train models with the same method on different datasets, models with low bias would all on average predict close to the target values they're trained on. Models with high bias would on the contrary predict values further from the true target.
+% The predictions are very close to the target in the training data set. An underfitted model however, has a high bias. In both cases, we have a model that does not capture the real underlying pattern but is rather too complex or simple respectively. 
+%It can easily be understood by looking at an archery target \plothere{Add a figure after variance and explain all}. 
 
 \subsubsection{Variance}
 
