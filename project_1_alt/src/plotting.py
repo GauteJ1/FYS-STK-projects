@@ -71,6 +71,10 @@ class Plotting:
         plt.plot(x_data, y_data_train, label="Train")
         plt.plot(x_data, y_data_test, label="Test")
 
+        min_mse = min(y_data_test)
+        min_mse_deg = x_data[y_data_test.index(min_mse)]
+        plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+
         plt.title(f"{model_name}: {y_axis} for different model complexities")
         plt.legend()
         plt.xlabel("Degree")
@@ -165,7 +169,7 @@ class Plotting:
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
 
-    def plot_betas_lambda(self, model_name: str = "OLS", deg: int = 3):
+    def plot_betas_lambda(self, model_name: str = "OLS", deg: int = 3, opt_lambda: float = 0.1):
         x_data = self.lmbdas
         y_data = []
 
@@ -188,6 +192,7 @@ class Plotting:
             y_data.append(list(betas) + [0] * extra_zeros)
 
         plt.plot(x_data, y_data)
+        plt.axvline(x=opt_lambda, color="b", linestyle="--", label = "Optimal lambda")
         plt.xlabel(r"$\lambda$")
         plt.ylabel(r"Values of $\beta$'s")
         plt.xscale("log")
