@@ -3,6 +3,4 @@ matplotlib
 numpy
 scipy
 seaborn
-json
-PIL
-warnings
+pillow
