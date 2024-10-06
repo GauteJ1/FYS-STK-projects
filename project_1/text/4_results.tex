@@ -66,7 +66,7 @@ It is interesting to observe that the Lasso regression model has a far lower opt
 
 In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low. This is typical for an underfitted model. As the complexity increases, the bias goes down, whereas the variance increases. The lowest MSE is reached at some trade-off between the two. As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. This is a sign of an overfitted model.
 
-\mia{we can consider adding ridge versus lasso versus ols for franke with no resampling here in order to follow the assignment}
+\mia{we can consider adding ridge versus lasso versus ols for franke with no resampling here in order to follow the assignment + choose the best model for franke function}
 
 \subsection{Terrain data}
 
@@ -89,8 +89,6 @@ In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both re
 \end{figure}
 
 Our main goal is to find the very best model for terrain data. We have implemented three different model types; ols, ridge and lasso. Furthermore we can use no resampling, bootstrapping or cross-validation. This yields nine different models. In Fig. \ref{all_terrain} we compare all. The two best models are ridge regression with no resampling, as well as ols with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a degree of complexity of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
-
-\subsection{Overall discussion}
 
 Choosing the number of data points for the terrain data was challenging. 
 
