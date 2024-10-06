@@ -80,6 +80,3 @@ def test_reg_models():
     ols.fit_simple_model(deg=2)
     z_tilde = ols.predict(ols.X_test)
     assert (z_tilde - ols.z_test).all() < tol
-
-
-test_reg_models()

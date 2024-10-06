@@ -64,7 +64,7 @@ class Plotting:
             if y_axis == "MSE":
                 y_data_train.append(model.MSE(z_tilde_train, model.z_train))
                 y_data_test.append(model.MSE(z_tilde_test, model.z_test))
-            
+
             else:
                 y_data_train.append(model.R2(z_tilde_train, model.z_train))
                 y_data_test.append(model.R2(z_tilde_test, model.z_test))
@@ -75,7 +75,12 @@ class Plotting:
         if y_axis == "MSE":
             min_mse = min(y_data_test)
             min_mse_deg = x_data[y_data_test.index(min_mse)]
-            plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+            plt.plot(
+                min_mse_deg,
+                min_mse,
+                "ro",
+                label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
+            )
 
         plt.title(f"{model_name}: {y_axis} for different model complexities")
         plt.legend()
@@ -169,7 +174,9 @@ class Plotting:
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
 
-    def plot_betas_lambda(self, model_name: str = "OLS", deg: int = 3, opt_lambda: float = 0.1):
+    def plot_betas_lambda(
+        self, model_name: str = "OLS", deg: int = 3, opt_lambda: float = 0.1
+    ):
         x_data = self.lmbdas
         y_data = []
 
@@ -192,7 +199,7 @@ class Plotting:
             y_data.append(list(betas) + [0] * extra_zeros)
 
         plt.plot(x_data, y_data)
-        plt.axvline(x=opt_lambda, color="b", linestyle="--", label = r"Optimal $\lambda$")
+        plt.axvline(x=opt_lambda, color="b", linestyle="--", label=r"Optimal $\lambda$")
         plt.xlabel(r"$\lambda$")
         plt.ylabel(r"Values of $\beta$'s")
         plt.xscale("log")
@@ -286,7 +293,12 @@ class Plotting:
 
         min_mse = min(MSE)
         min_mse_deg = x_data[MSE.index(min_mse)]
-        plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+        plt.plot(
+            min_mse_deg,
+            min_mse,
+            "ro",
+            label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
+        )
 
         plt.title(
             f"{model_name}: MSE, bias and varaince for different model complexities"
@@ -341,7 +353,7 @@ class Plotting:
         lasso_lambda: float,
         max_degree: int,
         n_samples: int,
-        k_folds: int
+        k_folds: int,
     ):
         self.__config()
         x_data = list(range(1, max_degree + 1))
@@ -406,7 +418,6 @@ class Plotting:
             _, test = lasso.MSE_cross_validation(deg, lasso_lambda)
             lasso_cv.append(test)
 
-
         plt.plot(x_data, ols_boot, label="OLS - Bootstrap", linestyle="--")
         plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap", linestyle="--")
         plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap", linestyle="--")
@@ -419,7 +430,17 @@ class Plotting:
         plt.plot(x_data, ridge_cv, label="Ridge - Cross-Val")
         plt.plot(x_data, lasso_cv, label="Lasso - Cross-Val")
 
-        mse_results = [ols_boot, ridge_boot, lasso_boot, ols_reg, ridge_reg, lasso_reg, ols_cv, ridge_cv, lasso_cv]
+        mse_results = [
+            ols_boot,
+            ridge_boot,
+            lasso_boot,
+            ols_reg,
+            ridge_reg,
+            lasso_reg,
+            ols_cv,
+            ridge_cv,
+            lasso_cv,
+        ]
         min_mse = min(min(mse_list) for mse_list in mse_results)
         for mse_list in mse_results:
             if min_mse in mse_list:
@@ -427,71 +448,65 @@ class Plotting:
                 min_mse_deg = x_data[min_index]
                 break
 
-        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+        plt.plot(
+            min_mse_deg,
+            min_mse,
+            "ro",
+            label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
+        )
 
         plt.title(f"MSE")
         plt.legend()
         plt.xlabel("Degree")
         plt.ylabel("MSE")
 
-
     def plot_all_boot(
-            self,
-            ridge_lambda: float,
-            lasso_lambda: float,
-            max_degree: int,
-            n_samples: int
-        ):
-            self.__config()
-            x_data = list(range(1, max_degree + 1))
+        self, ridge_lambda: float, lasso_lambda: float, max_degree: int, n_samples: int
+    ):
+        self.__config()
+        x_data = list(range(1, max_degree + 1))
 
-            ols_boot = []
-            ridge_boot = []
-            lasso_boot = []
-          
+        ols_boot = []
+        ridge_boot = []
+        lasso_boot = []
 
-            ols = OLSModel(self.handler)
-            ridge = RidgeModel(self.handler)
-            lasso = LassoModel(self.handler)
+        ols = OLSModel(self.handler)
+        ridge = RidgeModel(self.handler)
+        lasso = LassoModel(self.handler)
 
-            for deg in x_data:
-                ols_boot.append(
-                    ols.MSE_bootstrap(
-                        n_samples=n_samples,
-                        degree=deg,
-                    )
+        for deg in x_data:
+            ols_boot.append(
+                ols.MSE_bootstrap(
+                    n_samples=n_samples,
+                    degree=deg,
                 )
-                ridge_boot.append(
-                    ridge.MSE_bootstrap(
-                        n_samples=n_samples,
-                        degree=deg,
-                        ridge_lambda=ridge_lambda,
-                    )
+            )
+            ridge_boot.append(
+                ridge.MSE_bootstrap(
+                    n_samples=n_samples,
+                    degree=deg,
+                    ridge_lambda=ridge_lambda,
                 )
-                lasso_boot.append(
-                    lasso.MSE_bootstrap(
-                        n_samples=n_samples,
-                        degree=deg,
-                        lasso_lambda=lasso_lambda,
-                    )
+            )
+            lasso_boot.append(
+                lasso.MSE_bootstrap(
+                    n_samples=n_samples,
+                    degree=deg,
+                    lasso_lambda=lasso_lambda,
                 )
+            )
 
+        plt.plot(x_data, ols_boot, label="OLS - Bootstrap")
+        plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap")
+        plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap")
 
-            plt.plot(x_data, ols_boot, label="OLS - Bootstrap")
-            plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap")
-            plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap")
-
-            plt.title(f"MSE")
-            plt.legend()
-            plt.xlabel("Degree")
-            plt.ylabel("MSE")
+        plt.title(f"MSE")
+        plt.legend()
+        plt.xlabel("Degree")
+        plt.ylabel("MSE")
 
     def plot_all_cv(
-        self,
-        ridge_lambda: float,
-        lasso_lambda: float,
-        max_degree: int,
-        k_folds: int
+        self, ridge_lambda: float, lasso_lambda: float, max_degree: int, k_folds: int
     ):
         self.__config()
         x_data = list(range(1, max_degree + 1))
@@ -506,7 +521,7 @@ class Plotting:
         ols.make_cross_val_split(kfolds=k_folds)
         ridge.make_cross_val_split(kfolds=k_folds)
         lasso.make_cross_val_split(kfolds=k_folds)
-        
+
         for deg in x_data:
 
             _, test = ols.MSE_cross_validation(deg)
@@ -563,14 +578,8 @@ class Plotting:
         plt.legend()
         plt.xlabel("Degree")
         plt.ylabel("MSE")
-            
 
-    def plot_cv_bs_ols(
-        self,
-        max_degree: int,
-        n_samples: int,
-        k_folds: int
-    ):
+    def plot_cv_bs_ols(self, max_degree: int, n_samples: int, k_folds: int):
         self.__config()
         x_data = list(range(1, max_degree + 1))
         ols_reg = []
@@ -578,9 +587,8 @@ class Plotting:
         ols_cv = []
 
         ols = OLSModel(self.handler)
-    
+
         ols.make_cross_val_split(kfolds=k_folds)
-    
 
         for deg in x_data:
             ols_boot.append(
@@ -589,14 +597,13 @@ class Plotting:
                     degree=deg,
                 )
             )
-            
+
             ols.fit_simple_model(deg)
             z_tilde_test = ols.predict(ols.X_test)
             ols_reg.append(ols.MSE(z_tilde_test, ols.z_test))
 
             _, test = ols.MSE_cross_validation(deg)
             ols_cv.append(test)
-
 
         plt.plot(x_data, ols_boot, label="OLS - Bootstrap", linestyle="--")
         plt.plot(x_data, ols_cv, label="OLS - Cross-Val")
@@ -609,7 +616,12 @@ class Plotting:
                 min_mse_deg = x_data[min_index]
                 break
 
-        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+        plt.plot(
+            min_mse_deg,
+            min_mse,
+            "ro",
+            label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
+        )
 
         plt.title(f"MSE")
         plt.legend()
@@ -656,11 +668,14 @@ class Plotting:
                 min_mse_deg = x_data[min_index]
                 break
 
-        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+        plt.plot(
+            min_mse_deg,
+            min_mse,
+            "ro",
+            label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
+        )
 
         plt.title(f"MSE")
         plt.legend()
         plt.xlabel("Degree")
         plt.ylabel("MSE")
-
-
