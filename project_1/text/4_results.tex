@@ -16,11 +16,7 @@ Through grid search the best combination of $\lambda$- and degree-values where f
     \label{tab:grid}
 \end{table}
 
-\mia{do these need a discussion?}
-
 \subsection{Franke function}
-
-\mia{fix titles in plots so that they do not overlap with the captions, maybe also change the xlabel to "degree of complexity/polynomial" or smt}
 
 \begin{figure}[h!]
     \centering
@@ -56,7 +52,9 @@ The $R^2$ value increases as higher degree polynomials are introduced to the ord
     \label{fig:lasso_betas}
 \end{figure}
 
-The $\beta$'s values for our Ridge- and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. A $\lambda$ value of this size seems highly unreasonable. The vertical line in each plot shows the optimal $\lambda$ in combination with the degree of complexity found through the grid search (numbers are available in Tab. \ref{tab:grid}). \mia{implications}
+The $\beta$'s values for our Ridge- and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. A $\lambda$ value of this size seems highly unreasonable. The vertical line in each plot shows the optimal $\lambda$ in combination with the degree of complexity found through the grid search (numbers are available in Tab. \ref{tab:grid}). 
+
+It is interesting to observe that the Lasso regression model has a far lower optimal $\lambda$-value than the Ridge regression model. Visually \mia{continue}
 
 \begin{figure}
     \centering
@@ -67,6 +65,8 @@ The $\beta$'s values for our Ridge- and Lasso regression models are presented in
 \end{figure}
 
 In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low. This is typical for an underfitted model. As the complexity increases, the bias goes down, whereas the variance increases. The lowest MSE is reached at some trade-off between the two. As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. This is a sign of an overfitted model.
+
+\mia{we can consider adding ridge versus lasso versus ols for franke with no resampling here in order to follow the assignment}
 
 \subsection{Terrain data}
 
@@ -79,30 +79,25 @@ In this section, the lasso- and ridge regression models are trained with their r
     \label{cv_versus_bs}
 \end{figure}
 
-In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both resampling techniques are used on the ordinary least squares model. 
+In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both resampling techniques are used on the ordinary least squares model. The minimal MSE-value for the cross-validated ols model is lower than for the bootstrapped model. The plot is not made for further degrees of complexity as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE increases fast.  
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_Terrain.pdf}
-    \caption{MSE for ols-, ridge- and lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum is found for \mia{insert}}
+    \caption{MSE for ols-, ridge- and lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
     \label{all_terrain}
 \end{figure}
 
-Our main goal is to find the very best model for terrain data. We have implemented three different model types; ols, ridge and lasso. Furthermore we can use no resampling, bootstrapping or cross-validation. This yields nine different models. In Fig. \ref{all_terrain} we compare all. The two best models are ridge regression with no resampling, as well as ols with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a degree of complexity of 11 and the MSE-value is approximately 134.  
+Our main goal is to find the very best model for terrain data. We have implemented three different model types; ols, ridge and lasso. Furthermore we can use no resampling, bootstrapping or cross-validation. This yields nine different models. In Fig. \ref{all_terrain} we compare all. The two best models are ridge regression with no resampling, as well as ols with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a degree of complexity of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
 
+\subsection{Overall discussion}
 
-\subsection{Overall discussion \mia{change this}}
-
-Both the Franke function and the terrain data are chosen to have $41^2 = 1681$ data points. \mia{the impact of this + would maybe be natural to have way more points for the terrain data but we wanted to compare them?}
-
-By including only a small section of the terrain data, the area in Fig. \ref{data:terrain} is quite rounded. 
-
-\mia{discussion of whether it is even correct to compare the error measures (i.e. that the BS error measure is wrong) and that more data is utilized for the cv than for the bootstrap}
+Choosing the number of data points for the terrain data was challenging. 
 
 For the model trained with cross-validation, more data is utilized than for the one trained with bootstrap. In the ladder, we split into a training and a test data set, whereas cross-validation trains on the entire dataset. 
-
-\mia{suggestions for further development: could implement bootstrap "corectly" (use different word) to have more data, non-linear methods}
 
 Further work to do on this could include a different implementation of the bootstrap method. We could use the entire data set to draw bootstrap samples from. Then we would have to keep track of which samples were not included in the bootstrap sample and use these as the test set for the specific bootstrap model. This would allow us to use more data for training and improve the model. 
 
 Furthermore, it is interesting to discuss whether linear models are sufficient for these kinds of problems or not. \mia{continue}
+
+\mia{critical discussion of scaling of data}
