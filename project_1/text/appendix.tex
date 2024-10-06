@@ -18,17 +18,17 @@ The code used for this project is available at \url{https://github.com/GauteJ1/F
     & = \fv{(\sum_j x_{ij}\beta_j)^2} + \fv{\epsilon_i^2} + 2\fv{\sum_j x_{ij}\beta_j \epsilon_i } - \fv{y_i}^2 \\
     & = \fv{y_i}^2 + \fv{\epsilon_i^2} + 2\fv{y_i}^2\cdot 0 - \fv{y_i}^2 \\ 
     & = \sigma^2
-\end{align*}
-
-\begin{align*}
+    &  \\
+    &  \\
+    &  \\
     \fv{\hat{\bet}} & = \fv{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \y} \\ 
     & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \fv{\y} \\ 
     & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \mathbf{X}\bet \\
     & = \unit \bet \\
     & = \bet 
-    &  \\
-    &  \\
-    &  \\
+\end{align*}
+
+\begin{align*}
     \text{var}(\hat{\bet}) & = \fv{(\hat{\bet}-\fv{\hat{\bet}})^2} \\
     & = \fv{(\hat{\bet}-\fv{\hat{\bet}})(\hat{\bet}-\fv{\hat{\bet}})^T} \\ 
     & = \fv{(\hat{\bet}-\bet)(\hat{\bet}-\bet)^T} \\ 
