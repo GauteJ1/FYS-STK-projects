@@ -22,7 +22,7 @@ In the following sections, the Lasso- and Ridge regression models are trained wi
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/OLS_MSE_Franke_Noise.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_MSE_Franke_Noise.pdf}
     \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data.}
     \label{fig:mseols}
 \end{figure}
@@ -33,7 +33,7 @@ We furthermore notice how the test error reaches its minimum at degree of comple
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/OLS_R2_Franke_Noise.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_R2_Franke_Noise.pdf}
     \caption{$R^2$ for the ordinary least squares model both on training- and test data.}
     \label{fig:r2ols}
 \end{figure}
@@ -42,14 +42,14 @@ The $R^2$ value increases as higher degree polynomials are introduced to the ord
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/Ridge_Betas_lambda_Franke_Noise_const_deg.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/Ridge_Betas_lambda_Franke_Noise_const_deg.pdf}
     \caption{The values of the parameters $\bet$ for the ridge regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
     \label{fig:ridge_betas}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/lasso_Betas_lambda_Franke_Noise_const_deg.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/lasso_Betas_lambda_Franke_Noise_const_deg.pdf}
     \caption{The values of the parameters $\bet$ for the lasso regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
     \label{fig:lasso_betas}
 \end{figure}
@@ -61,7 +61,7 @@ It is interesting to observe that the Lasso regression model has a far lower opt
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/OLS_Ridge_Lasso_Franke_Noise.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_Ridge_Lasso_Franke_Noise.pdf}
     \caption{The MSE on the test data for OLS-, Ridge- and Lasso regression models. The minimum MSE is marked with a red dot.}
     \label{all3franke}
 \end{figure}
@@ -72,7 +72,7 @@ We want to find the best model among OLS, Ridge and Lasso regression. In Fig. \r
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/bias_var_Franke_Noise_bootstrap.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/bias_var_Franke_Noise_bootstrap.pdf}
     \caption{MSE decomposed into a bias and a variance term for an ordinary least squares model trained with bootstrapping.
 }
     \label{bias_var_trade}
@@ -85,7 +85,7 @@ In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/CV_BS_OLS_Terrain.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/CV_BS_OLS_Terrain.pdf}
     \caption{MSE for three different models; OLS-, Ridge- and Lasso regression against degree of complexity. All are trained with cross-validation.}
     \label{cv_versus_bs}
 \end{figure}
@@ -99,7 +99,7 @@ We could have used the entire data set to draw bootstrap samples from. Then we w
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_Terrain.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/All_Terrain.pdf}
     \caption{MSE for OLS-, Ridge- and Lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
     \label{all_terrain}
 \end{figure}
