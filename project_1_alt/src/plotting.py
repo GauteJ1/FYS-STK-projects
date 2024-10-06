@@ -616,4 +616,51 @@ class Plotting:
         plt.xlabel("Degree")
         plt.ylabel("MSE")
 
+    def plot_all_no_resampling(
+        self,
+        max_degree: int,
+    ):
+        self.__config()
+        x_data = list(range(1, max_degree + 1))
+        ols_reg = []
+        ridge_reg = []
+        lasso_reg = []
+
+        ols = OLSModel(self.handler)
+        ridge = RidgeModel(self.handler)
+        lasso = LassoModel(self.handler)
+
+        for deg in x_data:
+
+            ols.fit_simple_model(deg)
+            z_tilde_test = ols.predict(ols.X_test)
+            ols_reg.append(ols.MSE(z_tilde_test, ols.z_test))
+
+            ridge.fit_simple_model(deg)
+            z_tilde_test = ridge.predict(ridge.X_test)
+            ridge_reg.append(ridge.MSE(z_tilde_test, ridge.z_test))
+
+            lasso.fit_simple_model(deg)
+            z_tilde_test = lasso.predict(lasso.X_test)
+            lasso_reg.append(lasso.MSE(z_tilde_test, lasso.z_test))
+
+        plt.plot(x_data, ols_reg, label="OLS")
+        plt.plot(x_data, ridge_reg, label="Ridge", linestyle="--")
+        plt.plot(x_data, lasso_reg, label="Lasso", linestyle="-.")
+
+        mse_results = [ols_reg, ridge_reg, lasso_reg]
+        min_mse = min(min(mse_list) for mse_list in mse_results)
+        for mse_list in mse_results:
+            if min_mse in mse_list:
+                min_index = mse_list.index(min_mse)
+                min_mse_deg = x_data[min_index]
+                break
+
+        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+
+        plt.title(f"MSE")
+        plt.legend()
+        plt.xlabel("Degree")
+        plt.ylabel("MSE")
+
 
