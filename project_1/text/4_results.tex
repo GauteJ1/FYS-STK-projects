@@ -61,7 +61,8 @@ The $\beta$'s values for our Ridge- and Lasso regression models are presented in
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/bias_var_Franke_Noise_bootstrap.pdf}
-    \caption{MSE decomposed into a bias and a variance term for an ordinary least squares model trained with bootstrapping. \mia{must find minimum and mark on the plot + want bias squared as the label to match with theory}}
+    \caption{MSE decomposed into a bias and a variance term for an ordinary least squares model trained with bootstrapping.
+}
     \label{bias_var_trade}
 \end{figure}
 
@@ -69,36 +70,26 @@ In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low
 
 \subsection{Terrain data}
 
+In this section, the lasso- and ridge regression models are trained with their respective $\lambda$ values from Tab. \ref{tab:grid}. 
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/CV_BS_OLS_Terrain.pdf}
     \caption{MSE for three different models; ols-, ridge- and lasso regression against degree of complexity. All are trained with cross-validation.}
-    \label{all_terrain_cv}
+    \label{cv_versus_bs}
 \end{figure}
 
-
-In this section, the lasso- and ridge regression models are trained with their respective $\lambda$ values from Tab. \ref{tab:grid}. 
+In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both resampling techniques are used on the ordinary least squares model. 
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_Terrain.pdf}
     \caption{MSE for ols-, ridge- and lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum is found for \mia{insert}}
-    \label{all_terrain_OLS}
+    \label{all_terrain}
 \end{figure}
 
-In Fig. \ref{all_terrain_OLS} the error decreases for all three models as the degree of complexity increases. Ordinary least squares and lasso regression outperforms the rigde regression model. This might be due to \mia{smt}
-When we use cross-validation to train all three models, ordinary least squares is the best performing model as shown in Fig. \ref{all_terrain_cv}. \mia{more}
+Our main goal is to find the very best model for terrain data. We have implemented three different model types; ols, ridge and lasso. Furthermore we can use no resampling, bootstrapping or cross-validation. This yields nine different models. In Fig. \ref{all_terrain} we compare all. The two best models are ridge regression with no resampling, as well as ols with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a degree of complexity of 11 and the MSE-value is approximately 134.  
 
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\linewidth]{project_1_alt/figures/figures_in_report/All_bootstrap_Terrain.pdf}
-    \caption{MSE for three different models; ols-, ridge- and lasso regression against degree of complexity. All are trained with bootstrapping.}
-    \label{all_terrain_bs}
-\end{figure}
-
-\mia{which one of the methods give the absolute lowest value for MSE $\rightarrow$ our best method yey}
-\mia{discussion of which to trust the most}
 
 \subsection{Overall discussion \mia{change this}}
 
