@@ -574,8 +574,6 @@ class Plotting:
         self.__config()
         x_data = list(range(1, max_degree + 1))
         ols_reg = []
-        ridge_reg = []
-        lasso_reg = []
         ols_boot = []
         ols_cv = []
 
