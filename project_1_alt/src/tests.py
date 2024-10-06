@@ -1,3 +1,5 @@
-assert True
 
-assert False
+def test_this():
+    assert True
+
+    assert False
