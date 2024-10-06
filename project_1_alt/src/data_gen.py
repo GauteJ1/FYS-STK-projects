@@ -6,9 +6,7 @@ from PIL import Image
 
 
 class DataGen:
-    def __init__(
-        self, data_points: int = 101
-    ) -> None:  # Will probably have to set other start/end points for the axes as well
+    def __init__(self, data_points: int = 101) -> None:
         self.data_points = data_points
         x = np.linspace(0, 1, data_points)
         y = np.linspace(0, 1, data_points)
@@ -39,7 +37,7 @@ class DataGen:
         ax.zaxis.set_major_locator(LinearLocator(10))
         ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
 
-        ax.set_title(title) 
+        ax.set_title(title)
 
         # Add a color bar which maps values to colors.
         fig.colorbar(surf, shrink=0.5, aspect=5)
@@ -99,18 +97,18 @@ class TerrainDataGen(DataGen):
         self.__generate_data()
 
     def __generate_data(self) -> None:
-        image = Image.open('../SRTM_data_Norway_1.tif')
+        image = Image.open("../SRTM_data_Norway_1.tif")
         data = np.array(image)
-        self.z = data[:self.data_points, :self.data_points]
+        self.z = data[: self.data_points, : self.data_points]
 
     def get_data(self) -> np.ndarray[float]:
         return self.z
 
     def plot_data(self, save_path: str = "None") -> None:
         z = self.z
-        min_lim = np.min(z)*0.9
-        max_lim = np.max(z)*1.1
-        z_lim = (min_lim, max_lim)  
+        min_lim = np.min(z) * 0.9
+        max_lim = np.max(z) * 1.1
+        z_lim = (min_lim, max_lim)
         super().plot_data(z, z_lim, "Terrain", save_path)
 
 
@@ -120,12 +118,7 @@ class SimpleTest(DataGen):
         self.__generate_data()
 
     def __generate_data(self) -> None:
-        self.z = (
-            2 * self.x**2
-            - 4 * self.x
-            + 4
-            + 0.2 * np.random.normal(0, 1, (self.x.shape))
-        )
+        self.z = self.x
 
     def get_data(self) -> np.ndarray[float]:
         return self.z
@@ -134,11 +127,3 @@ class SimpleTest(DataGen):
         z = self.z
         z_lim = (2, 5)
         super().plot_data(z, z_lim, "Simple", save_path)
-
-
-if __name__ == "__main__":
-    franke = FrankeDataGen(data_points=101)
-    franke.plot_data()
-
-    terrain = TerrainDataGen(data_points=101)
-    terrain.plot_data()

@@ -183,15 +183,3 @@ class LassoModel(RegModel):
         z_tilde = self.model.predict(X) + self.intercept
         z_tilde = np.array([[z] for z in z_tilde])
         return z_tilde
-
-
-if __name__ == "__main__":
-    data = SimpleTest(data_points=21)
-    handler = DataHandler(data, test_size=0.25)
-    ols = OLSModel(handler)
-    for deg in range(1, 12):
-        ols.fit_simple_model(deg=deg)
-        print(f"-------\nDeg: {deg}")
-        print(f"Train MSE: {ols.MSE(ols.X_train, ols.z_train)}")
-        print(f"Test MSE: {ols.MSE(ols.X_test, ols.z_test)}")
-    ols.bootstrap()

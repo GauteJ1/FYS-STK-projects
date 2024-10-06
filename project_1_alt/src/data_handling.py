@@ -95,17 +95,3 @@ class DataHandler:
             data_splits.append((X_train_scaled, X_test_scaled, z_train, z_test))
 
         return data_splits
-
-
-
-if __name__ == "__main__":
-    data = FrankeDataGen(10)
-    handler = DataHandler(data)
-
-    ### Test preprocess:
-    handler.preprocess(test_size=0.2, degree=2, scaling="Mean")
-    assert len(handler.X_train[0]) == 5
-    assert len(handler.X_train) == 80
-    assert np.mean(handler.X_train[0:, 1]) < 1e-9  # Should be scaled by mean
-
-    handler.create_cross_validation(degree=2, kfolds=4)
