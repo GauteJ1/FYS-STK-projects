@@ -1,5 +1,5 @@
 \subsection{Linear Regression}
-Linear regression bases itself on the assumption of a linear relationship between the \textit{predictors} and the \textit{response}. 
+Linear regression bases itself on the assumption of a linear relationship between the \textit{predictors} and the \textit{response} \cite[p.21-26]{fahrmeir}. 
 Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
 \begin{equation}
 \Tilde{y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j}.
@@ -300,42 +300,48 @@ The two methods, specifically the difference in how the coefficients approach ze
 
 \subsection{Bias-Variance Tradeoff}
 
-\julie{JULIE}
-
 \subsubsection{Bias}
-The bias of a model is the difference between the expected value of the estimator and the true value of the model we're estimating, as shown in Eq. \ref{bias}. 
+The bias of a method (or estimator) describes its inability to capture the true relationship we're estimating. For a specific model this a measure of the difference between the expected values of the estimator and the true values, as shown in Eq. \ref{bias}. 
 
 \begin{equation}\label{bias}
     \text{Bias}(\hat{\bet}) = \fv{\hat{\bet}}-\bet
 \end{equation}
 
-If we were to train models with the same method on different datasets, models with low bias would all on average predict close to the target values they're trained on. Models with high bias would on the contrary predict values further from the true target.
+If we were to train models with the same method on different datasets, models with low bias would all on average predict close to the target values they're trained on. Models with high bias would on the contrary predict values further from the true target. Bias is often described using shots at an archery target, where each shot represents a model trained on different data; high bias is analogous to shots far from the bulls-eye (which is our goal), while lower bias to shots closer to the bulls-eye.
 % The predictions are very close to the target in the training data set. An underfitted model however, has a high bias. In both cases, we have a model that does not capture the real underlying pattern but is rather too complex or simple respectively. 
 %It can easily be understood by looking at an archery target \plothere{Add a figure after variance and explain all}. 
 
 \subsubsection{Variance}
 
-The variance of an estimator is its sensitivity to fluctuations in the data sets. If the predictions vary a lot depending on which data set we train on, it has high variance. The equation for the calculation of the quantity is shown in Eq. \ref{var}. 
+The variance of a model describes the amount of variation between it's predictions and the expected value of the predictions, as shown in Eq. \ref{var}. This in turn explains a models sensitivity to fluctuations in the data sets; for a model with high variance the predictions will vary a lot depending on which data set we train on, and vice versa.
 
 \begin{equation}\label{var}
     \text{Var}(\hat{\bet}) = \fv{\hat{\bet}-\fv{\hat{\bet}}^2} = \fv{\hat{\bet}^2} - \fv{\hat{\bet}}^2
 \end{equation}
 
-An overfitted model generally has high variance. As the model learns the specific training data and not the underlying pattern, it is reasonable that the model becomes very sensitive to the specific data it is tested on.
+Relating back to the analogy of a shots at a target, high variance relates to shots that deviate a lot from one another, while lower variance to shots more closely grouped together.  
+% An overfitted model generally has high variance. As the model learns the specific training data and not the underlying pattern, it is reasonable that the model becomes very sensitive to the specific data it is tested on.
 
 \subsubsection{The trade-off}
 
 %\mia{mention that we here use OLS, but that the concepts hold in general}
 
-During training the objective is to minimize the cost function.  We can decompose the expression for the expected error for a model fit with ordinary least squares (OLS) regression. Calculations are available in \hyperref[appendixB]{appendix B}.
+When evaluating statistical models we often talk about the expected error of our model, as a measure of how good our model is. This expected error can be decomposed as shown in Eq. \ref{biasvar}. 
 
 \begin{equation}\label{biasvar}
     \fv{(\y - \yt)^2} = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
 \end{equation}
 
-Eq. \ref{biasvar} shows how the expected error is decomposed into a bias term, a variance term, and an irreducible error. The latter comes from $\epsilon$ in Eq. \ref{OG_y}. As the term irreducible error suggests, there is nothing for us to do with this term. We are therefore left with a bias term and a variance term. These terms are inversely related and in our to have the smallest error in total, we need to balance them. 
+Calculations are available in \hyperref[appendixB]{appendix B}, here specifically for a model fit with ordinary least squares (OLS) regression. 
+Eq. \ref{biasvar} gives us the expected error composed of a model-bias term, a model-variance term and lastly the variance of $\epsilon$; the irreducible error-term as given in Eq. \ref{OG_y}. As the latter of the three is irreducible and out of our control, we are therefore left with the bias term and variance term to try and reduce for optimizing our models. 
+The ideal model would have both low bias and low variance, but as the two terms are inversely related - this is highly improbable. Instead we seek to find the optimal balance between them - this is called the \textit{bias-variance trade-off}. 
 
-An overfitted model has low bias, but high variance. An underfitted model has the opposite, high bias and low variance. In fig. \ref{train_test_overfit} this corresponds to high bias and low variance in to the left and the opposite to the right. The figure furthermore shows how there is a sweat-spot where the trade-off between the two gives the lowest possible MSE.
+The edge cases of this trade-off are usually denoted overfitting and underfitting (as mentioned in Section \ref{overfitting}). Overfitted models have low bias and high variance, while an underfitted models have the opposite; high bias and low variance. 
+
+An overfitted model is characterized as being too complex; often having too many parameters, degrees of freedom or similar measures of complexity. 
+Overfit models pick up on all small variations in training data, including those caused by noise and randomness. As a consequence these models perform excellent on their training data, but are expected to perform quite terribly on new data sets. 
+
+An underfit model is contrastingly characterized as being too simple. Underfit models are not very specialized to the training data, failing to pick up on variations related to the underlying distribution of the data. As a consequence these models perform similarly on training data and test data, but this performance is not very good. 
 
 
-
+\julie{ref morten uke37, statquest kanskje}
