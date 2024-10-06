@@ -39,7 +39,7 @@ class DataGen:
         ax.zaxis.set_major_locator(LinearLocator(10))
         ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
 
-        ax.set_title(title)
+        ax.set_title(title) 
 
         # Add a color bar which maps values to colors.
         fig.colorbar(surf, shrink=0.5, aspect=5)

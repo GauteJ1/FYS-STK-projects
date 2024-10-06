@@ -281,8 +281,12 @@ class Plotting:
             var.append(var_)
 
         plt.plot(x_data, MSE, label="MSE")
-        plt.plot(x_data, bias, label="Bias")
+        plt.plot(x_data, bias, label=r"Bias$^2$")
         plt.plot(x_data, var, label="Variance")
+
+        min_mse = min(MSE)
+        min_mse_deg = x_data[MSE.index(min_mse)]
+        plt.plot(min_mse_deg, min_mse, 'ro', label = f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
 
         plt.title(
             f"{model_name}: MSE, bias and varaince for different model complexities"
@@ -403,17 +407,27 @@ class Plotting:
             lasso_cv.append(test)
 
 
-        plt.plot(x_data, ols_boot, label="OLS - Bootstrap")
-        plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap")
-        plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap")
+        plt.plot(x_data, ols_boot, label="OLS - Bootstrap", linestyle="--")
+        plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap", linestyle="--")
+        plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap", linestyle="--")
 
-        plt.plot(x_data, ols_reg, label="OLS - Regular")
-        plt.plot(x_data, ridge_reg, label="Ridge - Regular")
-        plt.plot(x_data, lasso_reg, label="Lasso - Regular")
+        plt.plot(x_data, ols_reg, label="OLS - Regular", linestyle="-.")
+        plt.plot(x_data, ridge_reg, label="Ridge - Regular", linestyle="-.")
+        plt.plot(x_data, lasso_reg, label="Lasso - Regular", linestyle="-.")
 
         plt.plot(x_data, ols_cv, label="OLS - Cross-Val")
         plt.plot(x_data, ridge_cv, label="Ridge - Cross-Val")
         plt.plot(x_data, lasso_cv, label="Lasso - Cross-Val")
+
+        mse_results = [ols_boot, ridge_boot, lasso_boot, ols_reg, ridge_reg, lasso_reg, ols_cv, ridge_cv, lasso_cv]
+        min_mse = min(min(mse_list) for mse_list in mse_results)
+        for mse_list in mse_results:
+            if min_mse in mse_list:
+                min_index = mse_list.index(min_mse)
+                min_mse_deg = x_data[min_index]
+                break
+
+        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
 
         plt.title(f"MSE")
         plt.legend()
@@ -550,5 +564,58 @@ class Plotting:
         plt.xlabel("Degree")
         plt.ylabel("MSE")
             
+
+    def plot_cv_bs_ols(
+        self,
+        max_degree: int,
+        n_samples: int,
+        k_folds: int
+    ):
+        self.__config()
+        x_data = list(range(1, max_degree + 1))
+        ols_reg = []
+        ridge_reg = []
+        lasso_reg = []
+        ols_boot = []
+        ols_cv = []
+
+        ols = OLSModel(self.handler)
+    
+        ols.make_cross_val_split(kfolds=k_folds)
+    
+
+        for deg in x_data:
+            ols_boot.append(
+                ols.MSE_bootstrap(
+                    n_samples=n_samples,
+                    degree=deg,
+                )
+            )
+            
+            ols.fit_simple_model(deg)
+            z_tilde_test = ols.predict(ols.X_test)
+            ols_reg.append(ols.MSE(z_tilde_test, ols.z_test))
+
+            _, test = ols.MSE_cross_validation(deg)
+            ols_cv.append(test)
+
+
+        plt.plot(x_data, ols_boot, label="OLS - Bootstrap", linestyle="--")
+        plt.plot(x_data, ols_cv, label="OLS - Cross-Val")
+
+        mse_results = [ols_boot, ols_cv]
+        min_mse = min(min(mse_list) for mse_list in mse_results)
+        for mse_list in mse_results:
+            if min_mse in mse_list:
+                min_index = mse_list.index(min_mse)
+                min_mse_deg = x_data[min_index]
+                break
+
+        plt.plot(min_mse_deg, min_mse, 'ro', label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}")
+
+        plt.title(f"MSE")
+        plt.legend()
+        plt.xlabel("Degree")
+        plt.ylabel("MSE")
 
 

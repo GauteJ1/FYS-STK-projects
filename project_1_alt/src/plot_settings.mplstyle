@@ -6,8 +6,8 @@ mathtext.fontset: stix
 font.family: STIXGeneral
 
 # Title sizes
-figure.titlesize: 14
-axes.titlesize: 10
+figure.titlesize: 20
+axes.titlesize: 20
 axes.labelsize: 10
 
 # Tick label sizes
