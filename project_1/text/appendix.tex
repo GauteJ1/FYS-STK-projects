@@ -4,78 +4,93 @@ The code used for this project is available at \url{https://github.com/GauteJ1/F
 \gaute{Also; remember to make the git-hub repository public before delivering}
 
 \subsection{Appendix B: Pen and paper calculations}\label{appendixB}
-\begin{align*}
-    \fv{y_i} & = \fv{\sum_j x_{ij}\beta_j + \epsilon_i} \\
-    & = \fv{\sum_j x_{ij}\beta_j} + \fv{\epsilon_i} \\ 
-    & = \sum_j x_{ij}\beta_j + 0 \\
-    & = \mathbf{X}_{i,*}\boldsymbol{\beta}
-    & \\
-    & \\
-    & \\
-    \text{var}(y_i) & = \fv{(y_i -\fv{y_i})^2} \\
-    & = \fv{y_i^2} - \fv{y_i}^2 \\ 
-    & = \fv{(\sum_j x_{ij}\beta_j + \epsilon_i)^2} - \fv{y_i}^2 \\
-    & = \fv{(\sum_j x_{ij}\beta_j)^2} + \fv{\epsilon_i^2} + 2\fv{\sum_j x_{ij}\beta_j \epsilon_i } - \fv{y_i}^2 \\
-    & = \fv{y_i}^2 + \fv{\epsilon_i^2} + 2\fv{y_i}^2\cdot 0 - \fv{y_i}^2 \\ 
-    & = \sigma^2
-    &  \\
-    &  \\
-    &  \\
-    \fv{\hat{\bet}} & = \fv{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \y} \\ 
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \fv{\y} \\ 
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \mathbf{X}\bet \\
-    & = \unit \bet \\
-    & = \bet 
-\end{align*}
 
-\begin{align*}
-    \text{var}(\hat{\bet}) & = \fv{(\hat{\bet}-\fv{\hat{\bet}})^2} \\
-    & = \fv{(\hat{\bet}-\fv{\hat{\bet}})(\hat{\bet}-\fv{\hat{\bet}})^T} \\ 
-    & = \fv{(\hat{\bet}-\bet)(\hat{\bet}-\bet)^T} \\ 
-    & = \fv{(\hat{\bet}-\bet)(\hat{\bet}^T-\bet^T)} \\
-    & = \fv{\hat{\bet}\hat{\bet}^T} - \fv{\hat{\bet}\bet^T} - \fv{\bet \hat{\bet}^T} + \fv{\bet \bet^T} \\
-    & = \fv{\hat{\bet}\hat{\bet}^T} - \bet\bet^T - \bet\bet^T + \bet\bet^T \\
-    & = \fv{\hat{\bet}\hat{\bet}^T} - \bet\bet^T \\
-    & = \fv{\betta(\betta)^T} - \bet\bet^T \\
-    & = \fv{\betta \y^T \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T}} - \bet\bet^T \\
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\fv{\y\y^T}\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \\
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \\
-    & = \bet \bet^T + \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1} - \bet \bet^T \\
+In this section, the calculations for some of our theretical expressions are presented. 
+
+\begin{align}\label{a1}
+    \fv{y_i} & = \fv{\sum_j x_{ij}\beta_j + \epsilon_i} \nonumber \\
+    & = \fv{\sum_j x_{ij}\beta_j} + \fv{\epsilon_i} \nonumber \\ 
+    & = \sum_j x_{ij}\beta_j + 0 \nonumber \\
+    & = \mathbf{X}_{i,*}\boldsymbol{\beta}
+\end{align}
+
+The expectation value of the true $y_i$ is calculated in Eq. \ref{a1}. The assumption that $\fv{\epsilon_i} = 0$ is the essential part of the calculations. 
+
+
+
+\begin{align}\label{a2}
+    \text{var}(y_i) & = \fv{(y_i -\fv{y_i})^2} \nonumber \\
+    & = \fv{y_i^2} - \fv{y_i}^2 \nonumber \\ 
+    & = \fv{(\sum_j x_{ij}\beta_j + \epsilon_i)^2} - \fv{y_i}^2 \nonumber \\
+    & = \fv{(\sum_j x_{ij}\beta_j)^2} + \fv{\epsilon_i^2} + 2\fv{\sum_j x_{ij}\beta_j \epsilon_i } - \fv{y_i}^2 \nonumber \\
+    & = \fv{y_i}^2 + \fv{\epsilon_i^2} + 2\fv{y_i}^2\cdot 0 - \fv{y_i}^2 \nonumber \\ 
+    & = \sigma^2
+\end{align}
+
+For the calculation of the variance of the true $y_i$ (as shown in Eq. \ref{a2}), the central parts are $\fv{\epsilon_i} = 0$ and $\fv{\epsilon_i^2} = \text{var}(\boldsymbol{\epsilon}) = \sigma^2$. This stems from our assumptions on $\boldsymbol{\epsilon}$. 
+
+\begin{align}\label{a3}
+    \fv{\hat{\bet}} & = \fv{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \y} \nonumber \\ 
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \fv{\y} \nonumber \\ 
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \mathbf{X}\bet \nonumber \\
+    & = \unit \bet \nonumber \\
+    & = \bet 
+\end{align}
+
+In Eq. \ref{a3} we calculate the bias for the OLS estimator $\hat{\bet}$. The result from Eq. \ref{a1} is used going from the second to the third line.
+
+\begin{align}\label{a4}
+    \text{var}(\hat{\bet}) & = \fv{(\hat{\bet}-\fv{\hat{\bet}})^2} \nonumber \\
+    & = \fv{(\hat{\bet}-\fv{\hat{\bet}})(\hat{\bet}-\fv{\hat{\bet}})^T} \nonumber \\ 
+    & = \fv{(\hat{\bet}-\bet)(\hat{\bet}-\bet)^T} \nonumber \\ 
+    & = \fv{(\hat{\bet}-\bet)(\hat{\bet}^T-\bet^T)} \nonumber \\
+    & = \fv{\hat{\bet}\hat{\bet}^T} - \fv{\hat{\bet}\bet^T} - \fv{\bet \hat{\bet}^T} + \fv{\bet \bet^T} \nonumber \\
+    & = \fv{\hat{\bet}\hat{\bet}^T} - \bet\bet^T - \bet\bet^T + \bet\bet^T \nonumber \\
+    & = \fv{\hat{\bet}\hat{\bet}^T} - \bet\bet^T \nonumber \\
+    & = \fv{\betta(\betta)^T} - \bet\bet^T \nonumber \\
+    & = \fv{\betta \y^T \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T}} - \bet\bet^T \nonumber \\
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\fv{\y\y^T}\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
+    & = \bet \bet^T + \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1} - \bet \bet^T \nonumber \\
     & = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
-    &  \\
-    &  \\
-    &  \\
-    \fv{(\mathbf{y}-\yt)^2} & = \fv{(\mathbf{y} - \fv{\yt} + \fv{\yt} -\yt)^2} \\
-    & = \fv{(\mathbf{y} - \fv{\yt})^2} + \fv{(\fv{\yt} -\yt)^2} \\
-    & \;\;\;\; + 2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} \\
-    & = \fv{(\mathbf{f} + \boldsymbol{\epsilon} - \fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} \\
-    & = \fv{(\mathbf{f}-\fv{\yt})^2}+\fv{\boldsymbol{\epsilon}^2} \\
-    & \;\;\;\; + 2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} + \fv{(\yt - \fv{\yt})^2}  \\
-    & = \fv{(\mathbf{f}-\fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} +\fv{\boldsymbol{\epsilon}^2}\\
-    & = \mia{Must add that we use y in practice} \\
+\end{align}
+
+The variance of the ordinary least squares estimator is calculated in Eq. \ref{a4}. \mia{smt else?}
+
+\begin{align}\label{a5}
+    \fv{(\mathbf{y}-\yt)^2} & = \fv{(\mathbf{y} - \fv{\yt} + \fv{\yt} -\yt)^2} \nonumber \\
+    & = \fv{(\mathbf{y} - \fv{\yt})^2} + \fv{(\fv{\yt} -\yt)^2} \nonumber \\
+    & \;\;\;\; + 2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} \nonumber \\
+    & = \fv{(\mathbf{f} + \boldsymbol{\epsilon} - \fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} \nonumber \\
+    & = \fv{(\mathbf{f}-\fv{\yt})^2}+\fv{\boldsymbol{\epsilon}^2} \nonumber \\
+    & \;\;\;\; + 2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} + \fv{(\yt - \fv{\yt})^2}  \nonumber \\
+    & = \fv{(\mathbf{f}-\fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} +\fv{\boldsymbol{\epsilon}^2}\nonumber \\
+    & = \mia{Must add that we use y in practice} \nonumber \\
     & = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
-\end{align*}
+\end{align}
+
+The expected loss \mia{Julie hjelp} is decomposed into a bias and a variance term in Eq. \ref{a5}. When calculating this in practice we cannot know the true function $\boldsymbol{f}$. We therefore use $\y$ for our analysis. \mia{implications}
 
 % In the calculations these terms are zero: 
 
 % \begin{align*}
-%     2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} & = 2\fv{\mathbf{y} - \fv{\yt}}\fv{\fv{\yt} -\yt} \\ 
-%     & = 2\fv{\mathbf{y} - \fv{\yt}} (\fv{\yt}-\fv{\yt}) \\ 
-%     & = 2\fv{\mathbf{y} - \fv{\yt}} \cdot 0 \\
+%     2\fv{(\mathbf{y} - \fv{\yt})(\fv{\yt} -\yt)} & = 2\fv{\mathbf{y} - \fv{\yt}}\fv{\fv{\yt} -\yt} \nonumber \\ 
+%     & = 2\fv{\mathbf{y} - \fv{\yt}} (\fv{\yt}-\fv{\yt}) \nonumber \\ 
+%     & = 2\fv{\mathbf{y} - \fv{\yt}} \cdot 0 \nonumber \\
 %     & = 0
 % \end{align*}
 
 % \begin{align*}
-%     2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} & =  2 \fv{(\mathbf{f}-\fv{\yt})}\fv{\boldsymbol{\epsilon}} \\
-%     & = 2 \fv{(\mathbf{f}-\fv{\yt})} \cdot 0 \\
+%     2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} & =  2 \fv{(\mathbf{f}-\fv{\yt})}\fv{\boldsymbol{\epsilon}} \nonumber \\
+%     & = 2 \fv{(\mathbf{f}-\fv{\yt})} \cdot 0 \nonumber \\
 %     & = 0
 % \end{align*}
 
 % Have also used: 
 
 % \begin{align*}
-%     \fv{\boldsymbol{\epsilon}} & = 0 \\
-%     \fv{\boldsymbol{\epsilon}^2} & = \text{var}(\boldsymbol{\epsilon}) = \sigma^2 \\
+%     \fv{\boldsymbol{\epsilon}} & = 0 \nonumber \\
+%     \fv{\boldsymbol{\epsilon}^2} & = \text{var}(\boldsymbol{\epsilon}) = \sigma^2 \nonumber \\
 % \end{align*}
 
 \subsection{Appendix C: Use of AI} \label{appendixC}
