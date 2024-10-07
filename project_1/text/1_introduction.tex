@@ -10,33 +10,37 @@
 %- Small disposition: i.e. We will first cover the theoretical background, then describe our implementations of said methods before we discuss our results...
 
 Today, more than ever, we live in a highly data-driven society and ways to handle, interpret and make use of data is at the forefront of many minds. 
-Rather than relying on the intuition of humans, many fields are starting to lean almost entirely on decisions inferred from data-analysis \cite{foster,Kitchin}.
+% Rather than relying on the intuition of humans, many fields are starting to lean almost entirely on decisions inferred from data-analysis \cite{foster,Kitchin}.
 %(Provost \& Faucett, 2013; Kitchin, 2014). 
 In order to actually utilize and learn from data, one is dependent on reliable methods to perform analyses and extract information. 
-Arguably the most powerful framework for such methods is found in the field of statistical learning. 
+% Arguably the most powerful framework for such methods is found in the field of statistical learning. 
 %https://www.liebertpub.com/doi/full/10.1089/big.2013.1508
 %https://journals.sagepub.com/doi/full/10.1177/2053951714528481
 
-Statistical learning is a field with a plethora of applications, such as finance, healthcare, engineering and among the more popular ones in the recent years; artificial intelligence. 
-Within the field of statistical learning it is of norm to differentiate between \textit{supervised} and \textit{unsupervised} learning. 
-Common for both is the concept of \textit{training} a model to fit our desired goal. 
-By training we mean adapting the model-parameters according to some predefined criterion, in order for the model to effectively perform as intended \citep[ p.~1]{hastie}.
+Statistical learning is a field with a plethora of applications, such as finance, healthcare, engineering and of the more popular ones in the recent years; artificial intelligence. 
+% Within the field of statistical learning it is of norm to differentiate between \textit{supervised} and \textit{unsupervised} learning. 
+% Common for both is the concept of \textit{training} a model to fit our desired goal. 
+% By training we mean adapting the model-parameters according to some predefined criterion, in order for the model to effectively perform as intended \citep[ p.~1]{hastie}.
 
 %(Hastie et al., 2009, s.1).
 
-Supervised learning is the general term for describing learning methods used when we utilize priorly known outcomes to guide the model in the training process. 
-In unsupervised learning we are interested in ways to classify or cluster our data, and have no answer keys for a "correct" outcome \citep[ p.~1]{hastie}.
+% Supervised learning is the general term for describing learning methods used when we utilize priorly known outcomes to guide the model in the training process. 
+% In unsupervised learning we are interested in ways to classify or cluster our data, and have no answer keys for a "correct" outcome \citep[ p.~1]{hastie}.
 %(Hastie et al., 2009, s.1). 
-Unsupervised learning can be helpful in situations when we're hoping to find correlations not obvious to the human eye, such as when dealing with datasets spanning many dimensions that are often impossible to visualize in a productive way.
+% Unsupervised learning can be helpful in situations when we're hoping to find correlations not obvious to the human eye, such as when dealing with datasets spanning many dimensions that are often impossible to visualize in a productive way.
 
-Among the more common forms of supervised learning, \textit{linear regression} stands out, tracing its origins back to the early nineteenth century with the invention of the \textit{least squares method}. 
-Linear regression is a collective term, coined only in more recent years, including various linear methods for predicting quantitative values \citep[ p.~5]{james}. During mid to late 1900's many more techniques were developed, thereof the methods named 'Ridge' and 'Lasso'. Ridge had its debut in the 1970s. \julie{herherher}
+Among the more common forms, \textit{linear regression} stands out, tracing its origins back to the early nineteenth century with the invention of the \textit{least squares method} \citep[ p.~5]{james}. 
+Linear regression is a collective term, coined only in more recent years, including various linear methods for predicting quantitative values. During mid to late 1900's many more techniques were developed, thereof the methods named 'Ridge' and 'Lasso'. Ridge had its debut in the 1970s with the publication of two scientific articles in the journal \textit{Technometrics} \cite{hoerl}. Lasso was first formally presented and named in the article \textit{Regression Shrinkage and Selection Via the Lasso} by Robert Tibshirani in 1996. \cite{tibshirani}. 
 
 %(James et al., 2023, s.5).
 %From an introduction to statistical learning, Springer-book
 
-In this paper we explore different aspects of linear regression, including ordinary least squares, ridge, lasso, data handling, and more. 
-We will first use Franke function to verify the theoretical grounds. This includes overfitting, the evaluation measures MSE and $R^2$, the dampening of $\bet$ in penalized regression and bias-variance trade-off. Furthermore, we will implement the models tested on the Franke function on actual terrain data. We will use the resampling techniques bootstrapping and cross-validation. Using MSE as our error measure we will decide on the best overall model for the terrain data, which is the main goal of this paper . 
+In this paper we explore different aspects of linear regression, including ordinary least squares, Ridge, Lasso, data handling, and more. 
+We will first use Franke function to verify the theoretical grounds. This includes overfitting, the evaluation measures MSE and $R^2$, the dampening of $\bet$ in penalized regression and bias-variance trade-off. 
+We will study which of the three linear regression models perform the best on Franke function.
+Furthermore, we will implement the models tested on the Franke function on actual terrain data. 
+We will use the resampling techniques bootstrapping and cross-validation. 
+Using MSE as our error measure we will decide on the best overall model for the terrain data, which is the main goal of this paper. 
 
 
 We will first cover the theoretical background in which lay the foundation for our work, before detailing our implementation of methods. 
