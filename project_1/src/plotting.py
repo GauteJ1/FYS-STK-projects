@@ -606,6 +606,8 @@ class Plotting:
     def plot_all_no_resampling(
         self,
         max_degree: int,
+        ridge_lambda: float = 0,
+        lasso_lambda: float = 0
     ):
         self.__config()
         x_data = list(range(1, max_degree + 1))
@@ -623,11 +625,11 @@ class Plotting:
             z_tilde_test = ols.predict(ols.X_test)
             ols_reg.append(ols.MSE(z_tilde_test, ols.z_test))
 
-            ridge.fit_simple_model(deg)
+            ridge.fit_simple_model(deg, ridge_lambda)
             z_tilde_test = ridge.predict(ridge.X_test)
             ridge_reg.append(ridge.MSE(z_tilde_test, ridge.z_test))
 
-            lasso.fit_simple_model(deg)
+            lasso.fit_simple_model(deg, lasso_lambda)
             z_tilde_test = lasso.predict(lasso.X_test)
             lasso_reg.append(lasso.MSE(z_tilde_test, lasso.z_test))
 
