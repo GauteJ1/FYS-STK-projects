@@ -81,9 +81,9 @@ class Plotting:
                 label=f"Min MSE: {min_mse:.4f} at deg: {min_mse_deg}",
             )
 
-        plt.title(f"{model_name}: {y_axis} for different model complexities")
+        plt.title(f"{model_name}: {y_axis}")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel(y_axis)
 
     def plot_lambda(self, model_name: str = "Ridge", y_axis: str = "MSE", deg: int = 2):
@@ -117,8 +117,8 @@ class Plotting:
         plt.xlabel("Lambda")
         plt.ylabel(y_axis)
 
-    def __plot_betas_deg(
-        self, model_name: str = "OLS", lmbda: float = 0.1, max_deg: int = 5
+    def plot_betas_deg(
+        self, model_name: str = "OLS", lmbda: float = 0., max_deg: int = 5
     ):
         x_data = list(range(1, max_deg + 1))
         y_data = []
@@ -141,37 +141,12 @@ class Plotting:
             extra_zeros = length - len(betas)
             y_data.append(list(betas) + [0] * extra_zeros)
 
-        return x_data, y_data
-
-    def plot_all_betas(
-        self, ridge_lambda: float = 0.1, lasso_lambda: float = 0.1, max_deg: int = 5
-    ):
-        models = ["OLS", "Ridge", "Lasso"]
-
-        x_data, y_OLS = self.__plot_betas_deg("OLS", max_deg=max_deg)
-        _, y_Ridge = self.__plot_betas_deg("Ridge", ridge_lambda, max_deg)
-        _, y_Lasso = self.__plot_betas_deg("Lasso", lasso_lambda, max_deg)
-
-        fig, axs = plt.subplots(1, 3, sharey="row")
-
-        for y_data, ax, model in zip([y_OLS, y_Ridge, y_Lasso], axs, models):
-            ax.plot(x_data, y_data)
-            if model == "OLS":
-                ax.set_title(model)
-            elif model == "Ridge":
-                ax.set_title(rf"{model}, $\lambda={ridge_lambda}$")
-            elif model == "Lasso":
-                ax.set_title(rf"{model}, $\lambda={lasso_lambda}$")
-            ax.grid()
-            ax.set_xlabel("Degree")
-            if model == "OLS":
-                ax.set_ylabel(r"Values of $\beta$'s")
-
-        fig.set_figheight(3.6)
-        fig.set_figwidth(6.4)
-        fig.suptitle(rf"Value of $\beta$'s")
-        fig.tight_layout()
-        fig.subplots_adjust(top=0.88)
+        self.__config()
+        plt.plot(x_data, y_data)
+        plt.xlabel("Polynomial degree")
+        plt.ylabel(r"Values of $\beta$'s")
+        plt.title(rf"Value of $\beta$'s for {model_name}")
+        plt.legend()
 
     def plot_betas_lambda(
         self, model_name: str = "OLS", deg: int = 3, opt_lambda: float = 0.1
@@ -197,6 +172,7 @@ class Plotting:
             extra_zeros = length - len(betas)
             y_data.append(list(betas) + [0] * extra_zeros)
 
+        self.__config()
         plt.plot(x_data, y_data)
         plt.axvline(x=opt_lambda, color="b", linestyle="--", label=r"Optimal $\lambda$")
         plt.xlabel(r"$\lambda$")
@@ -254,9 +230,9 @@ class Plotting:
 
         plt.plot(x_data, y_data, label="MSE")
 
-        plt.title(f"{model_name}: {y_axis} for different model complexities")
+        plt.title(f"{model_name}: {y_axis}")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel(y_axis)
 
     def plot_bootstrap_bias_var(
@@ -300,11 +276,11 @@ class Plotting:
         )
 
         plt.title(
-            f"{model_name}: MSE, bias and varaince for different model complexities"
+            f"{model_name}: MSE, bias and variance"
         )
         plt.legend()
-        plt.xlabel("Degree")
-        plt.ylabel("MSE / Bias / Varaince")
+        plt.xlabel("Polynomial degree")
+        plt.ylabel("MSE / Bias / Variance")
 
     def plot_cross_val_MSE(
         self,
@@ -340,10 +316,10 @@ class Plotting:
         plt.plot(x_data, test_data, label="MSE Test")
 
         plt.title(
-            f"{model_name}: MSE for different model complexities from cross-validation, kfolds: {kfolds}"
+            f"{model_name}: MSE for cross-validation, kfolds: {kfolds}"
         )
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_all(
@@ -456,7 +432,7 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_all_boot(
@@ -501,7 +477,7 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_all_cv(
@@ -538,7 +514,7 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_all_ols(
@@ -575,7 +551,7 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_cv_bs_ols(self, max_degree: int, n_samples: int, k_folds: int):
@@ -624,7 +600,7 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
 
     def plot_all_no_resampling(
@@ -676,5 +652,5 @@ class Plotting:
 
         plt.title(f"MSE")
         plt.legend()
-        plt.xlabel("Degree")
+        plt.xlabel("Polynomial degree")
         plt.ylabel("MSE")
