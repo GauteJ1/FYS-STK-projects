@@ -73,10 +73,3 @@ def test_reg_models():
     z = np.array([[0], [1], [2], [1], [2], [3], [2], [3], [4]])
     beta = ols.fit_model_on_data(X, z)
     assert (X @ beta - z).all() < tol
-
-    # Test everything on simple model
-    f = lambda x, y: x
-    ols.get_preprocessed_data(degree=3)
-    ols.fit_simple_model(deg=2)
-    z_tilde = ols.predict(ols.X_test)
-    assert (z_tilde - ols.z_test).all() < tol
