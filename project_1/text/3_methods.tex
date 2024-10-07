@@ -31,17 +31,20 @@ In order to enable potential overfitting in the models, we added a stochastic no
 \end{align}
 where $f(x,y)$ is defined in Eq. \ref{eq:franke}. All subsequent references to the Franke function will mean the function defined in Eq. \ref{eq:franke_noise}.
 
+For the Franke data, we use 41 data points along each axis, for a total of 1681 data point (i.e. $41^2$).
+
 \subsubsection{Terrain data}
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/terrain_41.pdf}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/terrain.pdf}
     \caption{Terrain data}
     \label{data:terrain}
 \end{figure}
 
 Secondly, we implement our methods on real terrain data \cite{mortengithub}. The data we use contain \mia{struggling to write when the data is just taken from GitHub, I know nothing about it...}
 
+\mia{100 data points }
 
 \subsubsection{Scaling and train/test-split}
 To ensure our different models are trained and tested on the exact same data, making them comparable, we perform the train/test split of the data initially, in a separate data handling class.

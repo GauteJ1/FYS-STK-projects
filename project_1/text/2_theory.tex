@@ -1,10 +1,10 @@
 \subsection{Linear Regression}
 Linear regression bases itself on the assumption of a linear relationship between the \textit{predictors} and the \textit{response} \cite[p.21-26]{fahrmeir}. 
-Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) we seek a linear model on the form
+Given a dataset of $p$ input variables (commonly called predictors), $X=[x_1, \, x_2, \, \ldots, \, x_p]$ and a dataset of output variables (commonly called the response) one seeks a linear model on the form
 \begin{equation}
 \Tilde{y}=\hat{\beta_0}+\sum_{j=1}^{p}x_j\hat{\beta_j}.
 \end{equation}
-The scalar $\Tilde{y}$ is our prediction of the response, $\hat{\beta_0}$ the estimated intercept, and each $\hat{\beta_j}$ the estimated coefficient belonging to its corresponding predictor $x_j$. 
+The scalar $\Tilde{y}$ is the prediction of the response, $\hat{\beta_0}$ the estimated intercept, and each $\hat{\beta_j}$ the estimated coefficient belonging to its corresponding predictor $x_j$. 
 
 This equation is commonly written in vector form, 
 \begin{equation}
@@ -18,9 +18,9 @@ The ``true" model is assumed the form
 \begin{equation}\label{OG_y}
 y=\beta_0+\sum_{j=1}^{p}x_j\beta_j+\epsilon,
 \end{equation}
-Our linear regression models are always estimations of the equation above, and we have no way of knowing the true $\boldsymbol{\beta}$. 
+Our linear regression models are always estimations of the equation above, and for real-life data there's no way of knowing the true $\boldsymbol{\beta}$ (for generated data there will be exceptions). 
 $\epsilon$ is some irreducible \textit{error-term} or \textit{residual-term} representing all variance in the data not explainable by the linear model; any variation due to randomness is included in this term. It is assumed $\epsilon \sim  
-\mathcal{N}(0,\sigma^2)$, and given this assumption we get the expected value of $y_i$
+\mathcal{N}(0,\sigma^2)$, and given this assumption one gets the expected value of $y_i$
 
 \begin{equation}\label{expected_y}
     \fv{y_i} = \mathbf{X}_{i,*}\boldsymbol{\beta},
@@ -36,14 +36,14 @@ Calculations of Eq. \ref{expected_y} and \ref{var_y} are available in \hyperref[
 
 \subsection{Cost- \& Loss-Functions}
 The main objective when solving such a linear regression problem, is finding the optimal coefficients $\boldsymbol{\beta}$ that minimizes an error measure between $y_i$ and $\Tilde{y_i}$. 
-How such an optimal solution evinces is dictated by the definition of our \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much our predictions deviate from the "truth". 
+How such an optimal solution evinces is dictated by the definition of the \textit{cost-function},  or \textit{loss-function}, which is simply metrics chosen to measure how much the predictions deviate from the "truth". 
 A cost-function, $\text{Cost}(f,\mathcal{D} )$, is used to describe such a metric measuring a group of data-points, while a loss-function, $L(y, \hat{y})$, describes a metric regarding a single data-instance. 
 The cost-function can be expressed in terms of the loss function
 \begin{equation}
 \text{Cost}(f,\mathcal{D}) = \frac{1}{n}\sum_{i=1}^n L(y_i, \hat{y_i}),
 \end{equation}
 as the average of the loss-function over the data. 
-Through different choices of cost-function we end up with different methods for estimation, resulting in different models for the same data-set. 
+Through different choices of cost-function one ends up with different methods for estimation, resulting in different models for the same data-set. 
 
 %Depending on priorities when choosing, different models provide things like easier interpretation, lower \textit{bias}, or lower \textit{variance}. 
 
@@ -54,15 +54,15 @@ Through different choices of cost-function we end up with different methods for 
 
 \subsubsection{Scaling}\label{scaling}
 
-In order for all parameters to have an equal starting point when training a model, it's often necessary to scale the data \citep[p. 398]{hastie}. Having one parameter with values of order $10^3$, and another parameter with values of order $10^{-3}$, the model could miss the predictive importance of the latter. Whether or not it is necessary to scale the data, depends on the choice of cost-function; Given two parameters of different magnitudes where the same relative change has equal impact on the response, the parameter of smaller magnitude would have coefficients of inversely proportional magnitude. If a cost-function penalizes bigger coefficients, as some does, the parameter of smaller magnitude would then be penalized more than it should. To alleviate the risk of such problems, it is thus necessary for many methods that we scale all data before training. 
+In order for all parameters to have an equal starting point when training a model, it's often necessary to scale the data \citep[p. 398]{hastie}. Having one parameter with values of order $10^3$, and another parameter with values of order $10^{-3}$, the model could miss the predictive importance of the latter. Whether or not it is necessary to scale the data, depends on the choice of cost-function; Given two parameters of different magnitudes where the same relative change has equal impact on the response, the parameter of smaller magnitude would have coefficients of inversely proportional magnitude. If a cost-function penalizes bigger coefficients, as some does, the parameter of smaller magnitude would then be penalized more than it should. To alleviate the risk of such problems, it is thus necessary for many methods that all data is scaled before training. 
 
-A common choice for scaling is to use the \textit{standard scaler}. This method involves subtracting the mean and dividing by the standard deviation, for each feature (i.e. parameter) respectively. Each of the columns will then have mean equal to zero and a standard deviation of one after the scaling. For the i-th datapoint and the j-th feature we get the transformation as indicated in Eq. \ref{standardize} \citep[Linear Regression]{morten}. Alternatively a variation of the standard scaler is sometimes used, including only subtraction of the mean and omitting the division of standard deviation.
+A common choice for scaling is to use the \textit{standard scaler}. This method involves subtracting the mean and dividing by the standard deviation, for each feature (i.e. parameter) respectively. Each of the columns will then have mean equal to zero and a standard deviation of one after the scaling. For the i-th datapoint and the j-th feature one gets the transformation as indicated in Eq. \ref{standardize} \citep[Linear Regression]{morten}. Alternatively a variation of the standard scaler is sometimes used, including only subtraction of the mean and omitting the division of standard deviation.
 
 \begin{equation}\label{standardize}
     x_{ij} \rightarrow \frac{x_{ij}-\overline{x}_j}{\sigma_{x_j}}
 \end{equation}
 
-It's considered good practice to not scale the intercept, as it represents a constant term without variability and scaling it will often worsen it's performance, or defeat it's purpose entirely. It can be taken out during training and later be recalculated as Eq. \ref{bet0} shows \citep[Resampling methods]{morten}. We will later touch on how some methods would produce different results if a scaled intercept was included in the training. Taking out the intercept amounts to removing the column of 1's in the design matrix. 
+It's considered good practice to not scale the intercept, as it represents a constant term without variability and scaling it will often worsen it's performance, or defeat it's purpose entirely. It can be taken out during training and later be recalculated as Eq. \ref{bet0} shows \citep[Resampling methods]{morten}. Some methods will produce different results when a scaled intercept is included in the training. Taking out the intercept amounts to removing the column of 1's in the design matrix. 
 
 \begin{equation}\label{bet0}
     \beta_0 = \frac{1}{n}\sum_{i=0}^{n-1}y_i - \frac{1}{n}\sum_{i=0}^{n-1}\sum_{j=1}^{p-1}X_{ij}\beta_j
@@ -70,17 +70,17 @@ It's considered good practice to not scale the intercept, as it represents a con
 
 \subsubsection{Splitting data into sets}\label{overfitting}
 
-When training a model we want it to learn the underlying pattern of the data that is (hopefully) representative for the entire population the data is sampled from. 
-Testing a model on the same data it's trained on could give a false impression of it's accuracy; a model that takes into account variation specific to the data it's trained on (that's not representative for the larger population) would get rewarded in this testing, while a model that does not take it into account would get punished. 
+When training a model the goal is for it to learn the underlying pattern of the data that is (hopefully) representative for the entire population the data is sampled from. 
+Testing a model on the same data it's trained on could give a false impression of it's accuracy; model that takes into account variation specific to the data it's trained on (that's not representative for the larger population) would get rewarded in this testing, while a model that does not take it into account would get punished \cite[p. 228]{hastie}. 
 
-We therefore need (at least) two datasets; a set used for training and a set used for testing, to give us a more impartial evaluation of the model. The two datasets are named respectively "training data" and "test data". As can be inferred by the names, we use the training data in the training (or \textit{fitting}) of the model, while the test set is used to evaluate the performance of our final chosen model. 
+It's therefore necessary to have (at least) two datasets; one to be used for training and a set used for testing, to give us a more impartial evaluation of the model. The two datasets are named respectively "training data" and "test data". As can be inferred by the names, the training data is used in the training (or \textit{fitting}) of the model, while the test set is used to evaluate the performance of the final chosen model. 
 Additionally one can choose to include a "validation" set in the split; this validation set would then be applied in the model selection phase.
 
 An important concept in train-test splitting is to \textbf{never} touch the test-set before the final evaluation. The test-set is supposed to act as never-before seen data for the model, and given a limited data set it's the closest one gets to an impartial assessment. 
 If using a scaler, fitting of the scaler should be done after the split and solely on the training data - and this scaler, fit to the training data, then applied to the test data when testing. 
 
 Splitting data is an important tool to help avoid \textit{overfitting} and \textit{underfitting} of the model, and ensure a more generalizable fit. Overfitting and underfitting is elaborated further in  section G; "\textit{Bias-Variance Tradeoff}".
-\julie{KILDER}
+
 % We will use the latter to understand when the model starts learning beyond the underlying pattern. At this point, the training should be stopped. The test data is used for model selection.
 
 % If we develop a too complex model that gets specialized to the training data and perhaps even noise, we get a case of \textit{overfitting}. 
@@ -120,31 +120,29 @@ Splitting data is an important tool to help avoid \textit{overfitting} and \text
 \subsection{Resampling methods}
 
 When training models, error estimation is crucial both for model selection and model assessment. Without a good metric for the performance of the model it is impossible to gauge how well fit a model actually is.
-Generally, we want as much data as possible for the training of a model. When holding off some of the data for testing, we lose this data for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training and giving us a better error estimation.
+Generally, it's desirable to have as much data as possible for the training of a model. When holding off some of the data for testing, this data can then not be used for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training and giving us a better error estimation.
 
 \subsubsection{K-fold cross-validation}
-\textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. We divide our dataset into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
-The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv} \citep[p. 241]{hastie}.
+\textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. The dataset is divided into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
+The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv_error} \citep[p. 241]{hastie}. We take into consideration that the folds $\mathcal{F}_k$ may be of different sizes.
 
 
-\begin{equation}\label{cv}
+\begin{equation}\label{cv_error}
     CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{k}({x}_i)\right) 
 \end{equation}
 
-There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train-set. 
-The estimated error (Eq. \ref{cv}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. \mia{cite} \julie{KILDER}
+There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train set. 
+The estimated error (Eq. \ref{cv_error}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. \mia{cite} 
 
 On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the ladder is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
-\julie{KILDER}
-
 \subsubsection{Bootstrapping}
-Bootstrapping is a general term for another method of resampling where one draws with replacement from the original dataset, creating a "new" dataset for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. We generate many such samples and repeat the training for each of them. The total number of samples is denoted by B. 
-For the b-th bootstrap sample we obtain model $\hat{f}_b$ \citep[p. 249]{hastie}.
+Bootstrapping is a general term for another method of resampling where one draws with replacement from the original dataset, creating a "new" dataset for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. $B$ such samples are generated, and the training repeated for each of them. $B$ denotes the total number of samples. 
+The $b$-th bootstrap sample produces model $\hat{f}_b$ \citep[p. 249]{hastie}.
 
-Using bootstrap we get a possible estimation of the error calculated as the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
+Using bootstrap the estimation of the error can be calculated as the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
 
-\begin{equation}
+\begin{equation}\label{bs_error}
     BS_{error} = \frac{1}{n}\frac{1}{B}\sum_{i=0}^{n-1}\sum_{b=1}^{B} L\left(y_i, \hat{f}_b(x_i)\right)
 \end{equation}
 \
@@ -167,28 +165,26 @@ The \emph{mean squared error} (MSE) is a popular error measure for linear regres
     \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
 \end{equation}
 
-$n$ denotes the number of data points in our training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$.
-
-\plothere{Add something about cv\_error/bs\_error and mse}
+$n$ denotes the number of data points in the training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$. Given a loss-function of the squared distance between the prediction and the true value, the errors for cross-validation and bootstrapping (respectively Eq. \ref{cv_error} and Eq. \ref{bs_error}) will trivially be the equivalent of MSE. 
 
 $R^2$ is a measure of how much of the variance in the data the model explains. %\mia{cite} 
 \begin{equation}
     R^2 = 1 - \frac{RSS}{TSS}= 1 - \frac{\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2}{\sum_{i=0}^{n-1}(y_i-\overline{y}_i)^2},
 \end{equation}
 
-$R^2 \in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS. \mia{cite}
+$R^2 \in [0,1]$. If $R^2 = 1$ the model perfectly explains all variance, whereas a value of 0 would mean does not explain any of the variance. The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS \cite[p. 29]{martin}.
 
 \subsection{Ordinary least squares}
 
-\textit{Ordinary least squares} is a linear regression method where we seek to minimize the following cost function:
+\textit{Ordinary least squares} is a linear regression method that seeks to minimize the following cost function:
 
 \begin{equation}\label{cost_ols}
     C(\bet) = \sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2
 \end{equation}
 
-Comparing the expression above to Eq. \ref{mse}, we see how the OLS regression method is inherently designed to minimize MSE.
+Comparing the expression above to Eq. \ref{mse}, it's clear how the OLS regression method is inherently designed to minimize MSE.
 
-From Eq. \ref{cost_ols} we can derive the equation for the optimal $\bet$. This is done by taking the derivate of the cost function wrt. $\bet$ and finding the minimum. The optimal $\bet$ for OLS is shown in Eq. \ref{betaols}. 
+From Eq. \ref{cost_ols} the equation for the optimal $\bet$ can be derived. This is done by taking the derivate of the cost function wrt. $\bet$ and finding the minimum. The optimal $\bet$ for OLS is shown in Eq. \ref{betaols}. 
 
 \begin{equation}\label{betaols}
     \hat{\bet}_{\text{OLS}} = \betta = \boldsymbol{H}\y
@@ -197,14 +193,14 @@ From Eq. \ref{cost_ols} we can derive the equation for the optimal $\bet$. This 
 The $\boldsymbol{H}$ is popularly called the Hessian matrix. The Hessian matrix for OLS specifically is stated in Eq. \ref{betaols}, but the term "Hessian matrix" generally describes a square matrix of double derivatives.
 
 
-Ordinary least squares provides an unbiased estimation - meaning the expected distance between our prediction and the truth is zero. 
+Ordinary least squares provides an unbiased estimation - meaning the expected value of the estimated betas is equal to the true betas, as shown in Eq. \ref{ols}.  
 
-\begin{equation}
+\begin{equation}\label{ols}
     \fv{\hat{\bet}_{OLS}} = \bet
 \end{equation}
 
 \begin{equation}
-   \text{var}(\hat{\bet_{OLS}}) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+   \text{var}(\hat{\bet}_{OLS}) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \end{equation}
 
 OLS regression is invariant to scaling of the data.
@@ -217,15 +213,15 @@ OLS regression is invariant to scaling of the data.
 
 An extension of the ordinary least squares method is to add a penalization term to the cost-function. There are many reasons why this is often preferred. 
 
-Firstly, to perform OLS we assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set, or if $p > n$. In these cases the matrix will not be full rank, i.e. not invertible. 
+Firstly, when OLS is performed it's assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set, or if $p > n$. In these cases the matrix will not be full rank, i.e. not invertible. 
 A mathematical fix to this is to add a (small) number $\lambda$ along the diagonal: 
 \begin{equation}\label{pen}
     \bet = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
 \end{equation}
 
-These methods also help to reduce overfitting. \mia{cite (Morten)} In a sense we're normally penalizing "too good of a fit", meaning it's harder for models too get to specialized to specifics in the training data.
+These methods also help to reduce overfitting. \mia{cite (Morten)} In a sense one is normally penalizing "too good of a fit", meaning it's harder for models too get to specialized to specifics in the training data.
 
-Eq. \ref{pen} is the general equation for the coefficients in penalized regression, where the parameter $\lambda$ controls the regularization. Among the many types of choices for penalization metrics we have the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. Different types of penalties yields in different properties and interpretations related to the resulting models.
+Eq. \ref{pen} is the general equation for the coefficients in penalized regression, where the parameter $\lambda$ controls the regularization. Among the many types of choices for penalization metrics are the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. Different types of penalties yields in different properties and interpretations related to the resulting models.
 
 \subsubsection{Ridge Regression}\label{ridge_sec}
 
@@ -285,15 +281,15 @@ The intercept is held out in training, by the same reasoning as for Ridge regres
 
 \subsubsection{Ridge vs. Lasso}
 Both Ridge and Lasso are known as \textit{shrinkage methods}, as they both shrink the coefficients. Lasso additionally goes under the term \textit{selection method}, as the coefficients can be shrunk to zero resulting in only a selection of the features contributing in the model. 
-If the value of $\lambda$ is sufficiently large, we will see that more coefficients become zero. 
-In ridge regression, the values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
+If the value of $\lambda$ is sufficiently large, a larger number of coefficients become zero. 
+In Ridge regression, the values of $\beta_j$ are forced closer to zero, but can never be zero completely. 
 
-The two methods, specifically the difference in how the coefficients approach zero, are illustrated in Fig. \ref{fig:ridge_lasso}. Both methods will find a solution where the error function intersects the constraint. For the circular ridge constraints, this intersection will never coincide with the axis i.e. the coefficients will always be non-zero. 
+The two methods, specifically the difference in how the coefficients approach zero, are illustrated in Fig. \ref{fig:ridge_lasso}. Both methods will find a solution where the error function intersects the constraint. For the circular Ridge constraints, this intersection will never coincide with the axis i.e. the coefficients will always be non-zero. 
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/ridge-lasso.png}
-    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectively Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function \cite[Taken from][]{hastie}}.
+    \caption{Illustration of the optimal coefficients in Ridge regression (left) and Lasso regression (right). The green areas illustrate the constraints given in respectively Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function \cite[Recreated from][p. 71]{hastie}.}
     \label{fig:ridge_lasso}
 \end{figure}
 
@@ -302,19 +298,19 @@ The two methods, specifically the difference in how the coefficients approach ze
 \subsection{Bias-Variance Tradeoff}
 
 \subsubsection{Bias}
-The bias of a method (or estimator) describes its inability to capture the true relationship we're estimating. For a specific model this a measure of the difference between the expected values of the estimator and the true values, as shown in Eq. \ref{bias}. 
+The bias of a method (or estimator) describes its inability to capture the true relationship being estimated. For a specific model this a measure of the difference between the expected values of the estimator and the true values, as shown in Eq. \ref{bias}. 
 
 \begin{equation}\label{bias}
     \text{Bias}(\hat{\bet}) = \fv{\hat{\bet}}-\bet
 \end{equation}
 
-If we were to train models with the same method on different datasets, models with low bias would all on average predict close to the target values they're trained on. Models with high bias would on the contrary predict values further from the true target. Bias is often described using shots at an archery target, where each shot represents a model trained on different data; high bias is analogous to shots far from the bulls-eye (which is our goal), while lower bias to shots closer to the bulls-eye.
+If models were to be trained with the same method on different datasets, those with low bias would all on average predict close to the target values they're trained on. Models with high bias would on the contrary predict values further from the true target. Bias is often described using shots at an archery target, where each shot represents a model trained on different data; high bias is analogous to shots far from the bulls-eye (which is the goal), while lower bias to shots closer to the bulls-eye.
 % The predictions are very close to the target in the training data set. An underfitted model however, has a high bias. In both cases, we have a model that does not capture the real underlying pattern but is rather too complex or simple respectively. 
 %It can easily be understood by looking at an archery target \plothere{Add a figure after variance and explain all}. 
 
 \subsubsection{Variance}
 
-The variance of a model describes the amount of variation between it's predictions and the expected value of the predictions, as shown in Eq. \ref{var}. This in turn explains a models sensitivity to fluctuations in the data sets; for a model with high variance the predictions will vary a lot depending on which data set we train on, and vice versa.
+The variance of a model describes the amount of variation between it's predictions and the expected value of the predictions, as shown in Eq. \ref{var}. This in turn explains a models sensitivity to fluctuations in the data sets; for a model with high variance the predictions will vary a lot depending on which data set it's trained on, and vice versa.
 
 \begin{equation}\label{var}
     \text{Var}(\hat{\bet}) = \fv{\hat{\bet}-\fv{\hat{\bet}}^2} = \fv{\hat{\bet}^2} - \fv{\hat{\bet}}^2
@@ -327,15 +323,15 @@ Relating back to the analogy of a shots at a target, high variance relates to sh
 
 %\mia{mention that we here use OLS, but that the concepts hold in general}
 
-When evaluating statistical models we often talk about the expected error of our model, as a measure of how good our model is. This expected error can be decomposed as shown in Eq. \ref{biasvar}. 
+When evaluating statistical models one often talks about the expected error of the model, as a measure of how good the model is. This expected error can be decomposed as shown in Eq. \ref{biasvar}. 
 
 \begin{equation}\label{biasvar}
     \fv{(\y - \yt)^2} = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
 \end{equation}
 
 Calculations are available in \hyperref[appendixB]{appendix B}, here specifically for a model fit with ordinary least squares (OLS) regression. 
-Eq. \ref{biasvar} gives us the expected error composed of a model-bias term, a model-variance term and lastly the variance of $\epsilon$; the irreducible error-term as given in Eq. \ref{OG_y}. As the latter of the three is irreducible and out of our control, we are therefore left with the bias term and variance term to try and reduce for optimizing our models. 
-The ideal model would have both low bias and low variance, but as the two terms are inversely related - this is highly improbable. Instead we seek to find the optimal balance between them - this is called the \textit{bias-variance trade-off}. 
+Eq. \ref{biasvar} gives us the expected error composed of a model-bias term, a model-variance term and lastly the variance of $\epsilon$; the irreducible error-term as given in Eq. \ref{OG_y}. As the latter of the three is irreducible and wont be affected by changes to the method, one is therefore left with the bias term and variance term to try and reduce for optimizing models. 
+The ideal model would have both low bias and low variance, but as the two terms are inversely related - this is highly improbable. Instead the objective becomes to find the optimal balance between them - this is called the \textit{bias-variance trade-off}. 
 
 The edge cases of this trade-off are usually denoted overfitting and underfitting (as mentioned in Section \ref{overfitting}). Overfitted models have low bias and high variance, while an underfitted models have the opposite; high bias and low variance. 
 
