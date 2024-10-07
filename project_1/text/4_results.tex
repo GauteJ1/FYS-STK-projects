@@ -23,13 +23,14 @@ In the following sections, the Lasso- and Ridge regression models are trained wi
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_MSE_Franke_Noise.pdf}
-    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data.}
+    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data. \mia{replicating Hastie 2.11 p.38}}
     \label{fig:mseols}
 \end{figure}
 
 Fig. \ref{fig:mseols} shows how the mean square error (MSE) initially decreases as the degree of complexity increases. This seems reasonable as the Franke function makes up a complicated surface and one would think that higher degree polynomials are necessary to replicate it. 
 
 We furthermore notice how the test error reaches its minimum at degree of complexity equal to 5. The test error increases as the polynomial degree further increases. We use the test error to choose the optimal degree of complexity. The training error continues to decrease. This is due to overfitting and the fact that OLS is designed to minimize the MSE. We use this as a sanity check of our model implementation.
+\mia{say smt about the high/low bias/variance}
 
 \begin{figure}[h!]
     \centering
@@ -43,18 +44,18 @@ The $R^2$ value increases as higher degree polynomials are introduced to the ord
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/Ridge_Betas_lambda_Franke_Noise_const_deg.pdf}
-    \caption{The values of the parameters $\bet$ for the ridge regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
+    \caption{The values of the parameters $\bet$ for the Ridge regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
     \label{fig:ridge_betas}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/lasso_Betas_lambda_Franke_Noise_const_deg.pdf}
-    \caption{The values of the parameters $\bet$ for the lasso regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
+    \caption{The values of the parameters $\bet$ for the Lasso regression model with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
     \label{fig:lasso_betas}
 \end{figure}
 
-The $\bet$-values for our Ridge- and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. A $\lambda$ value of this size seems highly unreasonable. 
+The $\bet$-values for our Ridge and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. A $\lambda$ value of this size seems highly unreasonable. 
 The vertical line in each plot shows the optimal $\lambda$ in combination with the degree of complexity found through the grid search (numbers are available in Tab. \ref{tab:grid}). This backs up the claim that $\lambda$'s higher than 1 seem unreasonable. 
 
 It is interesting to observe that the Lasso regression model has a far lower optimal $\lambda$-value than the Ridge regression model. It is important to note how the y-axis values in Fig. \ref{fig:ridge_betas} and in Fig. \ref{fig:lasso_betas} are different. The actual beta values chosen for the final model are comparable \mia{must check + elaborate}. 
@@ -62,7 +63,7 @@ It is interesting to observe that the Lasso regression model has a far lower opt
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_Ridge_Lasso_Franke_Noise.pdf}
-    \caption{The MSE on the test data for OLS-, Ridge- and Lasso regression models. The minimum MSE is marked with a red dot.}
+    \caption{The MSE on the test data for OLS, Ridge and Lasso regression models. The minimum MSE is marked with a red dot.}
     \label{all3franke}
 \end{figure}
 
@@ -85,10 +86,12 @@ In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/CV_BS_OLS_Terrain.pdf}
-    \caption{MSE for three different models; OLS-, Ridge- and Lasso regression against degree of complexity. All are trained with cross-validation.}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/CV_BS_OLS_terrain.pdf}
+    \caption{caption for cv versus bootstrap}
     \label{cv_versus_bs}
 \end{figure}
+
+\mia{smt about the number of folds }
 
 In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both resampling techniques are used on the ordinary least squares model. The minimal MSE-value for the cross-validated OLS model is lower than for the bootstrapped model. The plot is not made for further degrees of complexity as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE wrongly increases fast.  
 
@@ -99,8 +102,8 @@ We could have used the entire data set to draw bootstrap samples from. Then we w
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/All_Terrain.pdf}
-    \caption{MSE for OLS-, Ridge- and Lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/All_terrain.pdf}
+    \caption{MSE for OLS, Ridge and Lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
     \label{all_terrain}
 \end{figure}
 

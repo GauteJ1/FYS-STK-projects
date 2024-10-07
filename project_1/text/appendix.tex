@@ -48,7 +48,8 @@ In Eq. \ref{a3} we calculate the bias for the OLS estimator $\hat{\bet}$. The re
     & = \fv{\betta(\betta)^T} - \bet\bet^T \nonumber \\
     & = \fv{\betta \y^T \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T}} - \bet\bet^T \nonumber \\
     & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\fv{\y\y^T}\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T \\ 
+    & \quad + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
     & = \bet \bet^T + \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1} - \bet \bet^T \nonumber \\
     & = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \end{align}
