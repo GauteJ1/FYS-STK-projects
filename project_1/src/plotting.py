@@ -29,10 +29,9 @@ class Plotting:
         ).ravel()
 
     def __config(self):
-        plt.style.use("plot_settings.mplstyle")
-        plt.grid(True)
         sns.set_theme(palette="bright")
         sns.set_palette("Set2")
+        plt.style.use("plot_settings.mplstyle")
 
     def plot_MSE_R2(
         self,
