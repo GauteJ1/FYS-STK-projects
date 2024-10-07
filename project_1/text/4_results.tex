@@ -161,17 +161,17 @@ Our main goal is to find the model providing the best fit, with respect to the M
 We have implemented three different model types; OLS, Ridge, and Lasso. 
 Furthermore, we can use no resampling, bootstrapping or cross-validation. 
 Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. 
-The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. 
-The latter outperforms the former slightly and is therefore our best model. 
-The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. 
+We find OLS with cross-validation to be the best model, with a MSE value of  at a polynomial degree of 10.
+
 As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
 
-\mia{why is OLS CV best}
+\mia{why is ols cv best}
 
 Choosing the number of data points for the terrain data was challenging. Including more data points meant having a dataset with more variance. This leads to models with a far higher MSE. 
 
-Further work to do on this could include a different implementation of the bootstrap method.
+%Further work to do on this could include a different implementation of the bootstrap method.
 
-Furthermore, it is interesting to discuss whether linear models are sufficient for these kinds of problems or not. \mia{continue + propose something else}
+Furthermore, it is interesting to discuss whether linear models are sufficient for these kinds of problems or not. Intuitively one might think that more complex is better, and that the only downside of more complex models are computational efficiency. While being more computationally efficient is defini
+\mia{continue + propose something else}
 
 \mia{critical discussion of scaling of data must be included}
