@@ -134,12 +134,13 @@ This is a sign of an overfitted model.
 In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. 
 Both resampling techniques are used on the ordinary least squares model. 
 The minimal MSE value for the cross-validated OLS model is lower than for the bootstrapped model. 
-We do not plot higher polynomial degrees as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE wrongly increases quickly.  
+%We do not plot higher polynomial degrees as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE wrongly increases quickly.  
 
 There might be several reasons why the MSE is lower for cross-validation compared to bootstrapping. 
 For the model trained with cross-validation, more data is utilized than for the one trained with bootstrap. 
 In the latter, we split into a training and a test data set, whereas cross-validation trains on the entire dataset.
-
+Indeed, as we use an 80/20 train-test split, and bootstrap on average uses 63.2\% of the train data each sample, the bootstrap ends up using only 50.6\% ($0.8\cdot 63.2\%$) of the training data on average \citep[p. 251]{hastie}. 
+Compared to 10 folds cross validation, which uses 90\% of the data for training each fold, it is expected that the bootstrap model will overfit at a much lower complexity.
  
 We could have used the entire data set to draw bootstrap samples from, which would have allowed us to use more data.
 However we would then have to keep track of which samples were not included in the bootstrap sample and use these as the test set for the specific bootstrap model. 
@@ -156,7 +157,14 @@ Seeing as computing power was not an issue in this part, we chose k = 10 as our 
     \label{all_terrain}
 \end{figure}
 
-Our main goal is to find the model minimizing MSE for terrain data \julie{or} the model providing the best fit for terrain data \julie{in specific geographic area?}. We have implemented three different model types; OLS, Ridge, and Lasso. Furthermore, we can use no resampling, bootstrapping or cross-validation. Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. The latter outperforms the former slightly and is therefore our best model. The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
+Our main goal is to find the model providing the best fit, with respect to the MSE, for the terrain data.
+We have implemented three different model types; OLS, Ridge, and Lasso. 
+Furthermore, we can use no resampling, bootstrapping or cross-validation. 
+Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. 
+The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. 
+The latter outperforms the former slightly and is therefore our best model. 
+The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. 
+As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
 
 \mia{why is OLS CV best}
 

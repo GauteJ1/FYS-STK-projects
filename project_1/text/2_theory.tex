@@ -140,10 +140,11 @@ On the other hand, cross-validation will be quite computationally costly for a h
 Bootstrapping is a general term for another method of resampling where one draws with replacement from the original dataset, creating a "new" dataset for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. $B$ such samples are generated, and the training repeated for each of them. $B$ denotes the total number of samples. 
 The $b$-th bootstrap sample produces model $\hat{f}_b$ \citep[p. 249]{hastie}.
 
-Using bootstrap the estimation of the error can be calculated as the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
+Using bootstrap the estimation of the error can be calculated as Eq. \ref{bs_error} entails.
+%the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
 
 \begin{equation}\label{bs_error}
-    BS_{error} = \frac{1}{n}\frac{1}{B}\sum_{i=0}^{n-1}\sum_{b=1}^{B} L\left(y_i, \hat{f}_b(x_i)\right)
+    BS_{error} = \frac{1}{n}\sum_{i=0}^{n-1} L\left(y_i,\frac{1}{B}\sum_{b=1}^{B} \hat{f}_b(x_i)\right)
 \end{equation}
 \
 
