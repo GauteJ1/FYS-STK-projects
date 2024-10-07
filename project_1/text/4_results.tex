@@ -87,10 +87,24 @@ Taking the latter into consideration, the beta values chosen for the final model
 
 We want to find the best model among OLS, Ridge and Lasso regression. 
 In Fig. \ref{all3franke} we see the MSE on the test data for all three. 
-OLS and Ridge far outperform Lasso regression. This may be due to \mia{?} 
-The best model on the Franke function data is  \mia{?}
+The best model on the Franke function data is OLS with a MSE of 0.0987. 
+This is found at a polynomial degree of five.  
 
-\mia{why does Lasso suck?}
+The Lasso regression model does not perform identically with OLS when $\lambda$ is set to zero. 
+As fitting the Lasso model requires iterative tuning, we can not expect to reach the exact optimal $\beta$'s. 
+For continuity, we decided on having a constant value for max iterations while fitting the Lasso models, at \texttt{max\_iter=1000}. 
+Increasing this would result in a substantial increase in computation time for the grid search.
+The Lasso regression model performs worse out of the three partly because it has not yet reached the optimal solution.
+
+Furthermore, the Ridge regression model performs only slightly worse than OLS.
+We suspect that the $\lambda$ value found through the grid search is not the optimal one, as a $\lambda$ value of $10^{-5}$ yield a lower minimal MSE for the test data. 
+The cause of this is not apparent to us. 
+Possible explanations might be that the grid search uses another train test split than the plotting files. 
+This is to be able to run them separately, i.e. we don't want to have to run the relatively slow grid search every time we make a new plot.
+To avoid this being a large source of errors, we use bootstrapping in the grid search. 
+In this specific plot however, we only train on a simple train test split, which, if unlucky, can cause results that are not theoretically optimal.
+At a closer inspection of different $\lambda$ values greater than zero for Fig. \ref{all3franke}, the Ridge regression model never outperforms OLS. 
+The conclusion of OLS being the best model holds regardless. 
 
 \begin{figure}
     \centering
@@ -100,8 +114,13 @@ The best model on the Franke function data is  \mia{?}
     \label{bias_var_trade}
 \end{figure}
 
-By using bootstrap samples, we have decomposed the MSE into a bias and a variance term for an OLS model. 
-In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low. This is typical for an underfitted model. As the complexity increases, the bias goes down, whereas the variance increases. The lowest MSE is reached at some trade-off between the two. As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. This is a sign of an overfitted model.
+With the use of bootstrap samples, we have calculated the MSE decomposed into a bias and a variance term for an OLS model. 
+In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low. 
+This is typical for an underfitted model. As the complexity increases, the bias goes down, whereas the variance increases. 
+The lowest MSE is reached at some trade-off between the two. 
+As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. 
+This is a sign of an overfitted model.
+\julie{jules}
 
 \subsection{Terrain data}
 
@@ -112,14 +131,23 @@ In Fig. \ref{bias_var_trade} the bias is initially high, but the variance is low
     \label{cv_versus_bs}
 \end{figure}
 
-\mia{smt about the number of folds }
+In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. 
+Both resampling techniques are used on the ordinary least squares model. 
+The minimal MSE value for the cross-validated OLS model is lower than for the bootstrapped model. 
+We do not plot higher polynomial degrees as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE wrongly increases quickly.  
 
-In Fig. \ref{cv_versus_bs} we compare bootstrapping to cross-validation. Both resampling techniques are used on the ordinary least squares model. The minimal MSE-value for the cross-validated OLS model is lower than for the bootstrapped model. The plot is not made for further degrees of complexity as we then reach problems with numerical precision (numbers lower than $\approx 10^{-15}$) and the MSE wrongly increases fast.  
+There might be several reasons why the MSE is lower for cross-validation compared to bootstrapping. 
+For the model trained with cross-validation, more data is utilized than for the one trained with bootstrap. 
+In the latter, we split into a training and a test data set, whereas cross-validation trains on the entire dataset.
 
-There might be several reasons why the MSE is lower for cross-validation compared to bootstrapping. For the model trained with cross-validation, more data is utilized than for the one trained with bootstrap. In the ladder, we split into a training and a test data set, whereas cross-validation trains on the entire dataset.
+ 
+We could have used the entire data set to draw bootstrap samples from, which would have allowed us to use more data.
+However we would then have to keep track of which samples were not included in the bootstrap sample and use these as the test set for the specific bootstrap model. 
+This was not done, as it would have required us to implement bootstrapping twice for the different purposes in this report.
 
-We could have used the entire data set to draw bootstrap samples from. Then we would have to keep track of which samples were not included in the bootstrap sample and use these as the test set for the specific bootstrap model. This would allow us to use more data. This might be one of the reasons for the difference. \mia{what else?}
-
+For the cross-validated model we tried different number of folds in the range 5 to 10. 
+The results were very similar, with $k = 10$ giving the lowest MSE. 
+Seeing as computing power was not an issue in this part, we chose k = 10 as our final value. 
 
 \begin{figure}[h!]
     \centering
@@ -128,7 +156,7 @@ We could have used the entire data set to draw bootstrap samples from. Then we w
     \label{all_terrain}
 \end{figure}
 
-Our main goal is to find the very best model for terrain data. We have implemented three different model types; OLS, Ridge, and Lasso. Furthermore, we can use no resampling, bootstrapping or cross-validation. Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
+Our main goal is to find the model minimizing MSE for terrain data \julie{or} the model providing the best fit for terrain data \julie{in specific geographic area?}. We have implemented three different model types; OLS, Ridge, and Lasso. Furthermore, we can use no resampling, bootstrapping or cross-validation. Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. The latter outperforms the former slightly and is therefore our best model. The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
 
 \mia{why is OLS CV best}
 

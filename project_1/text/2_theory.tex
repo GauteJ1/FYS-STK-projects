@@ -247,7 +247,7 @@ The value of $\beta_0$ is later calculated as Eq. \ref{bet0} shows.
 
 In the ideal case, when the design matrix $\mathbf{X}$ is orthogonal, we have $\mathbf{X}^T\mathbf{X} = \boldsymbol{I}$. From Eq. \ref{pen}, we get that:
 \begin{equation}\label{ridgeOLSder}
-    \bet_{Ridge} = (\boldsymbol{I} - \lambda\boldsymbol{I} \mathbf{X}^T \mathbf{y}
+    \bet_{Ridge} = (\boldsymbol{I} - \lambda\boldsymbol{I}) \mathbf{X}^T \mathbf{y}
 \end{equation}
 From Eq. \ref{ridgeOLSder}, it immediately follows that, in the case of $\mathbf{X}$ orthogonal, we ge the relation described in Eq. \ref{ridgeOLS}.
 \begin{equation}\label{ridgeOLS}
