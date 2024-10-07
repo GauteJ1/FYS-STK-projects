@@ -1,5 +1,5 @@
 \subsection{Appendix A: Source code} \label{appendixA}
-The code used for this project is available at \url{https://github.com/GauteJ1/FYS-STK-projects}. Instructions for running the code are located in \texttt{ project\_1/README.md}. The GitHub repository also contains several figures left out of the report. \gaute{(If this is the case).}
+The code used for this project is available at \url{https://github.com/GauteJ1/FYS-STK-projects}. Instructions for running the code are located in \texttt{ project\_1/README.md}. All plots and results in this paper are easily reproducible in the Jupyter notebook files in this repository, by following the instructions mentioned above.
 
 \subsection{Appendix B: Pen and paper calculations}\label{appendixB}
 
@@ -12,7 +12,7 @@ In this section, the calculations for some of our theretical expressions are pre
     & = \mathbf{X}_{i,*}\boldsymbol{\beta}
 \end{align}
 
-The expectation value of the true $y_i$ is calculated in Eq. \ref{a1}. The assumption that $\fv{\epsilon_i} = 0$ is the essential part of the calculations. 
+Eq. \ref{a1}: Calculation of the expectation value of the true $y_i$, using the assumption that $\fv{\epsilon_i} = 0$. 
 
 
 
@@ -25,7 +25,8 @@ The expectation value of the true $y_i$ is calculated in Eq. \ref{a1}. The assum
     & = \sigma^2
 \end{align}
 
-For the calculation of the variance of the true $y_i$ (as shown in Eq. \ref{a2}), the central parts are $\fv{\epsilon_i} = 0$ and $\fv{\epsilon_i^2} = \text{var}(\boldsymbol{\epsilon}) = \sigma^2$. This stems from our assumptions on $\boldsymbol{\epsilon}$. 
+Eq. \ref{a2}: Calculation of the variance of the true $y_i$. Here $\fv{\epsilon_i} = 0$ and $\fv{\epsilon_i^2} = \text{var}(\boldsymbol{\epsilon}) = \sigma^2$, as $\epsilon \sim  
+\mathcal{N}(0,\sigma^2)$.
 
 \begin{align}\label{a3}
     \fv{\hat{\bet}} & = \fv{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \y} \nonumber \\ 
@@ -35,7 +36,7 @@ For the calculation of the variance of the true $y_i$ (as shown in Eq. \ref{a2})
     & = \bet 
 \end{align}
 
-In Eq. \ref{a3} we calculate the bias for the OLS estimator $\hat{\bet}$. The result from Eq. \ref{a1} is used going from the second to the third line.
+Eq. \ref{a3}: Calculation of the bias for the OLS estimator $\hat{\bet}$. The result from Eq. \ref{a1} is used going from the second to the third line.
 
 \begin{align}\label{a4}
     \text{var}(\hat{\bet}) & = \fv{(\hat{\bet}-\fv{\hat{\bet}})^2} \nonumber \\
@@ -54,7 +55,7 @@ In Eq. \ref{a3} we calculate the bias for the OLS estimator $\hat{\bet}$. The re
     & = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \end{align}
 
-The variance of the ordinary least squares estimator is calculated in Eq. \ref{a4}. \mia{smt else?}
+Eq. \ref{a4}: Calculation of the variance of the ordinary least squares estimator. \mia{smt else?}
 
 \begin{align}\label{a5}
     \fv{(\mathbf{y}-\yt)^2} & = \fv{(\mathbf{y} - \fv{\yt} + \fv{\yt} -\yt)^2} \nonumber \\
@@ -64,11 +65,10 @@ The variance of the ordinary least squares estimator is calculated in Eq. \ref{a
     & = \fv{(\mathbf{f}-\fv{\yt})^2}+\fv{\boldsymbol{\epsilon}^2} \nonumber \\
     & \;\;\;\; + 2\fv{(\mathbf{f}-\fv{\yt})\boldsymbol{\epsilon}} + \fv{(\yt - \fv{\yt})^2}  \nonumber \\
     & = \fv{(\mathbf{f}-\fv{\yt})^2} + \fv{(\yt - \fv{\yt})^2} +\fv{\boldsymbol{\epsilon}^2}\nonumber \\
-    & = \mia{Must add that we use y in practice} \nonumber \\
     & = \text{Bias}(\yt)^2 + \text{var}(\yt) + \sigma^2
 \end{align}
 
-The expected loss \mia{Julie hjelp} is decomposed into a bias and a variance term in Eq. \ref{a5}. When calculating this in practice we cannot know the true function $\boldsymbol{f}$. We therefore use $\y$ for our analysis. \mia{implications}
+Eq. \ref{a5}: Decomposition of the expected loss in terms of bias and variance. As $\bold{f}$ is unknown, $\y$ is used in calculations. 
 
 % In the calculations these terms are zero: 
 
@@ -95,3 +95,121 @@ The expected loss \mia{Julie hjelp} is decomposed into a bias and a variance ter
 \subsection{Appendix C: Use of AI} \label{appendixC}
 
 \mia{State use of AI}
+
+
+\gaute{clearpage here if needed}
+
+
+\subsection{Appendix D: Plots not included in the report} \label{appendixD}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/bias_var_terrain_bootstrap.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/CV_BS_OLS_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_Betas_lambda_terrain_const_deg.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_Betas_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_Betas_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_MSE_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_R2_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_Betas_lambda_terrain_const_deg.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_MSE_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_MSE_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_R2_Franke_Noise.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_R2_terrain.pdf}
+    \caption{Caption}
+    \label{fig:ref}
+\end{figure}
