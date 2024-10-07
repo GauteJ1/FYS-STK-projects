@@ -209,17 +209,17 @@ OLS regression is invariant to scaling of the data.
 
 %\mia{I think it could be useful with some figures in the theory, showing bias, variance, the scaling of the parameters in ride and lasso, etc. Could use either size of beta against lambda or the geometric variant. }
 
-\subsection{Penalized linear regression methods}
+\subsection{Penalized linear regression methods}\label{pen-reg}
 
 An extension of the ordinary least squares method is to add a penalization term to the cost-function. There are many reasons why this is often preferred. 
 
 Firstly, when OLS is performed it's assume that the matrix $\boldsymbol{X}^T\boldsymbol{X}$ in Eq. \ref{betaols} is invertible. This may not always be the case due to correlation between the predictors in the data set, or if $p > n$. In these cases the matrix will not be full rank, i.e. not invertible. 
 A mathematical fix to this is to add a (small) number $\lambda$ along the diagonal: 
 \begin{equation}\label{pen}
-    \bet = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
+    \bet_{Ridge} = (\mathbf{X}^T\mathbf{X}- \lambda\boldsymbol{I})^{-1}\mathbf{X}^T\mathbf{y}
 \end{equation}
 
-These methods also help to reduce overfitting. \mia{cite (Morten)} In a sense one is normally penalizing "too good of a fit", meaning it's harder for models too get to specialized to specifics in the training data.
+These methods also help to reduce overfitting. Intuitively this is a result of penalizing "too good of a fit" on the training data, meaning it's harder for models to get overfit. 
 
 Eq. \ref{pen} is the general equation for the coefficients in penalized regression, where the parameter $\lambda$ controls the regularization. Among the many types of choices for penalization metrics are the L1-norm penalty, also known as Lasso, and the L2-norm penalty, known as Ridge. Different types of penalties yields in different properties and interpretations related to the resulting models.
 
@@ -245,9 +245,11 @@ This can alternatively be expressed as Eq. \ref{ridge_alt} and \ref{ridge_constr
 Ridge regression puts a penalty on all the $\beta$-terms except the intercept, which is held out during training. Had it been included, the model would depend on the chosen origin and this dependency undermines the principle of shift invariance \citep[p. 63]{hastie}.
 The value of $\beta_0$ is later calculated as Eq. \ref{bet0} shows. 
 
-
-It can be showed that $\bet_{OLS}$ and $\bet_{Ridge}$ are related as shown in Eq. \ref{ridgeOLS}. \julie{bare hvis }\mia{X er ortonormal?}
-
+In the ideal case, when the design matrix $\mathbf{X}$ is orthogonal, we have $\mathbf{X}^T\mathbf{X} = \boldsymbol{I}$. From Eq. \ref{pen}, we get that:
+\begin{equation}\label{ridgeOLSder}
+    \bet_{Ridge} = (\boldsymbol{I} - \lambda\boldsymbol{I} \mathbf{X}^T \mathbf{y}
+\end{equation}
+From Eq. \ref{ridgeOLSder}, it immediately follows that, in the case of $\mathbf{X}$ orthogonal, we ge the relation described in Eq. \ref{ridgeOLS}.
 \begin{equation}\label{ridgeOLS}
     \bet_{Ridge} = \frac{1}{1+\lambda}\bet_{OLS}
 \end{equation}
@@ -333,12 +335,9 @@ Calculations are available in \hyperref[appendixB]{appendix B}, here specificall
 Eq. \ref{biasvar} gives us the expected error composed of a model-bias term, a model-variance term and lastly the variance of $\epsilon$; the irreducible error-term as given in Eq. \ref{OG_y}. As the latter of the three is irreducible and wont be affected by changes to the method, one is therefore left with the bias term and variance term to try and reduce for optimizing models. 
 The ideal model would have both low bias and low variance, but as the two terms are inversely related - this is highly improbable. Instead the objective becomes to find the optimal balance between them - this is called the \textit{bias-variance trade-off}. 
 
-The edge cases of this trade-off are usually denoted overfitting and underfitting (as mentioned in Section \ref{overfitting}). Overfitted models have low bias and high variance, while an underfitted models have the opposite; high bias and low variance. 
+The edge cases of this trade-off are usually denoted overfitting and underfitting, as mentioned in Section \ref{overfitting} and Section \ref{pen-reg}. Overfitted models have low bias and high variance, while an underfitted models have the opposite; high bias and low variance \cite[Statistical interpretations and Resampling Methods]{morten}. 
 
 An overfitted model is characterized as being too complex; often having too many parameters, degrees of freedom or similar measures of complexity. 
 Overfit models pick up on all small variations in training data, including those caused by noise and randomness. As a consequence these models perform excellent on their training data, but are expected to perform quite terribly on new data sets. 
 
 An underfit model is contrastingly characterized as being too simple. Underfit models are not very specialized to the training data, failing to pick up on variations related to the underlying distribution of the data. As a consequence these models perform similarly on training data and test data, but this performance is not very good. 
-
-
-\julie{ref morten uke37, statquest kanskje}

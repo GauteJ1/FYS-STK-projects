@@ -1,6 +1,6 @@
 \subsection{Hyperparamters}
 
-Through grid search the best combination of $\lambda$- and degree-values where found to be: 
+Through grid search the optimal combination of $\lambda$- and degree-values were found to be: 
 
 \begin{table}[h!]
     \centering
@@ -16,21 +16,25 @@ Through grid search the best combination of $\lambda$- and degree-values where f
     \label{tab:grid}
 \end{table}
 
-In the following sections, the Lasso- and Ridge regression models are trained with their respective $\lambda$ values from Tab. \ref{tab:grid}. 
+In the following sections, the Lasso and Ridge regression models are trained with their respective $\lambda$ values from Tab. \ref{tab:grid}. 
 
 \subsection{Franke function}
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_MSE_Franke_Noise.pdf}
-    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data. \mia{replicating Hastie 2.11 p.38}}
+    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data. This displays the same concept as figure 2.11 in Hastie et.al. \citep[p. 38]{hastie}.}
     \label{fig:mseols}
 \end{figure}
 
-Fig. \ref{fig:mseols} shows how the mean square error (MSE) initially decreases as the degree of complexity increases. This seems reasonable as the Franke function makes up a complicated surface and one would think that higher degree polynomials are necessary to replicate it. 
+Fig. \ref{fig:mseols} shows how the mean square error (MSE) initially decreases as the polynomial degree increases. This seems reasonable as the Franke function makes up a complicated surface and higher degree polynomials are necessary to replicate it. 
 
-We furthermore notice how the test error reaches its minimum at degree of complexity equal to 5. The test error increases as the polynomial degree further increases. We use the test error to choose the optimal degree of complexity. The training error continues to decrease. This is due to overfitting and the fact that OLS is designed to minimize the MSE. We use this as a sanity check of our model implementation.
-\mia{say smt about the high/low bias/variance}
+Furthermore, we notice that the test error reaches its minimum at polynomial degree equal to 5. 
+This minimum is chosen as the optimal polynomial degree. 
+Beyond this point, the test error increases and the training error decreases.
+This is due to overfitting, and the fact that OLS is designed to minimize the MSE of the training data. 
+
+When the model is underfitted, i.e. a too low polynomial degree, we have high bias and low variance. At the other end however, when the polynomial degree is too large, the bias is low and the variance is high. 
 
 \begin{figure}[h!]
     \centering
@@ -39,7 +43,13 @@ We furthermore notice how the test error reaches its minimum at degree of comple
     \label{fig:r2ols}
 \end{figure}
 
-The $R^2$ value increases as higher degree polynomials are introduced to the ordinary least squares model, as shown in Fig. \ref{fig:r2ols}. This is reasonable as we likely need higher degree polynomials to explain more variance in the data. The increase in $R^2$ halters at around degree equal to 10. At this point, introducing higher degree polynoimals does not help explain further variance in the data. The value of $R^2$ for the test data is lower then the one for the training data. This might be a sign that the model does not generalize well. 
+As shown in Fig. \ref{fig:r2ols}, the $R^2$ value increases as higher degree polynomials are introduced to the ordinary least squares model. 
+This is reasonable as we likely need higher degree polynomials to explain more variance in the data. The increase in $R^2$ halters at around degree equal to 10. 
+At this point, introducing higher degree polynomials does not help explain further variance in the data. 
+The value of $R^2$ for the test data is substantially lower then the one for the training data. 
+This might be a sign that the model does not describe the underlying structure of the data precisely, in other words doesn't generalize well. 
+This claim is further supported by an $R^2$ value of 0.50 on the training data, meaning that our model only explains 50 \% of the variance in the training data.
+However, this is expected due to the large amount of noise we introduced in Eq. \ref{eq:franke_noise}.
 
 \begin{figure}[h!]
     \centering
@@ -55,10 +65,18 @@ The $R^2$ value increases as higher degree polynomials are introduced to the ord
     \label{fig:lasso_betas}
 \end{figure}
 
-The $\bet$-values for our Ridge and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectfully. For both models, we observe that the values of the coefficients are forced towards zero, and thereby also each other, as the penalty increases. For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty. Closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. A $\lambda$ value of this size seems highly unreasonable. 
-The vertical line in each plot shows the optimal $\lambda$ in combination with the degree of complexity found through the grid search (numbers are available in Tab. \ref{tab:grid}). This backs up the claim that $\lambda$'s higher than 1 seem unreasonable. 
+The $\bet$-values for our Ridge and Lasso regression models are presented in Fig. \ref{fig:ridge_betas} and Fig. \ref{fig:lasso_betas} respectively. 
+For both models, we observe that the coefficients are forced towards zero as the penalty increases. 
+For the Ridge regression coefficients, all have non-zero values regardless of the size of the penalty. 
+For Lasso regression however, we observe that some are brought to zero at a sufficiently large penalty; 
+closer to $\lambda = 10^0 = 1$ all values of the $\beta$'s are brought to zero. 
+A $\lambda$ value of this size seems highly unreasonable, as it corresponds to a constant prediction, i.e. a flat plane normal to the $z$-axis.
+The vertical line in each plot shows the optimal $\lambda$ in combination with the polynomial degree found through the grid search (numbers are available in Tab. \ref{tab:grid}). 
+%This backs up the claim that $\lambda$'s higher than 1 seem unreasonable. 
 
-It is interesting to observe that the Lasso regression model has a far lower optimal $\lambda$-value than the Ridge regression model. It is important to note how the y-axis values in Fig. \ref{fig:ridge_betas} and in Fig. \ref{fig:lasso_betas} are different. The actual beta values chosen for the final model are comparable \mia{must check + elaborate}. 
+We find it interesting that the Lasso regression model has a far lower optimal $\lambda$ value than the Ridge regression model.
+However, we also note how the y-axis values in Fig. \ref{fig:ridge_betas} and in Fig. \ref{fig:lasso_betas} are different. 
+Taking the latter into consideration, the beta values chosen for the final models are comparable. 
 
 \begin{figure}[h!]
     \centering
@@ -67,7 +85,10 @@ It is interesting to observe that the Lasso regression model has a far lower opt
     \label{all3franke}
 \end{figure}
 
-We want to find the best model among OLS, Ridge and Lasso regression. In Fig. \ref{all3franke} we see the MSE on the test data for all three. OLS and Ridge far outperform Lasso regression. This may be due to \mia{?} The best model on the Franke function data is \mia{?}
+We want to find the best model among OLS, Ridge and Lasso regression. 
+In Fig. \ref{all3franke} we see the MSE on the test data for all three. 
+OLS and Ridge far outperform Lasso regression. This may be due to \mia{?} 
+The best model on the Franke function data is  \mia{?}
 
 \mia{why does Lasso suck?}
 
@@ -103,11 +124,11 @@ We could have used the entire data set to draw bootstrap samples from. Then we w
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/All_terrain.pdf}
-    \caption{MSE for OLS, Ridge and Lasso regression against degree of complexity. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
+    \caption{MSE for OLS, Ridge and Lasso regression against polynomial degree. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
     \label{all_terrain}
 \end{figure}
 
-Our main goal is to find the very best model for terrain data. We have implemented three different model types; OLS, Ridge, and Lasso. Furthermore, we can use no resampling, bootstrapping or cross-validation. Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a degree of complexity of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
+Our main goal is to find the very best model for terrain data. We have implemented three different model types; OLS, Ridge, and Lasso. Furthermore, we can use no resampling, bootstrapping or cross-validation. Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. The two best models are Ridge regression with no resampling, as well as OLS with cross-validation. The ladder outperforms the former slightly and is therefore our best model. The lowest MSE is found at a polynomial degree of 11 and the MSE-value is approximately 134. As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
 
 \mia{why is OLS CV best}
 
