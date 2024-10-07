@@ -62,7 +62,7 @@ Optimizing the ordinary least squares model is simple, as we only need to test i
 We run a set of bootstrap samples for each degree complexity, and choose the model with the lowest MSE.
 
 For Ridge and Lasso however, we require selecting two parameters simultaneously. As different model-complexities might obtain the best MSE at different values for $\lambda$, it does not suffice to lock one and test the other only for that value. 
-We use grid search, a standard technique for tuning multiple hyper parameters. \citep[p. 302]{grid_search} 
+We use grid search, a standard technique for tuning multiple hyper parameters \citep[p. 302]{grid_search}.
 Grid search is an exhaustive search over a selection of values for each parameter. 
 We perform two layers of grid search on each type of model and set of data. 
 In the first layer we test model-complexities ranging from 1 to 11, and lambdas from $1*10^{-5}$ up to $9$ (with increasing step size according to order of magnitude). 

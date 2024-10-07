@@ -124,7 +124,7 @@ Generally, we want as much data as possible for the training of a model. When ho
 
 \subsubsection{K-fold cross-validation}
 \textit{K-fold cross-validation} is one such resampling method. The $K$ represents a number that must be chosen by the developer as they see fit. We divide our dataset into $K$ parts $\mathcal{F}_k$, called folds. $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
-The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv}. \citep[p. 241]{hastie}
+The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv} \citep[p. 241]{hastie}.
 
 
 \begin{equation}\label{cv}
@@ -169,6 +169,7 @@ The \emph{mean squared error} (MSE) is a popular error measure for linear regres
 
 $n$ denotes the number of data points in our training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$.
 
+\plothere{Add something about cv\_error/bs\_error and mse}
 
 $R^2$ is a measure of how much of the variance in the data the model explains. %\mia{cite} 
 \begin{equation}
@@ -292,7 +293,7 @@ The two methods, specifically the difference in how the coefficients approach ze
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/ridge-lasso.png}
-    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectively Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function. \cite[Taken from][]{hastie}}
+    \caption{Illustration of the optimal coefficients in ridge regression (left) and lasso regression (right). The blue areas illustrate the constraints given in respectively Eq. \ref{ridge_constraint} and Eq. \ref{lasso_constraint}, and the red ellipses contours of a least squares error function \cite[Taken from][]{hastie}}.
     \label{fig:ridge_lasso}
 \end{figure}
 
