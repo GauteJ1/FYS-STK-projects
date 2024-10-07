@@ -327,6 +327,7 @@ class Plotting:
         ridge_lambda: float,
         lasso_lambda: float,
         max_degree: int,
+        max_bootstrap: int,
         n_samples: int,
         k_folds: int,
     ):
@@ -350,7 +351,7 @@ class Plotting:
         ridge.make_cross_val_split(kfolds=k_folds)
         lasso.make_cross_val_split(kfolds=k_folds)
 
-        for deg in x_data:
+        for deg in range(1, max_bootstrap):
             ols_boot.append(
                 ols.MSE_bootstrap(
                     n_samples=n_samples,
@@ -372,6 +373,7 @@ class Plotting:
                 )
             )
 
+        for deg in x_data:
             ols.fit_simple_model(deg)
             z_tilde_test = ols.predict(ols.X_test)
             ols_reg.append(ols.MSE(z_tilde_test, ols.z_test))
@@ -393,9 +395,9 @@ class Plotting:
             _, test = lasso.MSE_cross_validation(deg, lasso_lambda)
             lasso_cv.append(test)
 
-        plt.plot(x_data, ols_boot, label="OLS - Bootstrap", linestyle="--")
-        plt.plot(x_data, ridge_boot, label="Ridge - Bootstrap", linestyle="--")
-        plt.plot(x_data, lasso_boot, label="Lasso - Bootstrap", linestyle="--")
+        plt.plot(x_data[:max_bootstrap-1], ols_boot, label="OLS - Bootstrap", linestyle="--")
+        plt.plot(x_data[:max_bootstrap-1], ridge_boot, label="Ridge - Bootstrap", linestyle="--")
+        plt.plot(x_data[:max_bootstrap-1], lasso_boot, label="Lasso - Bootstrap", linestyle="--")
 
         plt.plot(x_data, ols_reg, label="OLS - Regular", linestyle="-.")
         plt.plot(x_data, ridge_reg, label="Ridge - Regular", linestyle="-.")
