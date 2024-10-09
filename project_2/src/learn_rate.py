@@ -2,7 +2,7 @@ import numpy as np
 
 class Update_Beta():
     def __init__(self) -> None:
-        self.learn_type = ""
+        self.rate_type = "" 
 
     def constant(self, eta: float):
         self.eta = eta
@@ -13,7 +13,11 @@ class Update_Beta():
         self.gamma = gamma
         self.rate_type = "Momentum"
         self.prev_v = None
-    
+
+    def adagrad(self, eta: float):
+        self.eta = eta
+        self.rate_type = "Adagrad"
+            
     def __call__(self, beta, gradients):
         if self.rate_type == "Constant":
             return beta - self.eta*gradients
@@ -24,3 +28,11 @@ class Update_Beta():
             v = self.gamma*self.prev_v + self.eta*gradients
             self.prev_v = v
             return beta - v
+        
+        """
+        elif self.rate_type == "Adagrad":
+            delta = 1e-8
+            G = np.zeros_like(gradients)
+            G += gradients**2
+            return beta - self.eta*gradients/(np.sqrt(G) + delta)"""
+        

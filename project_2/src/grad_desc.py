@@ -8,11 +8,17 @@ from learn_rate import Update_Beta
 
 # Have not tuned the learning rate yet
 
-class OLS:
-    def __init__(self, data: DataGen) -> None:
+class Model: 
+
+    def __init__(self, data: DataGen, model_type: str) -> None:
         self.x = data.x
         self.y = data.y
         self.n = data.data_points
+        self.model_type = model_type
+
+        self.a = data.a
+        self.b = data.b
+        self.c = data.c
 
 
     def makeX(self, deg: int):
@@ -25,92 +31,70 @@ class OLS:
             X[:,d] = self.x[:,0]**d
         return X
     
-    def set_update(self, type: str = "Constant", eta: float = 0, gamma: float = 0):
+    def set_update(self, tpe, eta, gamma):
         update = Update_Beta()
-        if type == "Constant":
+        if tpe == "Constant":
             update.constant(eta)
-        elif type == "Momentum":
+        elif tpe == "Momentum":
             update.momentum_based(eta, gamma)
+        elif tpe == "Adagrad":
+            update.adagrad(eta)
 
         return update
+    
+    def gradient(self, X, y, beta, Lambda = 0.1):
+        if self.model_type == "OLS":
+            return 2.0/self.n*X.T @ (X @ beta-y)
+        elif self.model_type == "Ridge":
+            return 2.0/self.n*X.T @ (X @ beta-y)+2*Lambda*beta
 
-    def gradient_descent(self):
+    def gradient_descent(self, tpe: str = "Constant", eta: float = 0.05, gamma: float = 0.05, epochs: int = 10000, batch_size: int = 0):
+
+        if batch_size == 0:
+            batch_size = self.n
+
+        self.epoch_list = []
+        self.MSE_list = []
+        self.beta = np.random.randn(3,1)
+
         X = self.makeX(3)
 
         # Learning rate and number of iterations
-        eta = 0.05
-        gamma = 0.05
-        update = self.set_update("Momentum", eta, gamma)
-        Niterations = 20000
-
-        # Gradient descent with OLS
-        beta_OLS = np.random.randn(3,1)
-        prev_beta_OLS = np.zeros_like(beta_OLS)
-        gradient = np.zeros(3)
+        update = self.set_update(tpe, eta, gamma)
 
         # Iterations (separate jit-compilable function?)
         iter = 0
         tolerance = 1e-5
 
-        pbar = tqdm(total=Niterations)
-        while iter < Niterations and not np.allclose(prev_beta_OLS, beta_OLS, tolerance):
-            prev_beta_OLS = beta_OLS.copy()
-            iter += 1
-            pbar.update(1)
+        #pbar = tqdm(total = epochs * (self.n // batch_size))
+        for epoch in range(epochs):
 
-            gradient = (2.0/self.n)*X.T @ (X @ beta_OLS-self.y)
-            beta_OLS = update(beta_OLS, gradient)
+            prev_beta_ridge = self.beta.copy()
+            
+            indices = np.random.permutation(self.n)  # must check if it should be random or not, have not checked Morten's notes
+            X_shuffled = X[indices]
+            y_shuffled = self.y[indices]
+
+            for i in range(0, self.n, batch_size):
+                X_batch = X_shuffled[i:i + batch_size]
+                y_batch = y_shuffled[i:i + batch_size]
+
+                self.beta = update(self.beta, self.gradient(X_batch, y_batch, self.beta))
+
+                iter += 1
+                #pbar.update(1)
+
+            preds = X @ self.beta
+            error = np.mean((self.y - preds)**2)
+            self.MSE_list.append(error)
+            self.epoch_list.append(epoch)
+            
+            if np.allclose(prev_beta_ridge, self.beta, tolerance):
+                    #print(f'Converged after {epoch} epochs')
+                    break
         
-        pbar.close()
+        #pbar.close()
 
-        print('Parameters for OLS using gradient descent')    
-        print(beta_OLS)
-        print(f'After {iter} iterations')
-
-
-class Ridge(OLS):
-    def gradient_descent(self):
-        X = self.makeX(3)
-
-        # Learning rate and number of iterations
-        eta = 0.05
-        Niterations = 20000
-
-        #Ridge parameter Lambda
-        Lambda  = 0.01
-
-        # Gradient descent with  Ridge
-        beta_Ridge = np.random.randn(3,1)
-        prev_beta_ridge = np.zeros_like(beta_Ridge)
-        gradient = np.zeros(3)
-
-        # Iterations (separate jit-compilable function?)
-        iter = 0
-        tolerance = 1e-5
-
-        pbar = tqdm(total=Niterations)
-        while iter < Niterations and not np.allclose(prev_beta_ridge, beta_Ridge, tolerance):
-            prev_beta_ridge = beta_Ridge.copy()
-            iter += 1
-            pbar.update(1)
-
-            gradient = 2.0/self.n*X.T @ (X @ beta_Ridge-self.y)+2*Lambda*beta_Ridge
-            beta_Ridge -= eta*gradient
-
-        pbar.close()
-
-        print('Parameters for Ridge using gradient descent')    
-        print(beta_Ridge)
-        print(f'After {iter} iterations')
-
-
-if __name__ == "__main__":
-    np.random.seed(42)
-
-    data = Poly1D2Deg(100)
-
-    ols_model = OLS(data)
-    ols_model.gradient_descent()
-
-    ridge_model = Ridge(data)
-    ridge_model.gradient_descent()
+        #print('Parameters for OLS using gradient descent')    
+        #print(self.beta)
+        #print(f'After {iter} iterations')
