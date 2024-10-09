@@ -27,17 +27,17 @@ Statistical learning is a field with a plethora of applications, such as finance
 % Supervised learning is the general term for describing learning methods used when we utilize priorly known outcomes to guide the model in the training process. 
 % In unsupervised learning we are interested in ways to classify or cluster our data, and have no answer keys for a "correct" outcome \citep[ p.~1]{hastie}.
 %(Hastie et al., 2009, s.1). 
-% Unsupervised learning can be helpful in situations when we're hoping to find correlations not obvious to the human eye, such as when dealing with datasets spanning many dimensions that are often impossible to visualize in a productive way.
+% Unsupervised learning can be helpful in situations when we're hoping to find correlations not obvious to the human eye, such as when dealing with data sets spanning many dimensions that are often impossible to visualize in a productive way.
 
 Among the more common forms, \textit{linear regression} stands out, tracing its origins back to the early nineteenth century with the invention of the \textit{least squares method} \citep[ p.~5]{james}. 
-Linear regression is a collective term, coined only in more recent years, including various linear methods for predicting quantitative values. During mid to late 1900's many more techniques were developed, thereof the methods named 'Ridge' and 'Lasso'. Ridge had its debut in the 1970s with the publication of two scientific articles in the journal \textit{Technometrics} \cite{hoerl}. Lasso was first formally presented and named in the article \textit{Regression Shrinkage and Selection Via the Lasso} by Robert Tibshirani in 1996. \cite{tibshirani}. 
+Linear regression is a collective term, coined only in more recent years, including various linear methods for predicting quantitative values. During mid to late 1900's many more techniques were developed, thereof the methods named 'Ridge' and 'Lasso'. Ridge regression had its debut in the 1970s with the publication of two scientific articles in the journal \textit{Technometrics} \cite{hoerl}. Lasso regression was first formally presented and named in the article \textit{Regression Shrinkage and Selection Via the Lasso} by Robert Tibshirani in 1996. \cite{tibshirani}. 
 
 %(James et al., 2023, s.5).
 %From an introduction to statistical learning, Springer-book
 
 In this paper we explore different aspects of linear regression, including ordinary least squares, Ridge, Lasso, data handling, and more. 
-We will first use Franke function to verify the theoretical grounds. This includes overfitting, the evaluation measures MSE and $R^2$, the dampening of $\bet$ in penalized regression and bias-variance trade-off. 
-We will study which of the three linear regression models perform the best on Franke function.
+We will first use the Franke function to verify the theoretical grounds. This includes overfitting, the evaluation measures MSE and $R^2$, the dampening of $\bet$ in penalized regression and bias-variance trade-off. 
+We will study which of the three linear regression methods perform the best on the Franke function.
 Furthermore, we will implement the models tested on the Franke function on actual terrain data. 
 We will use the resampling techniques bootstrapping and cross-validation. 
 Using MSE as our error measure we will decide on the best overall model for the terrain data, which is the main goal of this paper. 

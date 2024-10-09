@@ -1,3 +1,23 @@
-\mia{Must match with the abstract.}
+We have clearly observed that within the field of linear regression, there are major implications from selection of model type, polynomial degree and hyper-parameters.
+Furthermore the number of data points, the type of data, and selection of methods for training and testing of the models, result in divergent results.
+Hence, selecting good models, and tuning their complexities and hyper-parameters is a fine yet crucial art.
 
-Linear regression models have been utilized to explore the 
+In spite of some instabilities in test results on the different models, we have found clear indications of which models perform well under different circumstances tested in this paper.
+In particular, we have seen that a lack of training data or too high polynomial degree leads to overfitting, while higher values for the hyper-parameter $\lambda$ and larger quantities of training data, leads to more stable models.
+
+For both the synthetic data set based on the Franke function and the real terrain data, we observed that versions of the ordinary least square models resulted in the lowest MSE.
+Even though we suspect that our grid search implementation for finding optimal $\lambda$-values for the Ridge and Lasso models could have a weakness due to how we implemented bootstrap, manual testing of some other $\lambda$-values suggests that OLS would always perform best anyways.
+
+Our best performing models for the two data sets are the following:
+For the Franke data, the best model is ordinary least squares with polynomial degree 5, resulting in an MSE of 0.0987.
+For the terrain data, we have an ordinary least squares model trained through 10-fold cross validation.
+This model has polynomial degree 10, and an MSE of 17.686.
+
+Due to our low $R^2$-scores, we conclude that linear regression is not optimal for modelling this kind of data.
+That being said, the models are still far better than random guessing, and at a relatively low computational cost they could still be a viable option.
+
+Future improvement of our results could be made by making sure the train and test data is exactly the same between the grid search and plotting of the models.
+Increasing number of data points and adding more samples to bootstrapping could also improve the results, to a cost of requiring more computational power.
+
+Linear regression as a field is already heavily researched, and most results in a paper like this is just confirming theory, as well as tuning hyper-parameters.
+Due to this, a similar paper like this could be useful for any given data set, if one wants to figure out whether linear regression will perform well modelling it.
