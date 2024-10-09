@@ -12,7 +12,8 @@ In this section, the calculations for some of our theretical expressions are pre
     & = \mathbf{X}_{i,*}\boldsymbol{\beta}
 \end{align}
 
-Eq. \ref{a1}: Calculation of the expectation value of the true $y_i$, using the assumption that $\fv{\epsilon_i} = 0$. 
+Eq. \ref{a1}: Calculation of the expectation value of the true $y_i$, using the assumption that $\fv{\epsilon_i} = 0$ as $\epsilon \sim  
+\mathcal{N}(0,\sigma^2)$. 
 
 
 
@@ -25,7 +26,7 @@ Eq. \ref{a1}: Calculation of the expectation value of the true $y_i$, using the 
     & = \sigma^2
 \end{align}
 
-Eq. \ref{a2}: Calculation of the variance of the true $y_i$. Here $\fv{\epsilon_i} = 0$ and $\fv{\epsilon_i^2} = \text{var}(\boldsymbol{\epsilon}) = \sigma^2$, as $\epsilon \sim  
+Eq. \ref{a2}: Calculation of the variance of the true $y_i$. Here $\fv{\epsilon_i} = 0$ and $\fv{\epsilon_i^2} = \text{var}(\boldsymbol{\epsilon}) = \sigma^2$, again as $\epsilon \sim  
 \mathcal{N}(0,\sigma^2)$.
 
 \begin{align}\label{a3}
@@ -49,13 +50,13 @@ Eq. \ref{a3}: Calculation of the bias for the OLS estimator $\hat{\bet}$. The re
     & = \fv{\betta(\betta)^T} - \bet\bet^T \nonumber \\
     & = \fv{\betta \y^T \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T}} - \bet\bet^T \nonumber \\
     & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\fv{\y\y^T}\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
-    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T \\ 
-    & \quad + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} - \bet\bet^T \nonumber \\
+    & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X}\bet \bet^T \mathbf{X}^T + \fv{\boldsymbol{\epsilon}^2})\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-T} \nonumber \\ 
+    & \quad - \bet\bet^T \nonumber \\
     & = \bet \bet^T + \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1} - \bet \bet^T \nonumber \\
     & = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \end{align}
 
-Eq. \ref{a4}: Calculation of the variance of the ordinary least squares estimator. \mia{smt else?}
+Eq. \ref{a4}: Calculation of the variance of the ordinary least squares estimator. 
 
 \begin{align}\label{a5}
     \fv{(\mathbf{y}-\yt)^2} & = \fv{(\mathbf{y} - \fv{\yt} + \fv{\yt} -\yt)^2} \nonumber \\
@@ -92,124 +93,123 @@ Eq. \ref{a5}: Decomposition of the expected loss in terms of bias and variance. 
 %     \fv{\boldsymbol{\epsilon}^2} & = \text{var}(\boldsymbol{\epsilon}) = \sigma^2 \nonumber \\
 % \end{align*}
 
-\subsection{Appendix C: Use of AI} \label{appendixC}
+\clearpage
 
-\mia{State use of AI}
+\subsection{Appendix C: Plots not included in the report} \label{appendixD}
+The following are all plots requested (or hinted at) in the assignment which we do not include in the report itself.
 
-
-\gaute{clearpage here if needed}
-
-
-\subsection{Appendix D: Plots not included in the report} \label{appendixD}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/bias_var_terrain_bootstrap.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/CV_BS_OLS_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_Betas_lambda_terrain_const_deg.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_Betas_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
+    \caption{The values of the parameters $\bet$ for the OLS regression model trained on Franke function data
+    against the polynomial degree. Each colored line represents one $\beta_j$. }
+    \label{fig:ref1}
 \end{figure}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_Betas_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_MSE_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_R2_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_Betas_lambda_terrain_const_deg.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_MSE_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
+    \caption{MSE for the Ridge regression model trained on Franke function data against the penalty parameter $\lambda$}
+    \label{fig:ref2}
 \end{figure}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_MSE_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_R2_Franke_Noise.pdf}
-    \caption{Caption}
-    \label{fig:ref}
+    \caption{$R^2$ for the Ridge regression model trained on Franke function data against the penalty parameter $\lambda$}
+    \label{fig:ref3}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_Franke_Noise.pdf}
+    \caption{MSE for the Lasso regression model trained on Franke function data against the penalty parameter $\lambda$}
+    \label{fig:ref4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_Franke_Noise.pdf}
+    \caption{$R^2$ for the Lasso regression model trained on Franke function data against the penalty parameter $\lambda$}
+    \label{fig:ref5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/CV_BS_OLS_Franke_Noise.pdf}
+    \caption{Comparison of an OLS regression model trained on Franke function data with 10-fold cross-validation and bootstrapped with 100 bootstrap samples.}
+    \label{fig:ref6}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_MSE_terrain.pdf}
+    \caption{MSE for the OLS regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref7}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_R2_terrain.pdf}
+    \caption{$R^2$ for the OLS regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref8}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/OLS_Betas_terrain.pdf}
+    \caption{The values of the parameters $\bet$ for the OLS regression model trained on terrain data against polynomial degree. Each colored line represents one $\beta_j$.}
+    \label{fig:ref9}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_MSE_terrain.pdf}
+    \caption{MSE for the Ridge regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref10}
+\end{figure}
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_R2_terrain.pdf}
-    \caption{Caption}
-    \label{fig:ref}
+    \caption{$R^2$ for the Ridge regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref11}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Ridge_Betas_lambda_terrain_const_deg.pdf}
+    \caption{The values of the parameters $\bet$ for the Ridge regression model trained on terrain data with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
+    \label{fig:ref12}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_MSE_terrain.pdf}
+    \caption{MSE for the Lasso regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref13}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_R2_terrain.pdf}
+    \caption{$R^2$ for the Lasso regression model trained on terrain data against the polynomial degree.}
+    \label{fig:ref14}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/Lasso_Betas_lambda_terrain_const_deg.pdf}
+    \caption{The values of the parameters $\bet$ for the Lasso regression model trained on terrain data with polynomials up to a degree of seven for increasing values of $\lambda$. Each colored line represents one $\beta_j$.}
+    \label{fig:ref15}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{project_1/figures/figures_in_appendix/bias_var_terrain_bootstrap.pdf}
+    \caption{MSE decomposition into terms of bias and variance term for an ordinary least squares model  trained on terrain datawith bootstrapping with 100 samples. The minimum MSE is marked with a red dot.}
+    \label{fig:ref16}
 \end{figure}
