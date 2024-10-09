@@ -23,7 +23,7 @@ In the following sections, the Lasso and Ridge regression models are trained wit
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_MSE_Franke_Noise.pdf}
-    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data. This displays the same concept as figure 2.11 in Hastie et.al. \citep[p. 38]{hastie}.}
+    \caption{Mean squared error (MSE) for the ordinary least squares model both on training- and test data. The minimum MSE is marked with a red dot. This displays the same concept as figure 2.11 in Hastie et.al. \citep[p. 38]{hastie}.}
     \label{fig:mseols}
 \end{figure}
 
@@ -39,7 +39,7 @@ When the model is underfitted, i.e. a too low polynomial degree, we have high bi
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/OLS_R2_Franke_Noise.pdf}
-    \caption{$R^2$ for the ordinary least squares model both on training- and test data.}
+    \caption{$R^2$ for the ordinary least squares model on training- and test data.}
     \label{fig:r2ols}
 \end{figure}
 
@@ -109,7 +109,7 @@ The conclusion of OLS being the best model holds regardless.
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/bias_var_Franke_Noise_bootstrap.pdf}
-    \caption{MSE decomposed into a bias and a variance term for an ordinary least squares model trained with bootstrapping.
+    \caption{MSE decomposition in terms of bias and variance term for an ordinary least squares model trained with bootstrapping. The minimum MSE is marked with a red dot. 
 }
     \label{bias_var_trade}
 \end{figure}
@@ -120,14 +120,14 @@ This is typical for an underfitted model. As the complexity increases, the bias 
 The lowest MSE is reached at some trade-off between the two. 
 As the model complexity is further increased, the variance substantially increases and ensures an even higher MSE than at the beginning. 
 This is a sign of an overfitted model.
-\julie{jules}
+
 
 \subsection{Terrain data}
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/CV_BS_OLS_terrain.pdf}
-    \caption{caption for cv versus bootstrap}
+    \caption{MSE for OLS plotted against the polynomial degree, two different ways: 10-fold cross-validation and bootstrapping with 100 bootstrap samples. The minimum MSE is marked with a red dot.}
     \label{cv_versus_bs}
 \end{figure}
 
@@ -138,7 +138,7 @@ The minimal MSE value for the cross-validated OLS model is lower than for the bo
 
 There might be several reasons why the MSE is lower for cross-validation compared to bootstrapping. 
 For the model trained with cross-validation, more data is utilized than for the one trained with bootstrap. 
-In the latter, we split into a training and a test data set, whereas cross-validation trains on the entire dataset.
+In the latter, we split into a training and a test data set, whereas cross-validation trains on the entire data set.
 Indeed, as we use an 80/20 train-test split, and bootstrap on average uses 63.2\% of the train data each sample, the bootstrap ends up using only 50.6\% ($0.8\cdot 63.2\%$) of the training data on average \citep[p. 251]{hastie}. 
 Compared to 10 folds cross validation, which uses 90\% of the data for training each fold, it is expected that the bootstrap model will overfit at a much lower complexity.
  
@@ -149,11 +149,12 @@ This was not done, as it would have required us to implement bootstrapping twice
 For the cross-validated model we tried different number of folds in the range 5 to 10. 
 The results were very similar, with $k = 10$ giving the lowest MSE. 
 Seeing as computing power was not an issue in this part, we chose k = 10 as our final value. 
+This is used for all bootstrapped models for the terrain data.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/All_terrain.pdf}
-    \caption{MSE for OLS, Ridge and Lasso regression against polynomial degree. Each model is trained three times; with no resampling, using cross-validation and lastly, using bootstrapping. The minimum value for MSE is marked with a red dot.}
+    \caption{MSE for OLS, Ridge and Lasso regression against polynomial degree. Each model is trained three times; with no resampling, using 10-fold cross-validation and lastly, using bootstrapping with 100 bootstrap samples. The minimum MSE is marked with a red dot.}
     \label{all_terrain}
 \end{figure}
 
@@ -161,17 +162,22 @@ Our main goal is to find the model providing the best fit, with respect to the M
 We have implemented three different model types; OLS, Ridge, and Lasso. 
 Furthermore, we can use no resampling, bootstrapping or cross-validation. 
 Combining this yields nine different models. In Fig. \ref{all_terrain} we compare the MSE on the test set for all. 
-We find OLS with cross-validation to be the best model, with a MSE value of  at a polynomial degree of 10.
+We find OLS with 10-fold cross-validation to be the best model, with a MSE value of 17.6863 at a polynomial degree of 10.
+This plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point (numbers smaller than $\approx 10^{-15}$).
+The bootstrapped models are excluded from the plot beyond a polynomial degree of seven, as including them would dominate the visualization.
 
-As with Fig. \ref{cv_versus_bs}, this plot is only created for degrees of complexity up to 11 seeing as there are problems with numerical precision beyond this point. 
+We believe that 10-fold cross-validation is performing best, as it combines being trained on the most data (90\% of the data each fold), while also being trained multiple times. 
+This results in a more stable model, that handles new test sets better than any other.
+It is possible that cross-validation with more than 10 folds would have performed even better, however we avoided this due to it requiring more computational power.
+Even though it would be feasible to train it on data sets of this size, it would not be well generalizable for larger data sets.
 
-\mia{why is ols cv best}
-
-Choosing the number of data points for the terrain data was challenging. Including more data points meant having a dataset with more variance. This leads to models with a far higher MSE. 
+Choosing the number of data points for the terrain data was challenging. Including more data points meant having a data set with more variance. This leads to models with a far higher MSE. 
+Another aspect we considered was the computational time. Especially the grid search is already time consuming with 1681 data points. 
 
 %Further work to do on this could include a different implementation of the bootstrap method.
 
-Furthermore, it is interesting to discuss whether linear models are sufficient for these kinds of problems or not. Intuitively one might think that more complex is better, and that the only downside of more complex models are computational efficiency. While being more computationally efficient is defini
-\mia{continue + propose something else}
+Furthermore, it is interesting to discuss whether linear models are sufficient for these kinds of problems or not. Intuitively one might think that more complex is better, and that the only downside of more complex models are computational efficiency. While being more computationally efficient is definitely an advantage that should not be neglected for large quantities of data, it's far from the only upside of these simpler models. 
+ 
+Firstly, linear models generally propose more explicit relationships, i.e. they're easier to interpret. To what extent different feature-variables affect the response-variable is simply stated by the slope's relation to the corresponding parameters, and can thus be deferred straight from the coefficients. The explainability of a model is crucial for justifying the use of analytical and predictive models in close to all real-world problems. 
 
-\mia{critical discussion of scaling of data must be included}
+Secondly, and maybe most obviously, if the true relationship we're trying to model is actually linear (or approximately so) - a linear model will be ideal for trying to mimic this relationship. While some more complex models might be able to imitate this performance, there is no reason to use overly complicated methods that increase the risk of overfitting, reduce the interpretability and are more computationally heavy. 
