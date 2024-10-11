@@ -22,7 +22,7 @@ class Update_Beta:
 
     def adam(
         self,
-        iter: int,
+        iter: int = 1000,
         eta: float = 1e-3,
         epsilon: float = 1e-8,
         b1: float = 0.9,
@@ -60,9 +60,9 @@ class Update_Beta:
             return beta - self.eta * gradients / (np.sqrt(G) + self.delta)
 
         elif self.rate_type == "Adam":
-            if self.m_prev == None:
+            if self.m_prev is None:
                 self.m_prev = np.zeros_like(gradients)
-            if self.s_prev == None:
+            if self.s_prev is None:
                 self.s_prev = np.zeros_like(gradients)
 
             m = self.b1 * self.m_prev + (1 - self.b1) * gradients
@@ -79,7 +79,7 @@ class Update_Beta:
             return beta
 
         elif self.rate_type == "RMSprop":
-            if self.s_prev == None:
+            if self.s_prev is None:
                 self.s_prev = np.zeros_like(gradients)
             s = self.b * self.s_prev + (1 - self.b) * gradients**2
             beta = beta - self.eta * gradients / (np.sqrt(s) + self.epsilon)

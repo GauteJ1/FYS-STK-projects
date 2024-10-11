@@ -28,14 +28,15 @@ class Plotting:
         sns.set_palette("Set2")
         #plt.style.use("plot_settings.mplstyle")
 
-    def plot_loss(self, xlim = None):
+    def plot_loss(self, xlim = None, label = None):
         self.__config()
-        plt.plot(self.epochs, self.MSE)
+        plt.plot(self.epochs, self.MSE, label = label)
         plt.xlabel("Epochs")
         plt.ylabel("MSE")
         plt.title("Mean squared error (MSE) against epochs")
         plt.xlim(0,xlim)
-        plt.show()
+        plt.legend()
+        #plt.show()
 
     def plot_betas(self):
         self.__config()

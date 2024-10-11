@@ -39,6 +39,10 @@ class Model:
             update.momentum_based(eta, gamma)
         elif tpe == "Adagrad":
             update.adagrad(eta)
+        elif tpe == "Adam": 
+            update.adam(eta = eta)
+        elif tpe == "RMSprop":
+            update.rmsprop(eta = eta)
 
         return update
     
