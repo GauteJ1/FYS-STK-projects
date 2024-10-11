@@ -13,8 +13,9 @@ class Poly1D2Deg(DataGen):
         self.__calc_y()
 
     def __calc_y(self):
+        # These should be a list (due to generalization)
         self.a = 3
-        self.b = 2
+        self.b = -2
         self.c = 5
         noise = 0.2
 

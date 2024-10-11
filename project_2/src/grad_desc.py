@@ -59,8 +59,9 @@ class Model:
 
         self.epoch_list = []
         self.MSE_list = []
-        self.beta = np.random.randn(3,1)
 
+        # This should be counfigurable from the function call (or elsewhere)
+        self.beta = np.random.randn(3,1)
         X = self.makeX(3)
 
         # Learning rate and number of iterations
@@ -68,11 +69,11 @@ class Model:
 
         # Iterations (separate jit-compilable function?)
         iter = 0
-        tolerance = 1e-5
+        tolerance = 1e-6
 
         #pbar = tqdm(total = epochs * (self.n // batch_size))
         for epoch in range(epochs):
-
+            iter += 1
             prev_beta_ridge = self.beta.copy()
             
             indices = np.random.permutation(self.n)  # must check if it should be random or not, have not checked Morten's notes
@@ -83,9 +84,8 @@ class Model:
                 X_batch = X_shuffled[i:i + batch_size]
                 y_batch = y_shuffled[i:i + batch_size]
 
-                self.beta = update(self.beta, self.gradient(X_batch, y_batch, self.beta))
+                self.beta = update(self.beta, self.gradient(X_batch, y_batch, self.beta), iter)
 
-                iter += 1
                 #pbar.update(1)
 
             preds = X @ self.beta
@@ -94,11 +94,7 @@ class Model:
             self.epoch_list.append(epoch)
             
             if np.allclose(prev_beta_ridge, self.beta, tolerance):
-                    #print(f'Converged after {epoch} epochs')
-                    break
+                # print(f'Converged after {epoch} epochs for {update.rate_type}')
+                break
         
         #pbar.close()
-
-        #print('Parameters for OLS using gradient descent')    
-        #print(self.beta)
-        #print(f'After {iter} iterations')

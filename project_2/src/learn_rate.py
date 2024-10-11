@@ -22,13 +22,11 @@ class Update_Beta:
 
     def adam(
         self,
-        iter: int = 1000,
         eta: float = 1e-3,
         epsilon: float = 1e-8,
         b1: float = 0.9,
-        b2: float = 0.99,
+        b2: float = 0.999
     ) -> None:
-        self.iter = iter
         self.eta = eta
         self.epsilon = epsilon
         self.b1 = b1
@@ -44,7 +42,7 @@ class Update_Beta:
         self.rate_type = "RMSprop"
         self.s_prev = None
 
-    def __call__(self, beta: np.ndarray, gradients: np.ndarray) -> np.ndarray:
+    def __call__(self, beta: np.ndarray, gradients: np.ndarray, iter: int = 1) -> np.ndarray:
         if self.rate_type == "Constant":
             return beta - self.eta * gradients
 
@@ -68,13 +66,13 @@ class Update_Beta:
             m = self.b1 * self.m_prev + (1 - self.b1) * gradients
             s = self.b2 * self.s_prev + (1 - self.b2) * gradients**2
 
-            m = m / (1 - self.b1**self.iter)
-            s = s / (1 - self.b2**self.iter)
-
-            beta = beta - self.eta * m / (np.sqrt(s) + self.epsilon)
-
             self.m_prev = m
             self.s_prev = s
+
+            m = m / (1 - self.b1**iter)
+            s = s / (1 - self.b2**iter)
+            
+            beta = beta - self.eta * m / (np.sqrt(s) + self.epsilon)
 
             return beta
 
