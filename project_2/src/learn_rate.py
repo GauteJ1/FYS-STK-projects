@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class Update_Beta:
     def __init__(self) -> None:
         self.rate_type = ""
@@ -19,6 +18,15 @@ class Update_Beta:
         self.eta = eta
         self.delta = delta
         self.rate_type = "Adagrad"
+        self.G = None
+
+    def adagrad_momentum(self, eta: float, gamma: float, delta: float = 1e-8) -> None:
+        self.eta= eta
+        self.gamma = gamma
+        self.delta = delta
+        self.rate_type = "Adagrad_Momentum"
+        self.G = None
+        self.prev_v = None
 
     def adam(
         self,
@@ -54,8 +62,21 @@ class Update_Beta:
             return beta - v
 
         elif self.rate_type == "Adagrad":
-            G = gradients**2
-            return beta - self.eta * gradients / (np.sqrt(G) + self.delta)
+            if self.G is None:
+                self.G = np.zeros_like(gradients)
+            self.G += gradients**2
+            return beta - self.eta * gradients / (np.sqrt(self.G) + self.delta)
+        
+        elif self.rate_type == "Adagrad_Momentum":
+            if self.prev_v is None:
+                self.prev_v = np.zeros_like(gradients)
+            if self.G is None:
+                self.G = np.zeros_like(gradients)
+
+            self.G = gradients**2
+            v = self.gamma * self.prev_v + self.eta * gradients / (np.sqrt(self.G) + self.delta)
+            self.prev_v = v
+            return beta - v
 
         elif self.rate_type == "Adam":
             if self.m_prev is None:
