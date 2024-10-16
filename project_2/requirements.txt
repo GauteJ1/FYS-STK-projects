@@ -6,5 +6,8 @@ seaborn
 pillow
 pytest
 scikit-learn
+kagglehub
+jax
+
 
 #Revisit dependencies
