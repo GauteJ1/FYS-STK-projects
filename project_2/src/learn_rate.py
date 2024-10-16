@@ -1,4 +1,7 @@
 import numpy as np
+import jax.numpy as jnp
+import jax
+from jax._src.typing import Array
 
 class Update_Beta:
     def __init__(self) -> None:
@@ -50,7 +53,7 @@ class Update_Beta:
         self.rate_type = "RMSprop"
         self.s_prev = None
 
-    def __call__(self, beta: np.ndarray, gradients: np.ndarray, iter: int = 1) -> np.ndarray:
+    def __call__(self, beta: Array, gradients: Array, iter: int = 1) -> Array:
         if self.rate_type == "Constant":
             return beta - self.eta * gradients
 
@@ -74,37 +77,43 @@ class Update_Beta:
                 self.G = np.zeros_like(gradients)
 
             self.G = gradients**2
-            v = self.gamma * self.prev_v + self.eta * gradients / (np.sqrt(self.G) + self.delta)
+            v = self.gamma * self.prev_v + self.eta * gradients / (jnp.sqrt(self.G) + self.delta)
             self.prev_v = v
             return beta - v
-
+        
         elif self.rate_type == "Adam":
             if self.m_prev is None:
-                self.m_prev = np.zeros_like(gradients)
+                self.m_prev = jnp.zeros_like(gradients)
             if self.s_prev is None:
-                self.s_prev = np.zeros_like(gradients)
-
-            m = self.b1 * self.m_prev + (1 - self.b1) * gradients
-            s = self.b2 * self.s_prev + (1 - self.b2) * gradients**2
-
-            self.m_prev = m
-            self.s_prev = s
-
-            m = m / (1 - self.b1**iter)
-            s = s / (1 - self.b2**iter)
+                self.s_prev = jnp.zeros_like(gradients)
             
-            beta = beta - self.eta * m / (np.sqrt(s) + self.epsilon)
-
+            beta, self.m_prev, self.s_prev = adam(beta, gradients, self.eta, self.b1, self.b2, self.epsilon, iter, self.m_prev, self.s_prev)
+                                                  
             return beta
 
         elif self.rate_type == "RMSprop":
             if self.s_prev is None:
                 self.s_prev = np.zeros_like(gradients)
             s = self.b * self.s_prev + (1 - self.b) * gradients**2
-            beta = beta - self.eta * gradients / (np.sqrt(s) + self.epsilon)
+            beta = beta - self.eta * gradients / (jnp.sqrt(s) + self.epsilon)
 
             self.s_prev = s
             return beta
 
         else:
             raise RuntimeError("Learning rate type not set")
+
+@jax.jit
+def adam(beta: Array, gradients: Array, eta: float, b1: float, b2: float, epsilon: float, iter: int, m_prev: Array, s_prev: Array) -> tuple[Array, Array, Array]:
+    m = b1 * m_prev + (1 - b1) * gradients
+    s = b2 * s_prev + (1 - b2) * gradients**2
+
+    m_prev = m
+    s_prev = s
+
+    m = m / (1 - b1**iter)
+    s = s / (1 - b2**iter)
+    
+    beta = beta - eta * m / (jnp.sqrt(s) + epsilon)
+
+    return beta, m_prev, s_prev

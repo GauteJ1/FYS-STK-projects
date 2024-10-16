@@ -59,11 +59,17 @@ class Model:
         elif self.model_type == "Ridge":
             return lambda beta: 2.0 / self.n * X.T @ (X @ beta - y) + 2 * Lambda * beta
 
-    def gradient(self, X, y, Lambda=0.1):
+    def loss(self):
         if self.model_type == "OLS":
-            f = lambda beta: np.mean((X @ beta - y) ** 2)
+            loss = lambda X, y, beta, Lambda: jnp.mean((X @ beta - y) ** 2)
         elif self.model_type == "Ridge":
-            f = lambda beta: np.mean( (X @ beta - y) ** 2) + np.sum(Lambda * beta**2)
+            loss = lambda X, y, beta, Lambda: jnp.mean((X @ beta - y) ** 2) + jnp.sum(
+                Lambda * beta**2
+            )
+        return loss
+
+    def gradient(self, X, y, Lambda=0.1):
+        f = lambda beta: self.loss()(X, y, beta, Lambda)
         return jax.grad(f)
 
     def set_custom_initial_val(self, init_beta: np.ndarray) -> None:
@@ -92,8 +98,6 @@ class Model:
             self.beta = np.random.randn(3, 1)
         X = self.makeX(3)
 
-        gradients = self.gradient(X, self.y)
-
         # Learning rate and number of iterations
         update = self.set_update(tpe, eta, gamma)
 
@@ -116,9 +120,9 @@ class Model:
                 X_batch = X_shuffled[i : i + batch_size]
                 y_batch = y_shuffled[i : i + batch_size]
 
-                self.beta = update(
-                    self.beta, gradients(self.beta), iter
-                )
+                gradients = self.gradient(X_batch, y_batch)
+
+                self.beta = update(self.beta, gradients(self.beta), iter)
 
                 # pbar.update(1)
 
@@ -138,21 +142,25 @@ if __name__ == "__main__":
     data = Poly1D2Deg(101)
     model = Model(data, model_type="OLS")
 
-    beta = np.zeros((3,1))
+    beta = np.zeros((3, 1))
     X = model.makeX(3)
     y = model.y
 
     # print(model.analytical_gradient(X, y, beta))
     # print(model.gradient(X, y, beta))
-    assert np.allclose(model.analytical_gradient(X, y)(beta), model.gradient(X, y)(beta), atol=1e-5)
+    assert np.allclose(
+        model.analytical_gradient(X, y)(beta), model.gradient(X, y)(beta), atol=1e-5
+    )
 
     data = Poly1D2Deg(101)
     model = Model(data, model_type="Ridge")
 
-    beta = np.zeros((3,1))
+    beta = np.zeros((3, 1))
     X = model.makeX(3)
     y = model.y
 
     # print(model.analytical_gradient(X, y, beta))
     # print(model.gradient(X, y, beta))
-    assert np.allclose(model.analytical_gradient(X, y)(beta), model.gradient(X, y)(beta), atol=1e-5)
+    assert np.allclose(
+        model.analytical_gradient(X, y)(beta), model.gradient(X, y)(beta), atol=1e-5
+    )
