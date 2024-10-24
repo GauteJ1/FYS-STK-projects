@@ -84,3 +84,11 @@ class NeuralNetwork:
         gradients = grad(jax_grad_cost, 0)
 
         return gradients
+
+    def save_network(self, file_name):
+        # Write network info to json file
+        pass
+
+    def load_network(self, file_name):
+        # Load network from json file
+        pass
