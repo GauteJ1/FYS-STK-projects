@@ -13,12 +13,22 @@ class NeuralNetwork:
         network_shape,
         activation_funcs,
         cost_fun,
+        type_of_network,
     ):
         self.cost_fun = cost_fun
         self.cost_fun_der = grad(cost_fun, 0)  # Double check this
         self.activation_funcs = [globals()[func] for func in activation_funcs]
         self.activation_funcs_der = [globals()[func + '_der'] for func in activation_funcs]
         self.layers = self.create_layers(network_shape)
+        self.type_of_network = type_of_network
+
+        if self.type_of_network == "classification":
+            self.accuracy_func = accuracy_one_hot
+        elif self.type_of_network == "regression":
+            self.accuracy_func = r_2
+        else:
+            raise ValueError("Invalid type of network")
+
 
     def create_layers(self, network_shape):
         layers = []
@@ -82,23 +92,38 @@ class NeuralNetwork:
 
         return layer_grads
     
-    def train_network(self, inputs, targets, epochs, learning_rate, use_jax=True):
+    def train_network(self, inputs, targets, epochs, learning_rate, batch_size=10, use_jax=True):
         accuracy_list = []
         loss_list = []
+        num_samples = inputs.shape[0]
 
         for i in tqdm(range(epochs)):
-            layers_grad = self.backpropagation_batch(inputs, targets)
-            
-            for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
-                self.layers[idx] = (W - learning_rate * W_g, b - learning_rate * b_g)
+            # Shuffle data at the beginning of each epoch
+            permutation = np.random.permutation(num_samples)
+            inputs_shuffled = inputs[permutation]
+            targets_shuffled = targets[permutation]
 
+            for start in range(0, num_samples, batch_size):
+                end = start + batch_size
+                batch_inputs = inputs_shuffled[start:end]
+                batch_targets = targets_shuffled[start:end]
+
+                # Compute gradients for the batch
+                layers_grad = self.backpropagation_batch(batch_inputs, batch_targets)
+                
+                # Update weights
+                for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
+                    self.layers[idx] = (W - learning_rate * W_g, b - learning_rate * b_g)
+
+            # Calculate metrics after each epoch
             predictions = self.predict(inputs)
-            accuracy_score = r_2(predictions, targets)
+            accuracy_score = self.accuracy_func(predictions, targets)
             accuracy_list.append(accuracy_score)
             loss = self.cost_fun(predictions, targets)
             loss_list.append(loss)
 
         return self.layers, accuracy_list, loss_list, predictions
+
 
     def manual_gradient(self, inputs, targets):
         pass  # Fyll inn fra weekly exercise 43
@@ -110,6 +135,7 @@ class NeuralNetwork:
 
     def jaxgrad_gradient(self, inputs, targets):
         # Function calculating jax gradient using a separate jax_grad_cost function
+
         def jax_grad_predict(layers, inputs):
             a = inputs
             for (W, b), activation_func in zip(layers, self.activation_funcs):
