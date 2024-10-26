@@ -6,6 +6,8 @@ from methods import *
 from tqdm import tqdm
 from jax import grad, jit, vmap
 
+from learn_rate import Update_Beta
+
 
 class NeuralNetwork:
     def __init__(
@@ -14,6 +16,7 @@ class NeuralNetwork:
         activation_funcs,
         cost_fun,
         type_of_network,
+        update_strategy,
     ):
         self.cost_fun = cost_fun
         self.cost_fun_der = grad(cost_fun, 0)  # Double check this
@@ -21,14 +24,8 @@ class NeuralNetwork:
         self.activation_funcs_der = [globals()[func + '_der'] for func in activation_funcs]
         self.layers = self.create_layers(network_shape)
         self.type_of_network = type_of_network
-
-        if self.type_of_network == "classification":
-            self.accuracy_func = accuracy_one_hot
-        elif self.type_of_network == "regression":
-            self.accuracy_func = r_2
-        else:
-            raise ValueError("Invalid type of network")
-
+        self.update_strategy = update_strategy
+        self.update_beta = Update_Beta()
 
     def create_layers(self, network_shape):
         layers = []
@@ -56,7 +53,7 @@ class NeuralNetwork:
         a = inputs
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             layer_inputs.append(a)
-            z = np.dot(a, W.T) + b
+            z = jnp.dot(a, W.T) + b
             a = activation_func(z)
 
             zs.append(z)
@@ -92,35 +89,85 @@ class NeuralNetwork:
 
         return layer_grads
     
-    def train_network(self, inputs, targets, epochs, learning_rate, batch_size=10, use_jax=True):
+    def train_network(self, inputs, targets, epochs, learning_rate, batch_size=10, manuel_grads=False):
+        
+        # Set accuracy function based on network type
+        if self.type_of_network == "classification":
+            self.accuracy_func = accuracy_one_hot
+        elif self.type_of_network == "regression":
+            self.accuracy_func = r_2
+        else:
+            raise ValueError("Invalid type of network")
+        
+
+        if self.update_strategy == "Constant":
+            self.update_beta.constant(learning_rate)
+        elif self.update_strategy == "Momentum":
+            self.update_beta.momentum_based(learning_rate, gamma=0.9)
+        elif self.update_strategy == "Adagrad":
+            self.update_beta.adagrad(learning_rate)
+        elif self.update_strategy == "Adagrad_Momentum":
+            self.update_beta.adagrad_momentum(learning_rate, gamma=0.9)
+        elif self.update_strategy == "Adam":
+            self.update_beta.adam(learning_rate)
+        elif self.update_strategy == "RMSprop":
+            self.update_beta.rmsprop(learning_rate)
+        else:
+            raise ValueError("Unsupported update strategy")
+        
         accuracy_list = []
         loss_list = []
         num_samples = inputs.shape[0]
 
-        for i in tqdm(range(epochs)):
-            # Shuffle data at the beginning of each epoch
-            permutation = np.random.permutation(num_samples)
-            inputs_shuffled = inputs[permutation]
-            targets_shuffled = targets[permutation]
+        if manuel_grads:
+            for i in tqdm(range(epochs)):
+                # Shuffle data at the beginning of each epoch
+                permutation = np.random.permutation(num_samples)
+                inputs_shuffled = inputs[permutation]
+                targets_shuffled = targets[permutation]
 
-            for start in range(0, num_samples, batch_size):
-                end = start + batch_size
-                batch_inputs = inputs_shuffled[start:end]
-                batch_targets = targets_shuffled[start:end]
+                for start in range(0, num_samples, batch_size):
+                    end = start + batch_size
+                    batch_inputs = inputs_shuffled[start:end]
+                    batch_targets = targets_shuffled[start:end]
 
-                # Compute gradients for the batch
-                layers_grad = self.backpropagation_batch(batch_inputs, batch_targets)
-                
-                # Update weights
-                for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
-                    self.layers[idx] = (W - learning_rate * W_g, b - learning_rate * b_g)
+                    # Compute gradients for the batch
+                    layers_grad = self.backpropagation_batch(batch_inputs, batch_targets)
+                    # Update weights
+                    for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
+                        # Update W and b using the chosen strategy in Update_Beta
+                        W_updated = self.update_beta(W, W_g, iter=i+1)  # Update weights
+                        b_updated = self.update_beta(b, b_g,  iter=i+1)  # Update biases
+                        self.layers[idx] = (W_updated, b_updated)
 
-            # Calculate metrics after each epoch
-            predictions = self.predict(inputs)
-            accuracy_score = self.accuracy_func(predictions, targets)
-            accuracy_list.append(accuracy_score)
-            loss = self.cost_fun(predictions, targets)
-            loss_list.append(loss)
+        else: 
+            for i in tqdm(range(epochs)):
+                # Shuffle data at the beginning of each epoch
+                permutation = np.random.permutation(num_samples)
+                inputs_shuffled = inputs[permutation]
+                targets_shuffled = targets[permutation]
+
+                for start in range(0, num_samples, batch_size):
+                    end = start + batch_size
+                    batch_inputs = inputs_shuffled[start:end]
+                    batch_targets = targets_shuffled[start:end]
+
+                    # Compute gradients for the batch
+                    layers_grad = self.jaxgrad_gradient(batch_inputs, batch_targets)
+                    # Update weights
+                    for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
+                        # Update W and b using the chosen strategy in Update_Beta
+                        W_updated = self.update_beta(W, W_g)
+                        b_updated = self.update_beta(b, b_g)  
+
+                        self.layers[idx] = (W_updated, b_updated)
+
+                # Calculate metrics after each epoch
+                predictions = self.predict(inputs)
+                accuracy_score = self.accuracy_func(predictions, targets)
+                accuracy_list.append(accuracy_score)
+                loss = self.cost_fun(predictions, targets)
+                loss_list.append(loss)
 
         return self.layers, accuracy_list, loss_list, predictions
 
@@ -139,18 +186,19 @@ class NeuralNetwork:
         def jax_grad_predict(layers, inputs):
             a = inputs
             for (W, b), activation_func in zip(layers, self.activation_funcs):
-                z = W @ a + b
+                z = jnp.dot(a, W.T) + b
                 a = activation_func(z)
             return a
 
         def jax_grad_cost(layers, inputs, targets):
             # Mimicing cost, but with layers as argument to use jax.grad on it
-            predict = jax_grad_predict(layers, inputs)
-            return self.cost_fun(inputs, targets)
+            predictions = jax_grad_predict(layers, inputs)
+            return self.cost_fun(predictions, targets)
 
-        gradients = grad(jax_grad_cost, 0)
+        gradients = grad(jax_grad_cost, argnums=0)(self.layers, inputs, targets)
 
         return gradients
+
 
     def save_network(self, file_name):
         # Write network info to json file

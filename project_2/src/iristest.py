@@ -22,9 +22,9 @@ def test_iris():
     activation_funcs = ["sigmoid", "ReLU"]
     cost_func = mse
 
-    model = NeuralNetwork(network_shape, activation_funcs, mse)
+    model = NeuralNetwork(network_shape, activation_funcs, mse, "classification","Constant")
 
-    _, acc, loss = model.train_network(inputs, targets, epochs=50, learning_rate=0.05, batch=10)
+    _, acc, loss, preds = model.train_network(inputs, targets, epochs=50, learning_rate=0.05)
 
     assert loss[-1] < 0.3, "Iris test failed"
 

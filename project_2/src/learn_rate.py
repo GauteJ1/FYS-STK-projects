@@ -1,4 +1,3 @@
-import numpy as np
 import jax.numpy as jnp
 import jax
 from jax._src.typing import Array
@@ -54,27 +53,29 @@ class Update_Beta:
         self.s_prev = None
 
     def __call__(self, beta: Array, gradients: Array, iter: int = 1) -> Array:
+
         if self.rate_type == "Constant":
             return beta - self.eta * gradients
 
         elif self.rate_type == "Momentum":
-            if self.prev_v is None:
-                self.prev_v = np.zeros_like(gradients)
+            if self.prev_v is None or self.prev_v.shape != gradients.shape:
+                self.prev_v = jnp.zeros_like(gradients)
             v = self.gamma * self.prev_v + self.eta * gradients
             self.prev_v = v
             return beta - v
 
         elif self.rate_type == "Adagrad":
-            if self.G is None:
-                self.G = np.zeros_like(gradients)
+            if self.G is None or self.G.shape != gradients.shape:
+                self.G = jnp.zeros_like(gradients)
             self.G += gradients**2
-            return beta - self.eta * gradients / (np.sqrt(self.G) + self.delta)
+
+            return beta - self.eta * gradients / (jnp.sqrt(self.G) + self.delta)
         
         elif self.rate_type == "Adagrad_Momentum":
-            if self.prev_v is None:
-                self.prev_v = np.zeros_like(gradients)
+            if self.prev_v is None or self.prev_v.shape != gradients.shape:
+                self.prev_v = jnp.zeros_like(gradients)
             if self.G is None:
-                self.G = np.zeros_like(gradients)
+                self.G = jnp.zeros_like(gradients)
 
             self.G = gradients**2
             v = self.gamma * self.prev_v + self.eta * gradients / (jnp.sqrt(self.G) + self.delta)
@@ -82,9 +83,9 @@ class Update_Beta:
             return beta - v
         
         elif self.rate_type == "Adam":
-            if self.m_prev is None:
+            if self.m_prev is None or self.m_prev.shape != gradients.shape:
                 self.m_prev = jnp.zeros_like(gradients)
-            if self.s_prev is None:
+            if self.s_prev is None or self.s_prev.shape != gradients.shape:
                 self.s_prev = jnp.zeros_like(gradients)
             
             beta, self.m_prev, self.s_prev = adam(beta, gradients, self.eta, self.b1, self.b2, self.epsilon, iter, self.m_prev, self.s_prev)
@@ -92,8 +93,8 @@ class Update_Beta:
             return beta
 
         elif self.rate_type == "RMSprop":
-            if self.s_prev is None:
-                self.s_prev = np.zeros_like(gradients)
+            if self.s_prev is None or self.s_prev.shape != gradients.shape:
+                self.s_prev = jnp.zeros_like(gradients)
             s = self.b * self.s_prev + (1 - self.b) * gradients**2
             beta = beta - self.eta * gradients / (jnp.sqrt(s) + self.epsilon)
 
