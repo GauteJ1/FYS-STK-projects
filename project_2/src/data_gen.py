@@ -25,17 +25,47 @@ class Poly1D2Deg(DataGen):
 
     def __calc_y(self):
         # These should be a list (due to generalization)
-        self.a = 3
-        self.b = -2
-        self.c = 5
+        a = 3
+        b = -2
+        c = 5
         noise = 0.2
 
         self.y = (
-            self.a
-            + self.b * self.x
-            + self.c * self.x**2 
+            a + b * self.x + c * self.x**2 
             + noise * np.random.randn(self.data_points, 1)
         )
+
+class FrankeDataGen(DataGen):
+    def __init__(self, data_points: int = 101, noise: bool = False) -> None:
+        super().__init__(data_points)
+        self.noise = noise
+        self.__generate_data()
+
+    def __generate_data(self) -> None:
+        x = np.linspace(0, 1, self.data_points)
+        y = np.linspace(0, 1, self.data_points)
+        self.x, self.y = np.meshgrid(x, y)  # Create a 2D grid for x and y
+
+        term1 = 0.75 * np.exp(
+            -(0.25 * (9 * self.x - 2) ** 2) - 0.25 * ((9 * self.y - 2) ** 2)
+        )
+        term2 = 0.75 * np.exp(-((9 * self.x + 1) ** 2) / 49.0 - 0.1 * (9 * self.y + 1))
+        term3 = 0.5 * np.exp(
+            -((9 * self.x - 7) ** 2) / 4.0 - 0.25 * ((9 * self.y - 3) ** 2)
+        )
+        term4 = -0.2 * np.exp(-((9 * self.x - 4) ** 2) - (9 * self.y - 7) ** 2)
+
+        if self.noise:
+            self.z = (
+                term1
+                + term2
+                + term3
+                + term4
+                + 0.3 * np.random.normal(0, 1, self.x.shape)
+            )
+        else:
+            self.z = term1 + term2 + term3 + term4
+
 
 class CancerData(DataGen):
     def __init__(self, data_points: int = 569) -> None:
