@@ -2,6 +2,8 @@ import jax.numpy as jnp
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import r2_score
 
+### Activation functions and their derivatives ###
+
 
 def ReLU(z):
     return jnp.where(z > 0, z, 1e-15)
@@ -25,12 +27,20 @@ def softmax_vec(z):
     e_z = jnp.exp(z - jnp.max(z))  # for numerical stability
     return e_z / jnp.sum(e_z)
 
-# derivation of softmax 
 def softmax_der(z):
     return softmax(z) * (1 - softmax(z))
 
-def accuracy(y, y_pred):
-    return accuracy_score(y, y_pred)  # Use only for final evaluations, not within JAX-traced functions
+def identity(z):
+    return z
+
+def identity_der(z):
+    return 1
+
+
+### Accuracy functions ###
+
+def accuracy(predictions, targets):
+    return accuracy_score(predictions, targets)  # Use only for final evaluations, not within JAX-traced functions
 
 def accuracy_one_hot(predictions, targets):
     # Convert predictions to class labels
@@ -44,26 +54,10 @@ def accuracy_one_hot(predictions, targets):
     
     return accuracy_score(predicted_labels, target_labels)
 
-def r_2(y, y_pred):
-    return r2_score(y.flatten(), y_pred.flatten())
+### Cost functions ###
 
-def cross_entropy(y_pred, y):
-    # Average to ensure scalar output
-    return -jnp.mean(jnp.sum(y * jnp.log(y_pred), axis=1))
+def r_2(predictions, targets):
+    return r2_score(predictions.flatten(), targets.flatten())
 
-def mse(y_pred, y):
-    return jnp.mean((y - y_pred) ** 2)
-
-def mse_der(predict, target):
-    return (2 / len(predict)) * (predict - target)
-
-def identity(z):
-    return z
-
-def identity_der(z):
-    return 1
-
-def binary_cross_entropy(y_true, y_pred):
-    y_pred = jnp.clip(y_pred, 1e-15, 1 - 1e-15)  # Avoid log(0) by clipping
-    bce = -jnp.mean(y_true * jnp.log(y_pred) + (1 - y_true) * jnp.log(1 - y_pred))
-    return bce
+def mse(targets, predictions):
+    return jnp.mean((predictions - targets) ** 2)
