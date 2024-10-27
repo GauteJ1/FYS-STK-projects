@@ -4,13 +4,18 @@ from sklearn.metrics import r2_score
 
 
 def ReLU(z):
-    return jnp.where(z > 0, z, 0)
+    return jnp.where(z > 0, z, 1e-15)
 
 def ReLU_der(z):
-    return jnp.where(z > 0, 1, 0)
+    return jnp.where(z > 0, 1, 1e-15)  
 
 def sigmoid(z):
+    z = jnp.clip(z, -30, 30)  
     return 1 / (1 + jnp.exp(-z))
+
+def sigmoid_der(z):
+    sig = sigmoid(z)
+    return sig * (1 - sig)
 
 def softmax(z):
     e_z = jnp.exp(z - jnp.max(z, axis=0, keepdims=True))  # for numerical stability
@@ -52,12 +57,13 @@ def mse(y_pred, y):
 def mse_der(predict, target):
     return (2 / len(predict)) * (predict - target)
 
-def sigmoid_der(z):
-    return (jnp.exp(-z)) / ((1 + jnp.exp(-z)) ** 2)
-
 def identity(z):
     return z
 
 def identity_der(z):
     return 1
 
+def binary_cross_entropy(y_true, y_pred):
+    y_pred = jnp.clip(y_pred, 1e-15, 1 - 1e-15)  # Avoid log(0) by clipping
+    bce = -jnp.mean(y_true * jnp.log(y_pred) + (1 - y_true) * jnp.log(1 - y_pred))
+    return bce

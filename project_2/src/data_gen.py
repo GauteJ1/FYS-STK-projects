@@ -76,7 +76,7 @@ class CancerData(DataGen):
         api.dataset_download_files('uciml/breast-cancer-wisconsin-data', path='data', unzip=True)
 
         data = pd.read_csv("data/data.csv")
-        self.x = data.drop("diagnosis", axis=1)
+        self.x = data.drop(["diagnosis", "id", "Unnamed: 32"], axis=1)
         self.y = data["diagnosis"].map({'B': 0, 'M': 1})
 
 

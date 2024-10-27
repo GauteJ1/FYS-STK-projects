@@ -74,14 +74,20 @@ class NeuralNetwork:
         for i in reversed(range(len(self.layers))):
 
             layer_input, z, activation_der = layer_inputs[i], zs[i], self.activation_funcs_der[i]
-
+            #print(f"layer_input: {layer_input[0]}, z: {z[0]}, activation_der: {activation_der(z)[0]}")
             if i == len(self.layers) - 1:
                 dC_da = self.cost_fun_der(predict, target)
+                #print(f" for i = {i} dC_da: {dC_da[0]}")
             else:
                 (W, b) = self.layers[i + 1]
                 dC_da = dC_dz @ W
-            
+                #print(f" for i = {i} dC_da: {dC_da[0]}")
+
+            dC_da = jnp.clip(dC_da, -1e3, 1e3)
             dC_dz = dC_da * activation_der(z) 
+            dC_dz = jnp.clip(dC_dz, -1e3, 1e3)
+
+            #print(f" for i = {i} dC_dz: {dC_dz[0]} with dC_da: {dC_da[0]} and activation_der: {activation_der(z)[0]}")
             dC_dW = jnp.dot(dC_dz.T, layer_input) 
             dC_db = jnp.mean(dC_dz, axis=0)
 
@@ -89,7 +95,7 @@ class NeuralNetwork:
 
         return layer_grads
     
-    def train_network(self, inputs, targets, epochs, learning_rate, batch_size=10, manuel_grads=False):
+    def train_network(self, inputs, targets, epochs, learning_rate, batch_size=10, manuel_grads=True):
         
         # Set accuracy function based on network type
         if self.type_of_network == "classification":
@@ -140,8 +146,18 @@ class NeuralNetwork:
                         b_updated = self.update_beta(b, b_g,  iter=i+1)  # Update biases
                         self.layers[idx] = (W_updated, b_updated)
 
+                # Calculate metrics after each epoch
+                predictions = self.predict(inputs)
+                accuracy_score = self.accuracy_func(predictions, targets)
+                accuracy_list.append(accuracy_score)
+                loss = self.cost_fun(predictions, targets)
+                loss_list.append(loss)
+
         else: 
             for i in tqdm(range(epochs)):
+                inputs = np.array(inputs)
+                targets = np.array(targets)
+
                 # Shuffle data at the beginning of each epoch
                 permutation = np.random.permutation(num_samples)
                 inputs_shuffled = inputs[permutation]
