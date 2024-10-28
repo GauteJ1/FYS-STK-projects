@@ -9,3 +9,5 @@ scikit-learn
 kagglehub
 jax
 tqdm 
+torch
+optax
