@@ -1,6 +1,7 @@
 import numpy as np
 import kagglehub
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
 import os
@@ -10,6 +11,8 @@ os.environ['KAGGLE_KEY'] = "7b87a5fea36501c8f5ca5a35d5e88c8d"
 from kaggle.api.kaggle_api_extended import KaggleApi
 api = KaggleApi()
 api.authenticate()
+
+np.random.seed(4155)
 
 
 class DataGen: 
@@ -78,6 +81,12 @@ class CancerData(DataGen):
         data = pd.read_csv("data/data.csv")
         self.x = data.drop(["diagnosis", "id", "Unnamed: 32"], axis=1)
         self.y = data["diagnosis"].map({'B': 0, 'M': 1})
+
+        self.scale_data()
+
+    def scale_data(self):
+        scaler = MinMaxScaler()
+        self.x = scaler.fit_transform(self.x)
 
 
 if __name__ == "__main__":

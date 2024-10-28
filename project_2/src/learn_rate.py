@@ -67,17 +67,19 @@ class Update_Beta:
         elif self.rate_type == "Adagrad":
             if self.G is None or self.G.shape != gradients.shape:
                 self.G = jnp.zeros_like(gradients)
-            self.G += gradients**2
+            self.G += gradients**2  
+
 
             return beta - self.eta * gradients / (jnp.sqrt(self.G) + self.delta)
+
         
         elif self.rate_type == "Adagrad_Momentum":
             if self.prev_v is None or self.prev_v.shape != gradients.shape:
                 self.prev_v = jnp.zeros_like(gradients)
-            if self.G is None:
+            if self.G is None or self.G.shape != gradients.shape:
                 self.G = jnp.zeros_like(gradients)
 
-            self.G = gradients**2
+            self.G += gradients**2
             v = self.gamma * self.prev_v + self.eta * gradients / (jnp.sqrt(self.G) + self.delta)
             self.prev_v = v
             return beta - v

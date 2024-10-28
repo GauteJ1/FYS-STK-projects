@@ -22,7 +22,7 @@ def test_iris():
     activation_funcs = ["sigmoid", "ReLU"]
     cost_func = mse
 
-    model = NeuralNetwork(network_shape, activation_funcs, mse, "classification","Constant")
+    model = NeuralNetwork(network_shape, activation_funcs, mse, "classification","Constant", False)
 
     _, acc, loss, preds = model.train_network(inputs, targets, epochs=50, learning_rate=0.05)
 
