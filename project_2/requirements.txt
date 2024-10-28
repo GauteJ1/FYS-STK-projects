@@ -11,3 +11,4 @@ jax
 tqdm 
 torch
 optax
+kaggle
