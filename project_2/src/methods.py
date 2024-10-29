@@ -83,3 +83,13 @@ def binary_cross_entropy(predictions, targets):
     predictions = jnp.clip(predictions, epsilon, 1.0 - epsilon)  # Ensure stability
     bce = -jnp.mean(targets * jnp.log(predictions) + (1 - targets) * jnp.log(1 - predictions))
     return bce
+
+def recall(predictions, targets):
+    true_positives = jnp.sum(predictions * targets)
+    actual_positives = jnp.sum(targets)
+    return true_positives / (actual_positives + 1e-15)
+
+def precision(predictions, targets):
+    true_positives = jnp.sum(predictions * targets)
+    predicted_positives = jnp.sum(predictions)
+    return true_positives / (predicted_positives + 1e-15)

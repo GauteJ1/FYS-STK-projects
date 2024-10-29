@@ -140,6 +140,9 @@ class Exploration:
 
         self.best_optimizer = self.find_maximal_accuracy(self.optimizers, test_accuracy)
 
+        if self.print_info:
+            print(f"Best optimizer: {self.best_optimizer}")
+
     def find_structure(self):
 
         test_loss = []
@@ -164,9 +167,16 @@ class Exploration:
         self.best_structure = [self.input_size] + best_list + [self.output_size]
         self.num_hidden_layers = len(best_list) # update number of hidden layers to the best
 
+        if self.print_info:
+            print(f"Best structure: {self.best_structure}")
+
     def find_activation_functions(self):
 
         combinations_of_activations = list(product(self.activation_functions, repeat=self.num_hidden_layers))
+        final_activation = "sigmoid" if self.type_model == "classification" else "identity"
+
+        combinations_of_activations = [list(comb) + [final_activation] for comb in combinations_of_activations]
+
         test_loss = []
         test_accuracy = []
         for combination in combinations_of_activations:
@@ -177,6 +187,9 @@ class Exploration:
 
         best = self.find_maximal_accuracy(combinations_of_activations, test_accuracy)
         self.best_activation_functions = list(best)
+
+        if self.print_info:
+            print(f"Best activation functions: {self.best_activation_functions}")
 
     def grid_search_lr_batch(self):
 
@@ -227,13 +240,17 @@ class Exploration:
         self.best_optimizer = self.find_maximal_accuracy(self.optimizers, accuracies)
     
     def plot_best(self):
-        
+
         fig, ax = plt.subplots(1, 1, figsize=(10, 6))
         for i, acc in enumerate(self.best_accuracies):
             ax.plot(acc, label=self.optimizers[i])
         ax.set_xlabel("Epochs", fontsize=14)
-        ax.set_ylabel("Accuracy", fontsize=14)
-        ax.set_title("Accuracy for best hyperparameters", fontsize=16)
+        if self.type_model == 'continuous':
+            ax.set_ylabel("MSE", fontsize=14)
+            ax.set_title("MSE for best hyperparameters", fontsize=16)
+        elif self.type_model == 'classification':
+            ax.set_ylabel("Recall", fontsize=14)
+            ax.set_title("Recall for best hyperparameters", fontsize=16)
         ax.legend()
         plt.show()
 
@@ -244,10 +261,15 @@ class Exploration:
         print(f"Best learning rate and batch size: {self.best_lr_batch[self.best_optimizer][:-1]}")
 
         # print final accuracy for the best optimizer
-        print(f"Final accuracy: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+        if self.type_model == 'continuous':
+            print(f"Final MSE: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+        elif self.type_model == 'classification':
+            print(f"Final recall: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
 
 
-    def do_all(self):
+    def do_all(self, print_into: bool = False) -> None:
+
+        self.print_info = print_into        
         self.generate_data()
         self.find_ok_optimizer()
         self.find_structure()

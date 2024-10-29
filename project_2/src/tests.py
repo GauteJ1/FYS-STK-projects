@@ -8,7 +8,7 @@ import optax
 from jax import nn as jax_nn
 from jax import grad
 import jax as jax
-from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
+from sklearn.metrics import accuracy_score, mean_squared_error, r2_score, recall_score
 
 from neural_network import NeuralNetwork
 from methods import *
@@ -441,16 +441,21 @@ class TestFunctions(unittest.TestCase):
 
         self.assertTrue(jnp.allclose(actual, expected), "Cross-entropy loss mismatch")
 
-def test_binary_cross_entropy(self):
+    def test_binary_cross_entropy(self):
 
-    predictions = torch.tensor([0.1, 0.9, 0.2, 0.8], dtype=torch.float32)
-    target_tensor = torch.tensor([0, 1, 0, 1], dtype=torch.float32)
-    criterion = nn.BCELoss()
-    expected = criterion(predictions, target_tensor).item()
-    actual = binary_cross_entropy(predictions.detach().numpy(), target_tensor.detach().numpy())
-    self.assertTrue(np.allclose(actual, expected), "Binary cross-entropy loss mismatch")
+        predictions = torch.tensor([0.1, 0.9, 0.2, 0.8], dtype=torch.float32)
+        target_tensor = torch.tensor([0, 1, 0, 1], dtype=torch.float32)
+        criterion = nn.BCELoss()
+        expected = criterion(predictions, target_tensor).item()
+        actual = binary_cross_entropy(predictions.detach().numpy(), target_tensor.detach().numpy())
+        self.assertTrue(np.allclose(actual, expected), "Binary cross-entropy loss mismatch")
 
-
+    def test_recall(self):
+        predictions = jnp.array([1, 0, 1, 1])
+        targets = jnp.array([1, 0, 0, 1])
+        expected = recall_score(targets, predictions)
+        actual = recall(predictions, targets)
+        self.assertAlmostEqual(actual, expected, msg="Recall mismatch")
 
 
 if __name__ == "__main__":

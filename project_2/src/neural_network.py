@@ -57,7 +57,7 @@ class NeuralNetwork:
     def set_accuracy_function(self):
     
         if self.type_of_network == "classification":
-            self.accuracy_func = accuracy
+            self.accuracy_func = recall
         elif self.type_of_network == "continuous":
             self.accuracy_func = r_2
         else:
