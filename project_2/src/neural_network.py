@@ -58,7 +58,7 @@ class NeuralNetwork:
     
         if self.type_of_network == "classification":
             self.accuracy_func = accuracy
-        elif self.type_of_network == "regression":
+        elif self.type_of_network == "continuous":
             self.accuracy_func = r_2
         else:
             raise ValueError("Invalid type of network")
@@ -133,13 +133,14 @@ class NeuralNetwork:
 
         if self.train_test_split:
 
-            train_inputs, test_inputs, train_targets, test_targets = train_test_split(
-                inputs, targets, test_size=test_size, random_state=4155
-            )
+            train_inputs, test_inputs = inputs
+            train_targets, test_targets = targets
 
         else:
-            train_inputs, test_inputs = inputs, None
-            train_targets, test_targets = targets, None
+            train_inputs = inputs
+            train_targets = targets
+            test_inputs = None
+            test_targets = None
 
          # Initialize lists only if they are empty (for first training session)
         if not hasattr(self, 'loss') or not self.loss:
@@ -162,7 +163,7 @@ class NeuralNetwork:
 
         num_samples = train_inputs.shape[0]
 
-        for epoch in tqdm(range(epochs)):
+        for epoch in range(epochs):
 
             permutation = np.random.permutation(num_samples)
             train_inputs = train_inputs[permutation]

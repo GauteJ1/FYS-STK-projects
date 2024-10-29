@@ -29,7 +29,7 @@ class TestNeuralNetworkComparison(unittest.TestCase):
         self.activation_funcs = ["ReLU", "identity"]
         self.cost_func = "MSE"
 
-        self.type_of_network = "regression"
+        self.type_of_network = "continuous"
         self.update_strategy = "Constant"
         self.manual_gradients = False
 
@@ -121,7 +121,7 @@ class TestNeuralNetworkComparison(unittest.TestCase):
 
         acceptable_loss_diff = 0.05
         self.assertAlmostEqual(custom_loss[-1], pytorch_loss, delta=acceptable_loss_diff, 
-                            msg="Final loss differs too much from PyTorch model in the regression case.")
+                            msg="Final loss differs too much from PyTorch model in the continuous case.")
         
 
     # comparing manual_gradients=False and manual_gradients=True for the custom model
@@ -130,7 +130,7 @@ class TestNeuralNetworkComparison(unittest.TestCase):
             network_shape=[2, 8, 1], 
             activation_funcs=["ReLU", "sigmoid"], 
             cost_func="MSE", 
-            type_of_network="regression",
+            type_of_network="continuous",
             update_strategy="Constant",
             manual_gradients=False, # has nothing to say as we call manual_gradient and jaxgrad_gradient directly 
             train_test_split=False
