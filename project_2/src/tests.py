@@ -103,7 +103,7 @@ class TestNeuralNetworkComparison(unittest.TestCase):
 
     def test_custom_vs_pytorch(self):
 
-        n_epochs = 100
+        n_epochs = 1000
         learning_rate = 0.001
         batch_size = 10201 # Full batch, i.e. like no batching
 
@@ -242,7 +242,7 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
 
     def test_custom_vs_pytorch(self):
         # Test parameters
-        epochs = 100
+        epochs = 1000
         learning_rate = 0.001
         batch_size = 569 # Full batch, i.e. like no batching
 

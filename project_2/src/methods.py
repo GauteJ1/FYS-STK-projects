@@ -85,9 +85,15 @@ def binary_cross_entropy(predictions, targets):
     return bce
 
 def recall(predictions, targets):
+    # turn to binary values
+    predictions = jnp.where(predictions >= 0.5, 1, 0)
     true_positives = jnp.sum(predictions * targets)
     actual_positives = jnp.sum(targets)
-    return true_positives / (actual_positives + 1e-15)
+    recall_val = true_positives / (actual_positives + 1e-15)
+    # check for values outside the range [0, 1]
+    if recall_val < 0 or recall_val > 1:
+        raise ValueError(f"Recall value outside the range [0, 1]: {recall_val}")
+    return recall_val
 
 def precision(predictions, targets):
     true_positives = jnp.sum(predictions * targets)

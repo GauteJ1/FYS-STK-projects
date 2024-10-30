@@ -6,6 +6,7 @@ from methods import *
 from tqdm import tqdm
 from jax import grad, jit, vmap
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import recall_score
 
 
 from learn_rate import Update_Beta
@@ -59,7 +60,7 @@ class NeuralNetwork:
         if self.type_of_network == "classification":
             self.accuracy_func = recall
         elif self.type_of_network == "continuous":
-            self.accuracy_func = r_2
+            self.accuracy_func = r2_score
         else:
             raise ValueError("Invalid type of network")
         
@@ -106,6 +107,10 @@ class NeuralNetwork:
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):  
             z = jnp.dot(a, W.T) + b
             a = activation_func(z)
+
+        #if self.type_of_network == "classification":
+            #a = jnp.where(a >= 0.5, 1, 0)
+
         return a
     
     def feed_forward_saver(self, inputs: np.ndarray) -> tuple:
@@ -166,33 +171,27 @@ class NeuralNetwork:
         for epoch in range(epochs):
 
             permutation = np.random.permutation(num_samples)
-            train_inputs = train_inputs[permutation]
-            train_targets = train_targets[permutation]
+            batch_index = np.random.choice(permutation)  
+            batch_inputs = train_inputs[batch_index:batch_index + 1]
+            batch_targets = train_targets[batch_index:batch_index + 1]
 
-            for start in range(0, num_samples, batch_size):
-                end = start + batch_size
-                batch_inputs = train_inputs[start:end]
-                batch_targets = train_targets[start:end]
+            layers_grad = self.gradient(batch_inputs, batch_targets)
 
-                layers_grad = self.gradient(batch_inputs, batch_targets)
+            for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
+                W_updated = self.update_beta(W, W_g)
+                b_updated = self.update_beta(b, b_g)
 
-                for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
-                    W_updated = self.update_beta(W, W_g)
-                    b_updated = self.update_beta(b, b_g)  
-
-                    self.layers[idx] = (W_updated, b_updated)
-
+                self.layers[idx] = (W_updated, b_updated)
 
             train_predictions = self.predict(train_inputs)
             self.loss.append(self.cost_fun(train_predictions, train_targets))
             self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
 
             if test_inputs is not None:
-
                 test_predictions = self.predict(test_inputs)
                 self.test_loss.append(self.cost_fun(test_predictions, test_targets))
                 self.test_accuracy.append(self.accuracy_func(test_predictions, test_targets))
-    
+            
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
 
