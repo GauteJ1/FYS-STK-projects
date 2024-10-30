@@ -275,12 +275,14 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         self.beta = jnp.array([1.0, 2.0])
         self.gradients = jnp.array([0.1, 0.2])
         self.iter = 1
+        self.param_type = "weights"
         self.learning_rate = 0.01
 
     def test_constant_update(self):
         updater = Update_Beta()
         updater.constant(eta=self.learning_rate)
-        new_beta = updater(self.beta, self.gradients)
+        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+
 
         # Using SGD with a fixed learning rate in Optax for comparison
         optax_optimizer = optax.sgd(learning_rate=self.learning_rate)
@@ -293,7 +295,8 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_momentum_update(self):
         updater = Update_Beta()
         updater.momentum_based(eta=self.learning_rate, gamma=0.9)
-        new_beta = updater(self.beta, self.gradients)
+        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+
 
         # Using Momentum in Optax for comparison
         optax_optimizer = optax.sgd(learning_rate=self.learning_rate, momentum=0.9)
@@ -307,7 +310,8 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updater = Update_Beta()
         updater.adagrad(eta=self.learning_rate)
         # Perform a single update with the custom Adagrad
-        new_beta = updater(self.beta, self.gradients)
+        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+
 
         # Using Adagrad in Optax for comparison
         optax_optimizer = optax.adagrad(learning_rate=self.learning_rate)
@@ -323,7 +327,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_adam_update(self):
         updater = Update_Beta()
         updater.adam(eta=self.learning_rate, epsilon=1e-8, b1=0.9, b2=0.999)
-        new_beta = updater(self.beta, self.gradients, self.iter)
+        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
 
         # Using Adam in Optax for comparison
         optax_optimizer = optax.adam(learning_rate=self.learning_rate)
@@ -336,7 +340,8 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_rmsprop_update(self):
         updater = Update_Beta()
         updater.rmsprop(eta=self.learning_rate, epsilon=1e-8, b=0.9)
-        new_beta = updater(self.beta, self.gradients)
+        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+
 
         # Using RMSProp in Optax for comparison
         optax_optimizer = optax.rmsprop(learning_rate=self.learning_rate, decay=0.9, eps=1e-8)

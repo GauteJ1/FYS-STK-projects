@@ -2,6 +2,7 @@ import jax.numpy as jnp
 import numpy as np  
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import r2_score
+import torch
 
 
 
@@ -79,9 +80,16 @@ def cross_entropy(logits, targets):
     return -jnp.mean(jnp.sum(targets * jnp.log(softmax_preds + 1e-15), axis=1))
 
 def binary_cross_entropy(predictions, targets):
-    epsilon = 1e-10  # Small constant to avoid log(0)
-    predictions = jnp.clip(predictions, epsilon, 1.0 - epsilon)  # Ensure stability
-    bce = -jnp.mean(targets * jnp.log(predictions) + (1 - targets) * jnp.log(1 - predictions))
+
+    epsilon = 1e-6
+    predictions = jnp.clip(predictions, epsilon, 1 - epsilon) # to avoid nan 
+    
+    eps = 1e-10 # Small epsilon value to prevent log(0)
+    bce = -jnp.mean(targets * jnp.log(predictions + eps) + (1 - targets) * jnp.log(1 - predictions))
+
+    if jnp.isnan(bce):
+        raise ValueError("NaN encountered in binary cross-entropy")
+    
     return bce
 
 def recall(predictions, targets):
@@ -91,11 +99,32 @@ def recall(predictions, targets):
     actual_positives = jnp.sum(targets)
     recall_val = true_positives / (actual_positives + 1e-15)
     # check for values outside the range [0, 1]
+
     if recall_val < 0 or recall_val > 1:
         raise ValueError(f"Recall value outside the range [0, 1]: {recall_val}")
+    
     return recall_val
 
 def precision(predictions, targets):
     true_positives = jnp.sum(predictions * targets)
     predicted_positives = jnp.sum(predictions)
     return true_positives / (predicted_positives + 1e-15)
+
+def f1score(predictions, targets):
+    precision_val = precision(predictions, targets)
+    recall_val = recall(predictions, targets)
+
+    # Check if precision and recall are within the expected range [0, 1]
+    if not (0 <= precision_val <= 1):
+        raise ValueError(f"Precision value outside the range [0, 1]: {precision_val}")
+    if not (0 <= recall_val <= 1):
+        raise ValueError(f"Recall value outside the range [0, 1]: {recall_val}")
+
+    # Compute F1 score with a small epsilon to prevent division by zero
+    f1 = 2 * (precision_val * recall_val) / (precision_val + recall_val + 1e-15)
+    
+    # Check if F1 is within the expected range [0, 1]
+    if not (0 <= f1 <= 1):
+        raise ValueError(f"F1 score value outside the range [0, 1]: {f1}")
+    
+    return f1

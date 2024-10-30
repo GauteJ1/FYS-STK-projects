@@ -94,10 +94,10 @@ class Exploration:
 
         if isinstance(thing_to_look_at, tuple):
             lr_values, batch_sizes = thing_to_look_at
-            max_accuracy = -np.inf
-            best_config = (None, None, max_accuracy)
+            max_accuracy = -np.inf 
+            best_config = (None, None, max_accuracy) 
 
-            for i, acc in enumerate(test_accuracy):
+            for i, acc in enumerate(test_accuracy): 
                 if acc[-1] > max_accuracy:
                     max_accuracy = acc[-1]
                     best_config = (lr_values[i // len(batch_sizes)], 
@@ -118,15 +118,16 @@ class Exploration:
     def find_ok_optimizer(self):
         
         # parameters just for this initial search for a good enough optimizer
-        self.intermediary_batch_size = 1000
         self.intermediary_lr = 0.01
-        self.intermediary_epochs = 20
-        self.intermediary_hidden_layers = [4,4]
+        self.intermediary_epochs = 100
+        self.intermediary_hidden_layers = [8,8]
 
         if self.type_model == 'classification':
             self.intermediary_activation_funcs = ["ReLU", "ReLU", "sigmoid"]
+            self.intermediary_batch_size = 300
         else:
             self.intermediary_activation_funcs = ["ReLU", "ReLU", "identity"]  
+            self.intermediary_batch_size = 8000
 
         network_shape = [self.input_size] + self.intermediary_hidden_layers + [self.output_size]
         test_loss = []
@@ -142,6 +143,18 @@ class Exploration:
 
         if self.print_info:
             print(f"Best optimizer: {self.best_optimizer}")
+
+        if self.print_info:
+            # plot the loss for each optimizer
+            fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+            for i, loss in enumerate(test_loss):
+                print(f"for {self.optimizers[i]}: {loss[-1]}")
+                ax.plot(loss, label=self.optimizers[i])
+            ax.set_xlabel("Epochs", fontsize=14)
+            ax.set_ylabel("Loss", fontsize=14)
+            ax.set_title("Loss for different optimizers", fontsize=16)
+            ax.legend()
+            plt.show()
 
     def find_structure(self):
 
@@ -223,13 +236,13 @@ class Exploration:
 
 
     def make_best(self):
-        self.long_epochs = 100
+        self.long_epochs = 300
         losses = []
         accuracies = []
 
         for optim in tqdm(self.optimizers):
             best_lr, best_batch, _ = self.best_lr_batch[optim]
-            model = NeuralNetwork(self.best_structure, self.best_activation_functions, self.cost_function, "continuous", optim)
+            model = NeuralNetwork(self.best_structure, self.best_activation_functions, self.cost_function, self.type_model, optim)
             model.train_network(self.inputs, self.targets, epochs=self.long_epochs, learning_rate=best_lr, batch_size=best_batch)
             losses.append(model.test_loss)
             accuracies.append(model.test_accuracy)
@@ -246,11 +259,11 @@ class Exploration:
             ax.plot(acc, label=self.optimizers[i])
         ax.set_xlabel("Epochs", fontsize=14)
         if self.type_model == 'continuous':
-            ax.set_ylabel("MSE", fontsize=14)
-            ax.set_title("MSE for best hyperparameters", fontsize=16)
+            ax.set_ylabel(r"$R^2$", fontsize=14)
+            ax.set_title(r"$R^2$ for best hyperparameters", fontsize=16)
         elif self.type_model == 'classification':
-            ax.set_ylabel("Recall", fontsize=14)
-            ax.set_title("Recall for best hyperparameters", fontsize=16)
+            ax.set_ylabel("f1 score", fontsize=14)
+            ax.set_title("f1 score for best hyperparameters", fontsize=16)
         ax.legend()
         plt.show()
 
@@ -262,9 +275,9 @@ class Exploration:
 
         # print final accuracy for the best optimizer
         if self.type_model == 'continuous':
-            print(f"Final MSE: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final r^2 score: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
         elif self.type_model == 'classification':
-            print(f"Final recall: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final f1 socre: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
 
 
     def do_all(self, print_into: bool = False) -> None:

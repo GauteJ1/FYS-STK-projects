@@ -4,9 +4,7 @@ import numpy as np
 import json as json
 from methods import *
 from tqdm import tqdm
-from jax import grad, jit, vmap
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import recall_score
+from jax import grad
 
 
 from learn_rate import Update_Beta
@@ -43,11 +41,11 @@ class NeuralNetwork:
         if self.update_strategy == "Constant":
             self.update_beta.constant(self.learning_rate)
         elif self.update_strategy == "Momentum":
-            self.update_beta.momentum_based(self.learning_rate, gamma=0.9)
+            self.update_beta.momentum_based(self.learning_rate, gamma=0.95)
         elif self.update_strategy == "Adagrad":
             self.update_beta.adagrad(self.learning_rate)
         elif self.update_strategy == "Adagrad_Momentum":
-            self.update_beta.adagrad_momentum(self.learning_rate, gamma=0.9)
+            self.update_beta.adagrad_momentum(self.learning_rate, gamma=0.95)
         elif self.update_strategy == "Adam":
             self.update_beta.adam(self.learning_rate)
         elif self.update_strategy == "RMSprop":
@@ -58,9 +56,9 @@ class NeuralNetwork:
     def set_accuracy_function(self):
     
         if self.type_of_network == "classification":
-            self.accuracy_func = recall
+            self.accuracy_func = f1score
         elif self.type_of_network == "continuous":
-            self.accuracy_func = r2_score
+            self.accuracy_func = r_2
         else:
             raise ValueError("Invalid type of network")
         
@@ -107,9 +105,10 @@ class NeuralNetwork:
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):  
             z = jnp.dot(a, W.T) + b
             a = activation_func(z)
-
-        #if self.type_of_network == "classification":
-            #a = jnp.where(a >= 0.5, 1, 0)
+        
+        if self.type_of_network == "classification":
+            a = jnp.where(a >= 0.5, 1, 0)
+            a = a.astype(int)
 
         return a
     
@@ -125,73 +124,75 @@ class NeuralNetwork:
             zs.append(z)
         
         return layer_inputs, zs, a
-    
+
     def train_network(self, 
-                      inputs: np.ndarray, 
-                      targets: np.ndarray, 
-                      epochs: int, 
-                      learning_rate: float, 
-                      batch_size: int = 64,
-                      test_size: float = 0.3
-        ) -> None:
-        
+                        inputs: np.ndarray, 
+                        targets: np.ndarray, 
+                        epochs: int, 
+                        learning_rate: float, 
+                        batch_size: int = 100,
+            ) -> None:
+            
+            if self.train_test_split:
 
-        if self.train_test_split:
+                train_inputs, test_inputs = inputs
+                train_targets, test_targets = targets
 
-            train_inputs, test_inputs = inputs
-            train_targets, test_targets = targets
+            else:
+                train_inputs = inputs
+                train_targets = targets
+                test_inputs = None
+                test_targets = None
 
-        else:
-            train_inputs = inputs
-            train_targets = targets
-            test_inputs = None
-            test_targets = None
+            # Initialize lists only if they are empty (for first training session)
+            if not hasattr(self, 'loss') or not self.loss:
+                self.loss = []
+            if not hasattr(self, 'accuracy') or not self.accuracy:
+                self.accuracy = []
+            if not hasattr(self, 'test_loss') or not self.test_loss:
+                self.test_loss = []
+            if not hasattr(self, 'test_accuracy') or not self.test_accuracy:
+                self.test_accuracy = []
 
-         # Initialize lists only if they are empty (for first training session)
-        if not hasattr(self, 'loss') or not self.loss:
+            self.learning_rate = learning_rate
+            self.batch_size = batch_size
+            self.epochs += epochs
+
+            self.set_accuracy_function()
+            self.set_update_strategy()
+            self.set_grads()
+            self.set_cost_function()
+
+            num_samples = train_inputs.shape[0]
+
             self.loss = []
-        if not hasattr(self, 'accuracy') or not self.accuracy:
-            self.accuracy = []
-        if not hasattr(self, 'test_loss') or not self.test_loss:
             self.test_loss = []
-        if not hasattr(self, 'test_accuracy') or not self.test_accuracy:
+            self.accuracy = []
             self.test_accuracy = []
 
-        self.learning_rate = learning_rate
-        self.batch_size = batch_size
-        self.epochs += epochs
+            for epoch in range(epochs):
 
-        self.set_accuracy_function()
-        self.set_update_strategy()
-        self.set_grads()
-        self.set_cost_function()
+                permutation = np.random.permutation(num_samples)
+                batch_index = np.random.choice(permutation)  
+                batch_inputs = train_inputs[batch_index:batch_index + 1]
+                batch_targets = train_targets[batch_index:batch_index + 1]
 
-        num_samples = train_inputs.shape[0]
+                layers_grad = self.gradient(batch_inputs, batch_targets)
 
-        for epoch in range(epochs):
-
-            permutation = np.random.permutation(num_samples)
-            batch_index = np.random.choice(permutation)  
-            batch_inputs = train_inputs[batch_index:batch_index + 1]
-            batch_targets = train_targets[batch_index:batch_index + 1]
-
-            layers_grad = self.gradient(batch_inputs, batch_targets)
-
-            for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
-                W_updated = self.update_beta(W, W_g)
-                b_updated = self.update_beta(b, b_g)
-
-                self.layers[idx] = (W_updated, b_updated)
-
-            train_predictions = self.predict(train_inputs)
-            self.loss.append(self.cost_fun(train_predictions, train_targets))
-            self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
-
-            if test_inputs is not None:
-                test_predictions = self.predict(test_inputs)
-                self.test_loss.append(self.cost_fun(test_predictions, test_targets))
-                self.test_accuracy.append(self.accuracy_func(test_predictions, test_targets))
+                for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
+                    W_updated = self.update_beta(W, W_g, param_type="weights")
+                    b_updated = self.update_beta(b, b_g, param_type="biases")
+                    self.layers[idx] = (W_updated, b_updated)
             
+                train_predictions = self.predict(train_inputs)
+                self.loss.append(self.cost_fun(train_predictions, train_targets))
+                self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
+            
+                if test_inputs is not None:
+                    test_predictions = self.predict(test_inputs)
+                    self.test_loss.append(self.cost_fun(test_predictions, test_targets))
+                    self.test_accuracy.append(self.accuracy_func(test_predictions, test_targets))
+
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
 
@@ -218,7 +219,7 @@ class NeuralNetwork:
             layer_grads[i] = (dC_dW, dC_db) 
 
 
-        clipped_layer_grads = [(jnp.clip(W_grad, -1e3, 1e3), jnp.clip(b_grad, -1e3, 1e3)) for W_grad, b_grad in layer_grads]
+        clipped_layer_grads = [(jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12)) for W_grad, b_grad in layer_grads]
         
         return clipped_layer_grads
     
@@ -240,7 +241,7 @@ class NeuralNetwork:
 
         gradients = grad(jax_grad_cost, argnums=0)(self.layers, inputs, targets)
 
-        clipped_gradients = [(jnp.clip(W_grad, -1e3, 1e3), jnp.clip(b_grad, -1e3, 1e3)) for W_grad, b_grad in gradients]
+        clipped_gradients = [(jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12)) for W_grad, b_grad in gradients]
 
         return clipped_gradients
 
