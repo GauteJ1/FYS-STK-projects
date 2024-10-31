@@ -1,7 +1,9 @@
 import jax.numpy as jnp
 import jax
 from jax._src.typing import Array
+
 """
+
 class Update_Beta:
 
     def __init__(self) -> None:
@@ -135,11 +137,9 @@ def adam(beta: Array, gradients: Array, eta: float, b1: float, b2: float, epsilo
 
     return beta, m_prev, s_prev
     """
-import numpy as np
+
 import jax.numpy as jnp
 import jax
-from jax import grad
-from sklearn.metrics import f1_score, r2_score
 
 
 class Update_Beta:
@@ -171,20 +171,20 @@ class Update_Beta:
         self.delta = delta
         self.rate_type = "Adagrad_Momentum"
 
-    def adam(self, eta: float = 1e-3, epsilon: float = 1e-8, b1: float = 0.9, b2: float = 0.999) -> None:
+    def adam(self, eta: float, epsilon: float = 1e-8, b1: float = 0.9, b2: float = 0.69) -> None:
         self.eta = eta
         self.epsilon = epsilon
         self.b1 = b1
         self.b2 = b2
         self.rate_type = "Adam"
 
-    def rmsprop(self, eta: float = 1e-3, epsilon: float = 1e-8, b: float = 0.9) -> None:
+    def rmsprop(self, eta: float, epsilon: float = 1e-8, b: float = 0.9) -> None:
         self.eta = eta
         self.epsilon = epsilon
         self.b = b
         self.rate_type = "RMSprop"
 
-    def __call__(self, beta: jnp.ndarray, gradients: jnp.ndarray, param_type: str = "weights", iter: int = 1) -> jnp.ndarray:
+    def __call__(self, beta: jnp.ndarray, gradients: jnp.ndarray, param_type: str, iter: int = 1) -> jnp.ndarray:
         accum = self.accumulators[param_type]
 
         if self.rate_type == "Constant":
@@ -248,4 +248,4 @@ def adam(beta, gradients, eta, b1, b2, epsilon, iter, m_prev, s_prev):
     
     beta = beta - eta * m / (jnp.sqrt(s) + epsilon)
 
-    return beta, m_prev, s_prev
+    return beta, m_prev, s_prev    

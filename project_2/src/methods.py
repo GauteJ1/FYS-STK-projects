@@ -84,8 +84,7 @@ def binary_cross_entropy(predictions, targets):
     epsilon = 1e-6
     predictions = jnp.clip(predictions, epsilon, 1 - epsilon) # to avoid nan 
     
-    eps = 1e-10 # Small epsilon value to prevent log(0)
-    bce = -jnp.mean(targets * jnp.log(predictions + eps) + (1 - targets) * jnp.log(1 - predictions))
+    bce = -jnp.mean(targets * jnp.log(predictions) + (1 - targets) * jnp.log(1 - predictions))
 
     if jnp.isnan(bce):
         raise ValueError("NaN encountered in binary cross-entropy")
@@ -106,6 +105,7 @@ def recall(predictions, targets):
     return recall_val
 
 def precision(predictions, targets):
+    predictions = jnp.where(predictions >= 0.5, 1, 0)
     true_positives = jnp.sum(predictions * targets)
     predicted_positives = jnp.sum(predictions)
     return true_positives / (predicted_positives + 1e-15)
