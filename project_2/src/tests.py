@@ -244,7 +244,7 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         # Test parameters
         epochs = 1000
         learning_rate = 0.001
-        batch_size = 569 # Full batch, i.e. like no batching
+        batch_size = 350 # Full batch, i.e. like no batching
 
         # Train custom model
         self.custom_model.train_network(
@@ -264,9 +264,6 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         acceptable_loss_diff = 0.05
         self.assertAlmostEqual(custom_loss[-1], pytorch_loss, delta=acceptable_loss_diff, 
                                msg="Final loss differs too much from PyTorch model in the classification case.")
-        
-        
-
 
 
 class TestUpdateBetaWithOptax(unittest.TestCase):

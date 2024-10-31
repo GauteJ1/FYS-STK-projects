@@ -105,10 +105,6 @@ class NeuralNetwork:
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):  
             z = jnp.dot(a, W.T) + b
             a = activation_func(z)
-        
-        if self.type_of_network == "classification":
-            a = jnp.where(a >= 0.5, 1, 0)
-            a = a.astype(int)
 
         return a
     
@@ -162,7 +158,7 @@ class NeuralNetwork:
             self.set_update_strategy()
             self.set_grads()
             self.set_cost_function()
-
+            
             num_samples = train_inputs.shape[0]
 
             self.loss = []

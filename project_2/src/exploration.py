@@ -118,13 +118,13 @@ class Exploration:
     def find_ok_optimizer(self):
         
         # parameters just for this initial search for a good enough optimizer
-        self.intermediary_lr = 0.01
+        self.intermediary_lr = 0.001
         self.intermediary_epochs = 100
         self.intermediary_hidden_layers = [8,8]
 
         if self.type_model == 'classification':
             self.intermediary_activation_funcs = ["ReLU", "ReLU", "sigmoid"]
-            self.intermediary_batch_size = 300
+            self.intermediary_batch_size = 400
         else:
             self.intermediary_activation_funcs = ["ReLU", "ReLU", "identity"]  
             self.intermediary_batch_size = 8000
@@ -168,6 +168,7 @@ class Exploration:
 
                 network_shape = [self.input_size] + list(sizes) + [self.output_size]
                 
+                #print(layers, sizes)
                 model = NeuralNetwork(network_shape, self.intermediary_activation_funcs, self.cost_function, "continuous", self.best_optimizer)
                 model.train_network(self.inputs, self.targets, epochs=self.intermediary_epochs, learning_rate=self.intermediary_lr, batch_size=self.intermediary_batch_size)
                 
@@ -236,7 +237,7 @@ class Exploration:
 
 
     def make_best(self):
-        self.long_epochs = 300
+        self.long_epochs = 500
         losses = []
         accuracies = []
 

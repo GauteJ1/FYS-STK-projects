@@ -81,16 +81,24 @@ def cross_entropy(logits, targets):
 
 def binary_cross_entropy(predictions, targets):
 
-    epsilon = 1e-6
-    predictions = jnp.clip(predictions, epsilon, 1 - epsilon) # to avoid nan 
-    
-    eps = 1e-10 # Small epsilon value to prevent log(0)
-    bce = -jnp.mean(targets * jnp.log(predictions + eps) + (1 - targets) * jnp.log(1 - predictions))
+    bce = -jnp.mean(targets * jnp.log(predictions + 1e-15) + (1 - targets) * jnp.log(1 - predictions))
 
     if jnp.isnan(bce):
         raise ValueError("NaN encountered in binary cross-entropy")
     
     return bce
+
+def mse_derivative(targets, predictions):
+    return 2 * (predictions - targets) / targets.size
+
+def cross_entropy_derivative(logits, targets):
+    exp_logits = jnp.exp(logits - jnp.max(logits, axis=1, keepdims=True))
+    softmax_preds = exp_logits / jnp.sum(exp_logits, axis=1, keepdims=True)
+    return softmax_preds - targets
+
+def binary_cross_entropy_derivative(predictions, targets):
+    return (predictions - targets) / (predictions * (1 - predictions) + 1e-15)
+
 
 def recall(predictions, targets):
     # turn to binary values
