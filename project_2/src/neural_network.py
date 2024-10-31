@@ -26,6 +26,7 @@ class NeuralNetwork:
         self.activation_funcs = [globals()[func] for func in activation_funcs]
         self.activation_funcs_der = [globals()[func + '_der'] for func in activation_funcs]
         
+        self.network_shape = network_shape
         self.layers = self.create_layers(network_shape)
         self.type_of_network = type_of_network
         
@@ -56,7 +57,7 @@ class NeuralNetwork:
     def set_accuracy_function(self):
     
         if self.type_of_network == "classification":
-            self.accuracy_func = f1score
+            self.accuracy_func = recall
         elif self.type_of_network == "continuous":
             self.accuracy_func = r_2
         else:
@@ -98,6 +99,35 @@ class NeuralNetwork:
             i_size = layer_output_size
 
         return layers
+    
+    def ravel_layers(self, layers):
+        theta = np.array([])
+
+        for layer in layers:
+            theta = np.append(theta, np.ravel(layer[0]))
+            theta = np.append(theta, np.ravel(layer[1]))
+
+        return theta.ravel()
+
+    def reshape_layers(self, theta) -> list:
+        network_shape = self.network_shape
+
+        layers = []
+        i_size = network_shape[0]
+
+        index = 0
+        
+        np.random.seed(4155)
+        
+        for layer_output_size in network_shape[1:]:
+            W = np.reshape(theta[index:index+(layer_output_size * i_size)], (layer_output_size, i_size))
+            index += layer_output_size * i_size
+            b = np.reshape(theta[index:index+layer_output_size], layer_output_size)
+            index += layer_output_size
+            layers.append((W, b))
+            i_size = layer_output_size
+
+        return layers
 
     def predict(self, inputs: np.ndarray) -> np.ndarray:
         # Simple feed forward pass
@@ -105,10 +135,6 @@ class NeuralNetwork:
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):  
             z = jnp.dot(a, W.T) + b
             a = activation_func(z)
-        
-        if self.type_of_network == "classification":
-            a = jnp.where(a >= 0.5, 1, 0)
-            a = a.astype(int)
 
         return a
     
@@ -170,20 +196,29 @@ class NeuralNetwork:
             self.accuracy = []
             self.test_accuracy = []
 
+            seed_numbers = [i for i in range(epochs)]
+            i = 0
+
+            m = int(num_samples / batch_size)
+
             for epoch in range(epochs):
 
-                permutation = np.random.permutation(num_samples)
-                batch_index = np.random.choice(permutation)  
-                batch_inputs = train_inputs[batch_index:batch_index + 1]
-                batch_targets = train_targets[batch_index:batch_index + 1]
+                np.random.seed(seed_numbers[i])
+                i += 1
+                
+                random_idx = self.batch_size * np.random.randint(m)
+                batch_inputs = train_inputs[random_idx:random_idx + self.batch_size]
+                batch_targets = train_targets[random_idx:random_idx + self.batch_size]
 
                 layers_grad = self.gradient(batch_inputs, batch_targets)
 
-                for idx, ((W, b), (W_g, b_g)) in enumerate(zip(self.layers, layers_grad)):
-                    W_updated = self.update_beta(W, W_g, param_type="weights")
-                    b_updated = self.update_beta(b, b_g, param_type="biases")
-                    self.layers[idx] = (W_updated, b_updated)
-            
+                theta = self.ravel_layers(self.layers)
+                theta_grad = self.ravel_layers(layers_grad)
+                
+                theta_updated = self.update_beta(theta, theta_grad, param_type="weights")
+
+                self.layers = self.reshape_layers(theta_updated)
+
                 train_predictions = self.predict(train_inputs)
                 self.loss.append(self.cost_fun(train_predictions, train_targets))
                 self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
