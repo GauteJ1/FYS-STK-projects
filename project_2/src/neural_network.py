@@ -204,9 +204,6 @@ class NeuralNetwork:
             np.random.seed(seed_numbers[i])
             i += 1
 
-            # random_idx = np.random.randint(m, size=self.batch_size)
-            # batch_inputs = train_inputs[random_idx : random_idx + self.batch_size]
-            # batch_targets = train_targets[random_idx : random_idx + self.batch_size]
             if batch_size != 0:
                 random_idx = np.linspace(0, num_samples - 1, num_samples, dtype=int)
                 np.random.shuffle(random_idx)

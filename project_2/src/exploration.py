@@ -3,16 +3,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from IPython.display import display, clear_output
-from itertools import product, combinations_with_replacement
+from itertools import product
 from tqdm import tqdm
-import os
-import sys
 
 from neural_network import NeuralNetwork
 from methods import *
 from data_gen import FrankeDataGen, CancerData
-from grad_desc import Model
 
 np.random.seed(4155) # FYS-STK4155 
 
@@ -27,6 +23,19 @@ class Exploration:
                  activation_functions: list[str],
                  ) -> None:
         
+        """
+        Initializes the Exploration class for neural network experimentation.
+
+        Parameters:
+            type_model: Model type ('continuous' or 'classification').
+            optimizers: Optimizers to test.
+            layer_sizes: Hidden layer sizes to explore.
+            num_hidden_layers: Number of hidden layers to explore.
+            learning_rates: Learning rates to test.
+            batch_sizes: Batch sizes to test.
+            activation_functions: Activation functions to test.
+        """
+
         self.type_model = type_model    
         self.optimizers = optimizers
         self.layer_sizes = layer_sizes
@@ -36,6 +45,26 @@ class Exploration:
         self.activation_functions = activation_functions
 
     def generate_data(self) -> None:
+        
+        """ 
+        Generates and prepares the dataset based on the specified model type (either 'continuous' or 'classification').
+
+        For 'continuous' models, it uses the Franke function data:
+            - Generates 2D input features from the FrankeDataGen class.
+            - Sets the cost function to Mean Squared Error (MSE).
+            - Input size is set to 2, and output size is set to 1.
+
+        For 'classification' models, it uses the breast cancer dataset:
+            - Loads data from the CancerData class.
+            - Sets the cost function to Binary Cross Entropy.
+            - Input size is set to 30, and output size is set to 1.
+
+        Splits data into training and testing sets (70/30 split) with a fixed random seed for reproducibility.
+
+        Raises:
+            ValueError: If `type_model` is not 'continuous' or 'classification'.
+        """
+
         if self.type_model == 'continuous':
             data = FrankeDataGen()
             x_data = jnp.column_stack((data.x.flatten(), data.y.flatten()))  
@@ -66,36 +95,21 @@ class Exploration:
         self.inputs = inputs
         self.targets = targets
 
-    def find_minimal_loss(self, thing_to_look_at, test_loss) -> None:
-        
-        if isinstance(thing_to_look_at, tuple):
-            lr_values, batch_sizes = thing_to_look_at
-            min_loss = np.inf
-            best_config = (None, None, min_loss)  # (learning_rate, batch_size, final_loss)
+    def find_maximal_accuracy(self, configuration: list, test_accuracy: list) -> None:
 
-            for i, loss in enumerate(test_loss):
-                if loss[-1] < min_loss:
-                    min_loss = loss[-1]
-                    best_config = (lr_values[i // len(batch_sizes)], 
-                                   batch_sizes[i % len(batch_sizes)], 
-                                   float(min_loss))
+        """
+        Finds the configuration with the highest accuracy from test results.
 
-            return best_config
+        Parameters:
+            configurations: Either a tuple of (learning_rates, batch_sizes) or a list of configurations.
+            test_accuracy: List of test accuracies for each configuration.
 
-        
-        else: 
-            min_loss = np.inf
-            for i, loss in enumerate(test_loss):
-                if loss[-1] < min_loss:
-                    min_loss = loss[-1]
-                    best = thing_to_look_at[i]
+        Returns:
+            Best configuration with the maximal final accuracy.
+        """
 
-        return best
-    
-    def find_maximal_accuracy(self, thing_to_look_at, test_accuracy) -> None:
-
-        if isinstance(thing_to_look_at, tuple):
-            lr_values, batch_sizes = thing_to_look_at
+        if isinstance(configuration, tuple):
+            lr_values, batch_sizes = configuration
             max_accuracy = -np.inf 
             best_config = (None, None, max_accuracy) 
 
@@ -113,25 +127,41 @@ class Exploration:
             for i, acc in enumerate(test_accuracy):
                 if acc[-1] > max_accuracy:
                     max_accuracy = acc[-1]
-                    best = thing_to_look_at[i]
+                    best = configuration[i]
 
         return best
     
-    def plot(self, measure, variations, title) -> None:
-        
-        # print the accuracy for each structure
-            fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-            for i, acc in enumerate(measure):
-                ax.plot(acc, label=variations[i])
-            ax.set_xlabel("Epochs", fontsize=14)
-            ax.set_ylabel(title, fontsize=14)
-            ax.set_title(title + " for different structures", fontsize=16)
-            ax.legend()
-            plt.show()
+    def plot(self, measure: list, configurations: list, title: str) -> None: 
+            
+        """
+        Plots the given measure (accuracy or loss) for different configurations over epochs.
 
-    def find_ok_optimizer(self):
+        Parameters:
+            measure: List of values (accuracy or loss) over epochs for each configuration.
+            configurations: List of configuration names or labels for the plot legend.
+            title: Title for the plot, indicating the measure being plotted.
+        """
         
-        # parameters just for this initial search for a good enough optimizer
+        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+        for i, acc in enumerate(measure):
+            ax.plot(acc, label=configurations[i])
+        ax.set_xlabel("Epochs", fontsize=14)
+        ax.set_ylabel(title, fontsize=14)
+        ax.set_title(title + " for different structures", fontsize=16)
+        ax.legend()
+        plt.show()
+
+    def find_ok_optimizer(self) -> None:
+        """
+        Performs an initial search to identify a good enough optimizer for the given model type.
+
+        Sets up intermediary hyperparameters (learning rate, epochs, layer sizes) and trains the model 
+        with each optimizer in self.optimizers. Selects the optimizer that yields the highest accuracy.
+
+        Attributes Updated:
+            best_optimizer: Optimizer with the highest accuracy in this initial search.
+        """
+        
         self.intermediary_lr = 0.005
         self.intermediary_epochs = 300
         self.intermediary_hidden_layers = [4,8]
@@ -160,7 +190,18 @@ class Exploration:
             self.plot(test_loss, self.optimizers, "Loss")
             self.plot(test_accuracy, self.optimizers, "Accuracy")
 
-    def find_structure(self):
+    def find_structure(self) -> None:
+
+        """
+        Finds the best network structure by testing different combinations of hidden layer sizes.
+
+        For each combination of hidden layer sizes, trains the model and records the test loss and accuracy.
+        Selects the structure with the highest accuracy.
+
+        Attributes Updated:
+            best_structure: Optimal network structure (layer sizes) based on test accuracy.
+            num_hidden_layers: Number of hidden layers in the best structure.
+        """
 
         test_loss = []
         test_accuracy = []
@@ -190,7 +231,17 @@ class Exploration:
             self.plot(test_accuracy, permutations, "Accuracy")
         
 
-    def find_activation_functions(self):
+    def find_activation_functions(self) -> None:
+
+        """
+        Identifies the best activation functions for each hidden layer by testing different combinations.
+
+        For each combination of activation functions, trains the model and records test accuracy.
+        Selects the activation functions that yield the highest accuracy.
+
+        Attributes Updated:
+            best_activation_functions: List of optimal activation functions for each layer.
+        """
 
         combinations_of_activations = list(product(self.activation_functions, repeat=self.num_hidden_layers))
         final_activation = "sigmoid" if self.type_model == "classification" else "identity"
@@ -213,7 +264,15 @@ class Exploration:
             self.plot(test_loss, combinations_of_activations, "Loss")
             self.plot(test_accuracy, combinations_of_activations, "Accuracy")
 
-    def plot_grid(self, measure, title):
+    def plot_grid(self, measure: dict, title: str):
+
+        """
+        Plots a heatmap of the given measure (accuracy or loss) for each optimizer, across learning rates and batch sizes.
+
+        Parameters:
+            measure: Dictionary with optimizers as keys and 3D matrices of values (accuracy or loss) as values.
+            title: Title for the plot, indicating the measure being plotted.
+        """
 
         num_optimizers = len(self.optimizers)
 
@@ -241,50 +300,77 @@ class Exploration:
         plt.tight_layout(rect=[0, 0, 1, 0.95])  
         plt.show()
 
-    def grid_search_lr_batch(self):
+    def grid_search_lr_batch(self, optimizer: str) -> tuple:
+
+        """
+        Conducts a grid search over learning rates and batch sizes for a given optimizer.
+
+        For each combination of learning rate and batch size, trains the model and records test loss and accuracy.
+
+        Parameters:
+            optimizer: Optimizer to use for this grid search.
+
+        Returns:
+            A tuple of arrays: (test_accuracy, test_loss) for each combination of learning rate and batch size.
+        """
 
         test_loss = []
         test_accuracy = []
 
-        for lr in self.learning_rates: 
+        for lr in self.learning_rates:
             lr_losses = []
             lr_accuracies = []
-            for batch_size in self.batch_sizes: 
-                model = NeuralNetwork(self.best_structure, self.best_activation_functions, self.cost_function, self.type_model, self.best_optimizer)
-                model.train_network(self.inputs, self.targets, epochs=self.intermediary_epochs, learning_rate=lr, batch_size=batch_size)
+            for batch_size in self.batch_sizes:
+                model = NeuralNetwork(self.best_structure, self.best_activation_functions, 
+                                    self.cost_function, self.type_model, optimizer)  
+                model.train_network(self.inputs, self.targets, epochs=self.intermediary_epochs, 
+                                    learning_rate=lr, batch_size=batch_size)
                 lr_losses.append(model.test_loss)
                 lr_accuracies.append(model.test_accuracy)
             test_loss.append(lr_losses)
             test_accuracy.append(lr_accuracies)
 
-        test_accuracy = np.array(test_accuracy)
-        test_loss = np.array(test_loss)
+        return np.array(test_accuracy), np.array(test_loss)
 
-        return test_accuracy, test_loss
     
-    def grid_search_for_optimizer(self):
+    def grid_search_for_optimizer(self) -> None:
+        """
+        Performs a grid search over all optimizers, storing test loss and accuracy for each combination of
+        learning rate and batch size.
+
+        Attributes Updated:
+            best_lr_batch: Dictionary with each optimizer's best learning rate and batch size based on test accuracy.
+        """
 
         all_acc = {}
         all_loss = {}
 
-        for optim in self.optimizers: 
-            test_accuracy, test_loss = self.grid_search_lr_batch()
-            all_acc[optim] = test_accuracy
-            all_loss[optim] = test_loss
+        for optim in self.optimizers:
+            test_accuracy, test_loss = self.grid_search_lr_batch(optimizer=optim) 
+            all_acc[optim] = test_accuracy   
+            all_loss[optim] = test_loss      
 
         if self.print_info:
-            self.plot_grid(all_loss, "loss")
-            self.plot_grid(all_acc, "accuracy")
+            self.plot_grid(all_loss, "Loss")
+            self.plot_grid(all_acc, "Accuracy")
 
-        # find the minimum for each optimizer
-        best = {}
-        for optim, accuracy in all_acc.items():
-            best[optim] = self.find_minimal_loss((self.learning_rates, self.batch_sizes), accuracy)
+        best = {optim: self.find_maximal_accuracy((self.learning_rates, self.batch_sizes), all_acc[optim][:, :, -1])
+                for optim in self.optimizers}
 
         self.best_lr_batch = best
 
+    def make_best(self) -> None:
+        
+        """
+        Trains the model with the best parameters found (optimizer, learning rate, batch size, structure, 
+        and activation functions) for an extended number of epochs. Records test loss and accuracy for each optimizer.
 
-    def make_best(self):
+        Attributes Updated:
+            best_losses: List of final test losses for each optimizer.
+            best_accuracies: List of final test accuracies for each optimizer.
+            best_optimizer: Optimizer with the highest final accuracy.
+        """
+
         self.long_epochs = 300
         losses = []
         accuracies = []
@@ -301,7 +387,13 @@ class Exploration:
 
         self.best_optimizer = self.find_maximal_accuracy(self.optimizers, accuracies)
     
-    def plot_best(self):
+    def plot_best(self) -> None:
+        
+        """
+        Plots the accuracy over epochs for each optimizer using the best configurations identified in the search.
+
+        The plot displays either R^2 for continuous models or recall for classification models.
+        """
 
         fig, ax = plt.subplots(1, 1, figsize=(10, 6))
         for i, acc in enumerate(self.best_accuracies):
@@ -316,7 +408,13 @@ class Exploration:
         ax.legend()
         plt.show()
 
-    def print_best(self):
+    def print_best(self) -> None:
+        
+        """
+        Prints the best hyperparameters found in the search, including optimizer, structure, activation functions, 
+        learning rate, batch size, and final accuracy or R^2 score.
+        """
+
         print(f"Best optimizer: {self.best_optimizer}")
         print(f"Best structure: {self.best_structure}")
         print(f"Best activation functions: {self.best_activation_functions}")
@@ -331,6 +429,15 @@ class Exploration:
 
     def do_all(self, print_into: bool = False) -> None:
 
+        """
+        Executes the entire process for finding the best model configuration, including data generation, 
+        optimizer selection, structure, activation function search, grid search over learning rates and 
+        batch sizes, and final training.
+
+        Parameters:
+            print_info (bool): If True, displays information and plots at each stage of the search process.
+        """
+
         self.print_info = print_into        
         self.generate_data()
         self.find_ok_optimizer()
@@ -340,10 +447,3 @@ class Exploration:
         self.make_best()
         self.plot_best()
         self.print_best()
-        
-
-            
-
-
-        
-        
