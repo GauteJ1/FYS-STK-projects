@@ -207,12 +207,16 @@ class NeuralNetwork:
             # random_idx = np.random.randint(m, size=self.batch_size)
             # batch_inputs = train_inputs[random_idx : random_idx + self.batch_size]
             # batch_targets = train_targets[random_idx : random_idx + self.batch_size]
-            random_idx = np.linspace(0, num_samples-1, num_samples, dtype=int)
-            np.random.shuffle(random_idx)
-            random_idx = random_idx[:batch_size]
+            if batch_size != 0:
+                random_idx = np.linspace(0, num_samples - 1, num_samples, dtype=int)
+                np.random.shuffle(random_idx)
+                random_idx = random_idx[:batch_size]
 
-            batch_inputs = train_inputs[random_idx]
-            batch_targets = train_targets[random_idx]
+                batch_inputs = train_inputs[random_idx]
+                batch_targets = train_targets[random_idx]
+            else:
+                batch_inputs = train_inputs
+                batch_targets = train_targets
 
             layers_grad = self.gradient(batch_inputs, batch_targets)
 
