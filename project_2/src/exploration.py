@@ -132,8 +132,8 @@ class Exploration:
     def find_ok_optimizer(self):
         
         # parameters just for this initial search for a good enough optimizer
-        self.intermediary_lr = 0.05
-        self.intermediary_epochs = 100
+        self.intermediary_lr = 0.005
+        self.intermediary_epochs = 300
         self.intermediary_hidden_layers = [4,8]
 
         if self.type_model == 'classification':

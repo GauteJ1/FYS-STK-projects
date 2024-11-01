@@ -14,7 +14,7 @@ class NeuralNetwork:
     def __init__(
         self,
         network_shape: list[int],
-        activation_funcs: list[str],    
+        activation_funcs: list[str],
         cost_func: str,
         type_of_network: str,
         update_strategy: str,
@@ -24,18 +24,20 @@ class NeuralNetwork:
         self.cost_func = cost_func
 
         self.activation_funcs = [globals()[func] for func in activation_funcs]
-        self.activation_funcs_der = [globals()[func + '_der'] for func in activation_funcs]
-        
+        self.activation_funcs_der = [
+            globals()[func + "_der"] for func in activation_funcs
+        ]
+
         self.network_shape = network_shape
         self.layers = self.create_layers(network_shape)
         self.type_of_network = type_of_network
-        
+
         self.update_strategy = update_strategy
-        self.update_beta = Update_Beta() # import from learn_rate.py
+        self.update_beta = Update_Beta()  # import from learn_rate.py
         self.manual_gradients = manual_gradients
         self.train_test_split = train_test_split
 
-        self.epochs = 0  
+        self.epochs = 0
 
     def set_update_strategy(self):
 
@@ -53,23 +55,22 @@ class NeuralNetwork:
             self.update_beta.rmsprop(self.learning_rate)
         else:
             raise ValueError("Unsupported update strategy")
-        
+
     def set_accuracy_function(self):
-    
+
         if self.type_of_network == "classification":
             self.accuracy_func = recall
         elif self.type_of_network == "continuous":
             self.accuracy_func = r_2
         else:
             raise ValueError("Invalid type of network")
-        
+
     def set_grads(self):
-                
+
         if self.manual_gradients:
             self.gradient = self.manual_gradient
         else:
             self.gradient = self.jaxgrad_gradient
-        
 
     def set_cost_function(self) -> None:
         if self.cost_func == "MSE":
@@ -81,17 +82,15 @@ class NeuralNetwork:
         else:
             raise ValueError("Unsupported cost function")
 
-        self.cost_fun_der = grad(self.cost_fun, 0) 
-
-        
+        self.cost_fun_der = grad(self.cost_fun, 0)
 
     def create_layers(self, network_shape: list[int]) -> list:
 
         layers = []
         i_size = network_shape[0]
-        
+
         np.random.seed(4155)
-        
+
         for layer_output_size in network_shape[1:]:
             W = np.random.randn(layer_output_size, i_size)
             b = np.random.randn(layer_output_size)
@@ -99,7 +98,7 @@ class NeuralNetwork:
             i_size = layer_output_size
 
         return layers
-    
+
     def ravel_layers(self, layers):
         theta = np.array([])
 
@@ -116,13 +115,16 @@ class NeuralNetwork:
         i_size = network_shape[0]
 
         index = 0
-        
+
         np.random.seed(4155)
-        
+
         for layer_output_size in network_shape[1:]:
-            W = np.reshape(theta[index:index+(layer_output_size * i_size)], (layer_output_size, i_size))
+            W = np.reshape(
+                theta[index : index + (layer_output_size * i_size)],
+                (layer_output_size, i_size),
+            )
             index += layer_output_size * i_size
-            b = np.reshape(theta[index:index+layer_output_size], layer_output_size)
+            b = np.reshape(theta[index : index + layer_output_size], layer_output_size)
             index += layer_output_size
             layers.append((W, b))
             i_size = layer_output_size
@@ -132,12 +134,12 @@ class NeuralNetwork:
     def predict(self, inputs: np.ndarray) -> np.ndarray:
         # Simple feed forward pass
         a = inputs
-        for (W, b), activation_func in zip(self.layers, self.activation_funcs):  
+        for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             z = jnp.dot(a, W.T) + b
             a = activation_func(z)
 
         return a
-    
+
     def feed_forward_saver(self, inputs: np.ndarray) -> tuple:
         layer_inputs = []
         zs = []
@@ -148,86 +150,89 @@ class NeuralNetwork:
             a = activation_func(z)
 
             zs.append(z)
-        
+
         return layer_inputs, zs, a
 
-    def train_network(self, 
-                        inputs: np.ndarray, 
-                        targets: np.ndarray, 
-                        epochs: int, 
-                        learning_rate: float, 
-                        batch_size: int = 100,
-            ) -> None:
-            
-            if self.train_test_split:
+    def train_network(
+        self,
+        inputs: np.ndarray,
+        targets: np.ndarray,
+        epochs: int,
+        learning_rate: float,
+        batch_size: int = 100,
+    ) -> None:
 
-                train_inputs, test_inputs = inputs
-                train_targets, test_targets = targets
+        if self.train_test_split:
 
-            else:
-                train_inputs = inputs
-                train_targets = targets
-                test_inputs = None
-                test_targets = None
+            train_inputs, test_inputs = inputs
+            train_targets, test_targets = targets
 
-            # Initialize lists only if they are empty (for first training session)
-            if not hasattr(self, 'loss') or not self.loss:
-                self.loss = []
-            if not hasattr(self, 'accuracy') or not self.accuracy:
-                self.accuracy = []
-            if not hasattr(self, 'test_loss') or not self.test_loss:
-                self.test_loss = []
-            if not hasattr(self, 'test_accuracy') or not self.test_accuracy:
-                self.test_accuracy = []
+        else:
+            train_inputs = inputs
+            train_targets = targets
+            test_inputs = None
+            test_targets = None
 
-            self.learning_rate = learning_rate
-            self.batch_size = batch_size
-            self.epochs += epochs
-
-            self.set_accuracy_function()
-            self.set_update_strategy()
-            self.set_grads()
-            self.set_cost_function()
-
-            num_samples = train_inputs.shape[0]
-
+        # Initialize lists only if they are empty (for first training session)
+        if not hasattr(self, "loss") or not self.loss:
             self.loss = []
-            self.test_loss = []
+        if not hasattr(self, "accuracy") or not self.accuracy:
             self.accuracy = []
+        if not hasattr(self, "test_loss") or not self.test_loss:
+            self.test_loss = []
+        if not hasattr(self, "test_accuracy") or not self.test_accuracy:
             self.test_accuracy = []
 
-            seed_numbers = [i for i in range(epochs)]
-            i = 0
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.epochs += epochs
 
-            m = int(num_samples / batch_size)
+        self.set_accuracy_function()
+        self.set_update_strategy()
+        self.set_grads()
+        self.set_cost_function()
 
-            for epoch in range(epochs):
+        num_samples = train_inputs.shape[0]
 
-                np.random.seed(seed_numbers[i])
-                i += 1
-                
-                random_idx = self.batch_size * np.random.randint(m)
-                batch_inputs = train_inputs[random_idx:random_idx + self.batch_size]
-                batch_targets = train_targets[random_idx:random_idx + self.batch_size]
+        seed_numbers = [i for i in range(epochs)]
+        i = 0
 
-                layers_grad = self.gradient(batch_inputs, batch_targets)
+        # m = int(num_samples / batch_size)
 
-                theta = self.ravel_layers(self.layers)
-                theta_grad = self.ravel_layers(layers_grad)
-                
-                theta_updated = self.update_beta(theta, theta_grad, param_type="weights")
+        for epoch in range(epochs):
 
-                self.layers = self.reshape_layers(theta_updated)
+            np.random.seed(seed_numbers[i])
+            i += 1
 
-                train_predictions = self.predict(train_inputs)
-                self.loss.append(self.cost_fun(train_predictions, train_targets))
-                self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
-            
-                if test_inputs is not None:
-                    test_predictions = self.predict(test_inputs)
-                    self.test_loss.append(self.cost_fun(test_predictions, test_targets))
-                    self.test_accuracy.append(self.accuracy_func(test_predictions, test_targets))
+            # random_idx = np.random.randint(m, size=self.batch_size)
+            # batch_inputs = train_inputs[random_idx : random_idx + self.batch_size]
+            # batch_targets = train_targets[random_idx : random_idx + self.batch_size]
+            random_idx = np.linspace(0, num_samples-1, num_samples, dtype=int)
+            np.random.shuffle(random_idx)
+            random_idx = random_idx[:batch_size]
 
+            batch_inputs = train_inputs[random_idx]
+            batch_targets = train_targets[random_idx]
+
+            layers_grad = self.gradient(batch_inputs, batch_targets)
+
+            theta = self.ravel_layers(self.layers)
+            theta_grad = self.ravel_layers(layers_grad)
+
+            theta_updated = self.update_beta(theta, theta_grad)
+
+            self.layers = self.reshape_layers(theta_updated)
+
+            train_predictions = self.predict(train_inputs)
+            self.loss.append(self.cost_fun(train_predictions, train_targets))
+            self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
+
+            if test_inputs is not None:
+                test_predictions = self.predict(test_inputs)
+                self.test_loss.append(self.cost_fun(test_predictions, test_targets))
+                self.test_accuracy.append(
+                    self.accuracy_func(test_predictions, test_targets)
+                )
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
 
@@ -237,50 +242,59 @@ class NeuralNetwork:
 
         # We loop over the self.layers, from the last to the first
         for i in reversed(range(len(self.layers))):
-            layer_input, z, activation_der = layer_inputs[i], zs[i], self.activation_funcs_der[i]
+            layer_input, z, activation_der = (
+                layer_inputs[i],
+                zs[i],
+                self.activation_funcs_der[i],
+            )
 
             if i == len(self.layers) - 1:
                 dC_da = self.cost_fun_der(predict, target)
             else:
                 (W, b) = self.layers[i + 1]
-                dC_da = (dC_dz @ W) 
+                dC_da = dC_dz @ W
 
-            dC_dz = dC_da * activation_der(z)  
+            dC_dz = dC_da * activation_der(z)
             dC_dW = jnp.dot(dC_dz.T, layer_input)
             dC_db = jnp.mean(dC_dz, axis=0)
 
-            dC_db *= inputs.shape[0] ## MIA: check out this!!! Makes manuel == jaxgrad
+            dC_db *= inputs.shape[0]  ## MIA: check out this!!! Makes manuel == jaxgrad
 
-            layer_grads[i] = (dC_dW, dC_db) 
+            layer_grads[i] = (dC_dW, dC_db)
 
+        clipped_layer_grads = [
+            (jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12))
+            for W_grad, b_grad in layer_grads
+        ]
 
-        clipped_layer_grads = [(jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12)) for W_grad, b_grad in layer_grads]
-        
         return clipped_layer_grads
-    
+
     def jaxgrad_gradient(self, inputs: np.ndarray, targets: np.ndarray):
         # Function calculating jax gradient using a separate jax_grad_cost function
 
         def jax_grad_predict(layers: list[float], inputs: np.ndarray) -> np.ndarray:
-            
+
             a = inputs
             for (W, b), activation_func in zip(layers, self.activation_funcs):
                 z = jnp.dot(a, W.T) + b
                 a = activation_func(z)
             return a
 
-        def jax_grad_cost(layers: list[float], inputs: np.ndarray, targets: np.ndarray) -> np.ndarray:
+        def jax_grad_cost(
+            layers: list[float], inputs: np.ndarray, targets: np.ndarray
+        ) -> np.ndarray:
             # Mimicing cost, but with layers as argument to use jax.grad on it
             predictions = jax_grad_predict(layers, inputs)
             return self.cost_fun(predictions, targets)
 
         gradients = grad(jax_grad_cost, argnums=0)(self.layers, inputs, targets)
 
-        clipped_gradients = [(jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12)) for W_grad, b_grad in gradients]
+        clipped_gradients = [
+            (jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12))
+            for W_grad, b_grad in gradients
+        ]
 
         return clipped_gradients
-
-
 
     def save_network(self, file_name: str) -> None:
         # Convert JAX arrays to lists if necessary
@@ -291,23 +305,25 @@ class NeuralNetwork:
             "type_of_network": self.type_of_network,
             "update_strategy": self.update_strategy,
             "manual_gradients": self.manual_gradients,
-            "layers": [(np.array(W).tolist(), np.array(b).tolist()) for W, b in self.layers],
+            "layers": [
+                (np.array(W).tolist(), np.array(b).tolist()) for W, b in self.layers
+            ],
             "loss_history": [float(loss) for loss in self.loss],
             "accuracy_history": [float(acc) for acc in self.accuracy],
             "loss_history_test": [float(loss) for loss in self.test_loss],
             "accuracy_history_test": [float(acc) for acc in self.test_accuracy],
             "learning_rate": self.learning_rate,
             "batch_size": self.batch_size,
-            "epochs": self.epochs
+            "epochs": self.epochs,
         }
 
-        with open(file_name, 'w') as file:
+        with open(file_name, "w") as file:
             json.dump(network_info, file, indent=4)
 
     @classmethod
     def load_network(cls, file_name: str) -> "NeuralNetwork":
         # Load network info from JSON and initialize a new instance with it
-        with open(file_name, 'r') as file:
+        with open(file_name, "r") as file:
             network_info = json.load(file)
 
         # Create a new instance with the loaded parameters
@@ -331,4 +347,3 @@ class NeuralNetwork:
         model.epochs = network_info.get("epochs")
 
         return model
-
