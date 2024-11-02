@@ -31,9 +31,9 @@ class ExploreLogReg:
         self.inputs = inputs
         self.targets = targets
 
-    def find_minimal_loss(self, thing_to_look_at, test_loss) -> None:
-        if isinstance(thing_to_look_at, tuple):
-            lr_values, batch_sizes = thing_to_look_at
+    def find_minimal_loss(self, configuration, test_loss) -> None:
+        if isinstance(configuration, tuple):
+            lr_values, batch_sizes = configuration
             min_loss = np.inf
             best_config = (
                 None,
@@ -57,36 +57,36 @@ class ExploreLogReg:
             for i, loss in enumerate(test_loss):
                 if loss[-1] < min_loss:
                     min_loss = loss[-1]
-                    best = thing_to_look_at[i]
+                    best = configuration[i]
 
         return best
 
-    # def find_maximal_accuracy(self, thing_to_look_at, test_accuracy) -> None:
+    def find_maximal_accuracy(self, configuration, test_accuracy) -> None:
 
-    #     if isinstance(thing_to_look_at, tuple):
-    #         lr_values, batch_sizes = thing_to_look_at
-    #         max_accuracy = -np.inf
-    #         best_config = (None, None, max_accuracy)
+        if isinstance(configuration, tuple):
+            lr_values, batch_sizes = configuration
+            max_accuracy = -np.inf
+            best_config = (None, None, max_accuracy)
 
-    #         for i, acc in enumerate(test_accuracy):
-    #             if acc[-1] > max_accuracy:
-    #                 max_accuracy = acc[-1]
-    #                 best_config = (
-    #                     lr_values[i // len(batch_sizes)],
-    #                     batch_sizes[i % len(batch_sizes)],
-    #                     float(max_accuracy),
-    #                 )
+            for i, acc in enumerate(test_accuracy):
+                if acc[-1] > max_accuracy:
+                    max_accuracy = acc[-1]
+                    best_config = (
+                        lr_values[i // len(batch_sizes)],
+                        batch_sizes[i % len(batch_sizes)],
+                        float(max_accuracy),
+                    )
 
-    #         return best_config
+            return best_config
 
-    #     else:
-    #         max_accuracy = -np.inf
-    #         for i, acc in enumerate(test_accuracy):
-    #             if acc[-1] > max_accuracy:
-    #                 max_accuracy = acc[-1]
-    #                 best = thing_to_look_at[i]
+        else:
+            max_accuracy = -np.inf
+            for i, acc in enumerate(test_accuracy):
+                if acc[-1] > max_accuracy:
+                    max_accuracy = acc[-1]
+                    best = configuration[i]
 
-    #     return best
+        return best
 
     # def plot(self, measure, variations, title) -> None:
 

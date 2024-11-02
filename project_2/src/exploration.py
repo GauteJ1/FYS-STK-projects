@@ -295,45 +295,57 @@ class Exploration:
             self.plot(test_loss, combinations_of_activations, f"{self.cost_function_name} for different activation functions", self.cost_function_name)
             self.plot(test_accuracy, combinations_of_activations, f"{self.accuracy_measure} for different activation functions", self.accuracy_measure)
 
-    def plot_grid(self, measure: dict, title: str):
 
+    def plot_grid(self, measure: dict, title: str):
         """
         Plots a heatmap of the given measure (accuracy or loss) for each optimizer, across learning rates and batch sizes.
-
+        
         Parameters:
             measure: Dictionary with optimizers as keys and 3D matrices of values (accuracy or loss) as values.
             title: Title for the plot, indicating the measure being plotted.
         """
-
         num_optimizers = len(self.top_3_optimizers)
 
+        # Create subplots and shared colorbar
+        fig, axes = plt.subplots(1, num_optimizers, figsize=(12, 12))
+        axes = axes.flatten()
 
-        fig, axes = plt.subplots(1,num_optimizers, figsize=(12, 12)) 
-        plt.grid(False)
-        axes = axes.flatten() 
+        # Get global min and max values for the color scale across all matrices
+        vmin = min(matrix[:, :, -1].min() for matrix in measure.values())
+        vmax = max(matrix[:, :, -1].max() for matrix in measure.values())
 
+
+        # Plot each heatmap
         for i, (optimizer, matrix) in enumerate(measure.items()):
-            matrix = matrix[:, :, -1]  
+            matrix = matrix[:, :, -1]
 
-            
             sns.heatmap(matrix, annot=True, fmt=".4f", 
                         xticklabels=self.batch_sizes, 
                         yticklabels=self.learning_rates, 
-                        cmap="viridis", ax=axes[i])  
-            
-            axes[i].set_xlabel("Batch Size")
-            axes[i].set_ylabel("Learning Rate")
-            axes[i].set_title(f"{optimizer}", fontsize=10)  
+                        cmap="viridis", ax=axes[i],
+                        vmin=vmin, vmax=vmax, cbar=False,  # Only create colorbar for the first subplot
+                        cbar_kws={'label': title}, 
+                        annot_kws={"size": 20})
+
+            axes[i].set_title(f"{optimizer}", fontsize=40)
+            axes[i].grid(False)
+            if i == 1:
+                axes[i].set_xlabel("Batch Size", fontsize=25)
+            if i == 0:
+                axes[i].set_ylabel("Learning Rate", fontsize=25)
 
         
-        plt.suptitle("Test " + title + " for different Optimizers", fontsize=16)
 
-        
-        plt.tight_layout(rect=[0, 0, 1, 0.95])  
+        # Set overall title and layout
+        plt.suptitle(title + " for different optimizers", fontsize=40)
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+        # Add common colorbar on the right
+        fig.colorbar(axes[0].collections[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
 
         plt.savefig(f"../figures/{title}_grid_{self.type_model}.pdf")
-
         plt.show()
+
 
     def grid_search_lr_batch(self, optimizer: str) -> tuple:
 
@@ -386,8 +398,8 @@ class Exploration:
             all_loss[optim] = test_loss      
 
         if self.print_info:
-            self.plot_grid(all_loss, "Loss")
-            self.plot_grid(all_acc, "Accuracy")
+            self.plot_grid(all_loss, f"{self.cost_function_name}")
+            self.plot_grid(all_acc, f"{self.accuracy_measure}")
 
         best = {optim: self.find_maximal_accuracy((self.learning_rates, self.batch_sizes), all_acc[optim][:, :, -1])
                 for optim in self.top_3_optimizers}
@@ -495,6 +507,8 @@ class Exploration:
             plt.savefig(f"../figures/best_precision_{self.type_model}.pdf")
 
             plt.show()
+
+            # make confusion matrix
 
     def print_best(self) -> None:
         
