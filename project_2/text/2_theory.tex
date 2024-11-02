@@ -127,6 +127,24 @@ While this is good for some applications, one is sometimes more interested in kn
 
 Most common classificiation task is binary. 
 
+\subsubsection{Cross entropy and maximum likelihood}\label{sec:cross-entropy}
+\julie{must remember to include maximum likelihood in theory!!}
+
+When choosing a cost-function for the training of a classification model least squares or similar methods are no longer an option. These functions account for neither the discreteness or the non-linearity of the classification task. 
+As methods like logistic regression necessitate a probabilistic interpretation of the output, one needs a cost function that reflects the probability of each class accurately. In particular, our goal is to make the predicted probabilities of the correct classes as close to 1 as possible, while minimizing the probabilities of incorrect classes. Here \textit{cross-entropy loss} becomes useful.
+
+Entropy stems from the field of information theory, introduced as something akin to a measure of uncertainty \cite{Shore}. Building on this, cross-entropy was later proposed as a quantitative measure of how far a predicted probability distribution deviates from the true distribution that it aims to model. Provided as Eq. \ref{cross-entropy loss},
+\julie{is this too "historic" for a theory section?}
+
+\begin{equation}\label{cross-entropy loss}
+    L(y, \hat{y}) = - \left( y \cdot \log(\hat{y}) + (1 - y) \cdot \log(1 - \hat{y}) \right)
+\end{equation}
+
+\begin{equation}\label{cross-entropy cost}
+    C(Y, \hat{Y}) = - \frac{1}{N} \sum_{i=1}^{N} \left( y_i \cdot \log(\hat{y}_i) + (1 - y_i) \cdot \log(1 - \hat{y}_i) \right)
+\end{equation}
+
+
 \subsection{Logistic Regression}
  \julie{is this okay? or still imprecise?}
 Logistic regression seeks to use linear functions to model the posterior probabilities of an instance belonging to a class - while still maintaining a legal probability distribution with values ranging $[0,1]$ and summing to one \cite[p.119]{hastie}. 
@@ -168,22 +186,6 @@ Logistic regression can be generalized for the non-binary case, which is then ca
 % \Pr(G=K|X=x)=\frac{1}{1 + \sum_{l=1}^{K-1}\exp(\beta_{l_0}+\beta_l^Tx))}  
 % \end{equation}
 
-\subsection{Cost functions for binary classification \julie{elns}}\label{sec:cross-entropy}
-\julie{must remember to include maximum likelihood in theory!!}
-
-When choosing a cost-function for the training of a classification model least squares or similar methods are no longer an option. These functions account for neither the discreteness or the non-linearity of the classification task. 
-As methods like logistic regression necessitate a probabilistic interpretation of the output, one needs a cost function that reflects the probability of each class accurately. In particular, our goal is to make the predicted probabilities of the correct classes as close to 1 as possible, while minimizing the probabilities of incorrect classes. Here \textit{cross-entropy loss} becomes useful.
-
-Entropy stems from the field of information theory, introduced as something akin to a measure of uncertainty \cite{Shore}. Building on this, cross-entropy was later proposed as a quantitative measure of how far a predicted probability distribution deviates from the true distribution that it aims to model. Provided as Eq. \ref{cross-entropy loss},
-\julie{is this too "historic" for a theory section?}
-
-\begin{equation}\label{cross-entropy loss}
-    L(y, \hat{y}) = - \left( y \cdot \log(\hat{y}) + (1 - y) \cdot \log(1 - \hat{y}) \right)
-\end{equation}
-
-\begin{equation}\label{cross-entropy cost}
-    C(Y, \hat{Y}) = - \frac{1}{N} \sum_{i=1}^{N} \left( y_i \cdot \log(\hat{y}_i) + (1 - y_i) \cdot \log(1 - \hat{y}_i) \right)
-\end{equation}
 \subsection{Gradient descent}
 %morten lecture notes
 \julie{need transition here, maybe natural about optimization of mentioned cost-func in last section}
@@ -336,9 +338,11 @@ Although methods like linear regression for continuous tasks and logistic regres
     \label{fig:NN}
 \end{figure}
 
-A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes, as visualized in Fig. \ref{fig:NN}. The number of nodes in a layer is denoted as the width of the layer, and the number of layers in a network is denoted the depth of the network. 
+A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes or units, as visualized in Fig. \ref{fig:NN}. The number of nodes in a layer is denoted as the width of the layer, and the number of layers in a network is denoted the depth of the network. 
 Hidden layers are not hidden in the sense that they're not a visible part of the model; but rather that when using a trained model one never interacts with anything past the input and output layers, thus the internal nodes appear as hidden. 
 Between the nodes we have connections called \textit{weights}. These determine the influence from one particular node to another. 
+
+How many layers a NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[The architecture of Neural Networks]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a "better" architecture, however more complex tasks are commonly better solved by more "complex" networks; i.e. more layers and more nodes. 
 
 The weighted model stems from the mathematical function for an artificial neuron given as follows; 
 
@@ -347,9 +351,13 @@ The weighted model stems from the mathematical function for an artificial neuron
 \end{equation}
 
 Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ inputs and maps them to an output. 
+These activation functions are the key to how neural networks generalize beyond linear methods. As might be deferred, these activation functions should \textbf{not} be linear. The entire NN itself is just one big function of all it's weights and activation functions nested. Were the activation functions to be linear, the network itself would be linear - undermining the fundamental purpose of NN. 
+
+
 It is sometimes specified wether a network is \textit{fully connected} or not. A fully connected network, or layer, is simply connected in a way that each node receives the output from every single node in the preceding layer. Fig. \ref{fig:NN} is an example of a fully connected NN. However, a fully connected network can always act as a "not-fully connected" network simply by having some of it's weight set to $0$ and thereby nullifying the corresponding connections. 
 
-The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layers. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f$ one last time, before finally being output from the model. For each node $n$ in the first layer this process can be formally expressed as:
+The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layers. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f_1$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f_2$, before finally being output from the model. 
+For each node $n$ the process can be formally expressed as:
 
 
 \begin{equation}
@@ -357,10 +365,6 @@ The simplest model for an artificial neural network is called a \textit{feed for
 \end{equation}
 \citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and directly altering either weights or biases directly are not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
-\subsubsection{Activation functions}
-Why they should not be linear
-
-Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
 
 \subsubsection{Training of the network}
 \julie{worth mentioning that the input layer does not have bias?}
@@ -375,6 +379,11 @@ For networks to be used on regression problems, one commonly uses MSE (see secti
 
 backprop (gd, cost-func, manual gradients by chain-rule)
 
+\subsubsection{Types of activation functions}
+
+Why they should not be linear
+
+Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
 % - Why neural networks
 % - 
 % \julie{need motivation for NN, one direction FF no loops, input-hidden-output}
