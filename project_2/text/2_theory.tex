@@ -87,13 +87,14 @@ In Ridge regression, the L2-norm penalty gives us the following cost-function:
 
 
 
-This can alternatively be expressed as Eq. \ref{ridge_alt} and \ref{ridge_constraint}, where the restraint on $\bet$ is explicitly stated. Here the value of t is directly related to the value of $\lambda$ \citep[p. 63]{hastie}.
+This can alternatively be expressed as two equations, where the restraint on $\bet$ is explicitly stated:
 \begin{equation}\label{ridge_alt}
     C(\bet) = \sum_{i=1}^N \left(y_i - \sum_{j=1}^{p-1} X_{ij}\beta_j \right)^2
 \end{equation}
 \begin{equation}\label{ridge_constraint}
     \sum_{j=1}^p \beta_j^2 \leq t, 
 \end{equation}
+Here the value of t is directly related to the value of $\lambda$ \citep[p. 63]{hastie}.
 
 Ridge regression puts a penalty on all the $\beta$-terms except the intercept, which is held out during training. Had it been included, the model would depend on the chosen origin and this dependency undermines the principle of shift invariance \citep[p. 63]{hastie}.
 The value of $\beta_0$ is later calculated as Eq. \ref{bet0} \julie{denne refen må fikses eller fjernes} shows. 
@@ -107,7 +108,7 @@ From Eq. \ref{ridgeOLSder}, it immediately follows that, in the case of $\mathbf
     \bet_{Ridge} = \frac{1}{1+\lambda}\bet_{OLS}
 \end{equation}
 
-The solutions produced by Ridge regression depend on the scaling of the data. It is therefore especially important to standardize the data as explained in section \ref{scaling}.
+The solutions produced by Ridge regression depend on the scaling of the data. It is therefore especially important to standardize the data as explained in section \ref{sec:scaling}. \julie{denne refen må fikses eller fjernes}
 
 
 
@@ -205,7 +206,7 @@ By looking at the slope of the landscape one can keep taking steps in the steepe
 More precisely, one finds the gradient of the cost-function with respect to the parameters of the model - which provides the direction of steepest increase. The negative of the gradient will then provide the direction of steepest decrease, as given for a general cost-function in Eq. \ref{eq:gd}. $\theta$ represent the entire model, while the $\theta_i$s represent each of the parameters present in the model.
 
 \begin{equation}\label{eq:updt_std}
-    \theta_{t+1} = \theta_t - \eta_t \nabla_{\theta_t} C(\theta_t)
+    \theta_{t+1} = \theta_t - \eta_t \nabla_{\theta} C(\theta_t)
 \end{equation}
 
 When updating the parameters in the model, we now use this gradient combined with a new parameter $\eta$, as shown in Eq. \ref{eq:updt_std}.
@@ -218,24 +219,34 @@ It is often replaced by \textit{stochastic gradient descent} (SGD).
 In the literature, there are two main views on how SGD is motivated, and they are implemented slightly differently.
 Both methods do still boil down to the same theory, and the main idea behind both is to use a random subset of the training data available to compute an approximation of the gradients, using way less computational power.
 
-The first version, as presented in Goodfellow \textit{et al.} (\citeyear[p. 291]{Goodfellow-et-al-2016}), is that we in each update of the model parameters, only use one randomly chosen \textit{mini-batch} of the training data to calculate the gradients.
+The first view, as presented in Goodfellow \textit{et al.} (\citeyear[p. 291]{Goodfellow-et-al-2016}), is that we in each update of the model parameters, only use one randomly chosen \textit{mini-batch} of the training data to calculate the gradients.
+The motivation behind this is that we achieve a good approximation to the gradient in each step, while making each step less computationally heavy.
 
+The second way to consider SGD, is presented in Raschka \textit{et al.} (\citeyear[p. 47]{raschka}).
+Here, we split the training data in $m$ equal mini-batches i each iteration, and loop over these mini-batches calculating the gradients and updating the model each time.
+In this way, each iteration is about as computationally heavy as in normal gradient descent, however the model parameters is updated more frequent, and convergence is reached faster \citep[p. 47]{raschka}.
 
-
-The first view, as represented in Raschka, is that SGD
-
-% Utilizing the same steps as with regular gradient descent - only now each step is only performed on a subset of data-points, being randomly selected from our complete set. In doing so, we're allowing for most of the accuracy of gradient descent to remain while improving the efficiency of the algorithm. 
-% Stochastic gradient descent also allows for easier inclusion of new data-points, as they can simply be included as an additional step without the need of restarting the algorithm from scratch. 
-
-% In its strictest definition, stochastic gradient descent only uses one data-point per step, but it is more common to pick a subset (also called a mini-batch) to get a more accurate tuning. 
-%https://www.youtube.com/watch?v=vMh0zPT0tLI&ab_channel=StatQuestwithJoshStarmer 
-
+Both views are in essence the same: if one consider each step in the inner loop of the second view an iteration on the same level as the iterations in the first view; each iteration in both updates the model once, and has about the same computational complexity.
+From this point forward, we will by SGD be meaning the implementation represented by the first view.
 
 \subsubsection{Learning rate}
-\gaute{ - What is this thing???
-- Tuning the learning rate: why a too high/low learning rate causes issues  - Varying learning rates }
+When using GD or SGD, we multiply the gradients by a learning rate $\eta_t$ when updating the model.
+The learning rate is a positive scalar, usually chosen to be small to make each update relatively small \citep[p. 84]{Goodfellow-et-al-2016}.
+The gradients calculated in the GD/SGD step does only apply for the exact point the model is at before the update.
+Hence, changing the model to much, i.e. moving it too far, could cause it to overshoot the minimum or move it into an area of the function that is topographically very different from the starting point.
 
-\gaute{Learning rate schedulers}
+There are still important considerations to be made when choosing the learning rate.
+As mentioned, having a too big learning rate could result in the updates overshooting the minimum, and hence not converging.
+A very small learning rate is neither good, as it will require many more iterations to even get close to the minima, causing the training to become computationally heavier.
+One might still elect to choose a constant model by trial and error.
+
+Since having a too low learning rate is mostly bad in the early iterations, and a too high learning rate causes problem in the later iteration when trying to reach convergence, an intuitive solution is to start with a higher learning rate and reduce it after a set number of iterations.
+\begin{equation}\label{eq:line_search}
+    C(\theta_t - \eta \nabla_\theta C(\theta_t))
+\end{equation}
+Another approach is solving the function in Eq. \ref{eq:line_search} for different values of $\eta$, and choosing the $\eta$ resulting in the smallest value for each step in the iteration. This technique is called \textit{line search} \citep[p. 84]{Goodfellow-et-al-2016}.
+Line search still requires us to manually choose a set of learning rates, and every step in the iteration is limited to choose one of those learning rates.
+A more common alternative is \textit{adaptive learning rate} algorithms.
 
 \subsubsection{Adaptive learning rates}
 Gradient descent and stochastic gradient descents faces several issues when trying to approach the global minimum.
@@ -262,11 +273,11 @@ It sums the squares of all previous gradients, and scales the learning rate in e
 \begin{equation}\label{eq:updt_ada}
 \begin{split}
     g_t &= \nabla_{\theta}C(\theta_t)   \\
-    G_t &= G_{t-1} + g_t^2              \\
+    G_t &= G_{t-1} + {g}_t^2          \\
     \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
 \end{split}
 \end{equation}
-The update step of AdaGrad is displayed in Eq. \ref{eq:updt_ada}.
+The update step of AdaGrad is displayed in Eq. \ref{eq:updt_ada}, where $g_t^2$ is $g_t$ squared element-wise.
 The $\delta$ in Eq. \ref{eq:updt_ada} is a small constant added for numerical stability.
 It is often in chosen to be about $10^{-7}$ to $10^{-8}$ \citep[p. 304]{Goodfellow-et-al-2016}.
 It is also possible to combine the momentum and AdaGrad algorithms, by replacing the gradient in momentum with the update in the last line of the AdaGrad algorithm.
@@ -325,37 +336,41 @@ Although methods like linear regression for continuous tasks and logistic regres
     \label{fig:NN}
 \end{figure}
 
-A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes, as visualized in Fig. \ref{fig:NN}. 
-The hidden layers are not hidden in the sense that they're not a visible part of the model; but rather that when using a trained model one never interacts with anything past the input and output layers, thus the internal nodes appear as hidden. 
+A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes, as visualized in Fig. \ref{fig:NN}. The number of nodes in a layer is denoted as the width of the layer, and the number of layers in a network is denoted the depth of the network. 
+Hidden layers are not hidden in the sense that they're not a visible part of the model; but rather that when using a trained model one never interacts with anything past the input and output layers, thus the internal nodes appear as hidden. 
 Between the nodes we have connections called \textit{weights}. These determine the influence from one particular node to another. 
 
 The weighted model stems from the mathematical function for an artificial neuron given as follows; 
 
-\begin{equation}
+\begin{equation}\label{artifical_neuron}
     y = f\left( \sum_{i=0}^Nwx_i \right) 
 \end{equation}
 
 Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ inputs and maps them to an output. 
 It is sometimes specified wether a network is \textit{fully connected} or not. A fully connected network, or layer, is simply connected in a way that each node receives the output from every single node in the preceding layer. Fig. \ref{fig:NN} is an example of a fully connected NN. However, a fully connected network can always act as a "not-fully connected" network simply by having some of it's weight set to $0$ and thereby nullifying the corresponding connections. 
 
-The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. 
+The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layers. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f$ one last time, before finally being output from the model. For each node $n$ in the first layer this process can be formally expressed as:
 
 
+\begin{equation}
+    y = f\left( \sum_{i=0}^N w_{0n}x_i + b\right)
+\end{equation}
+\citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and directly altering either weights or biases directly are not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
-
+\subsubsection{Training of the network}
+To start training the NN, and navigating the landscape of the cost-function one needs a starting point. For initialization of weights and biases there are a lot of different conventions. Arguably the most common across the field, is random initialization. As the wording entails, they're then randomly initialized. 
 - Weights and biases
     - How they are initialized
+Finnes spesialiserte metoder 
+
+Choice of cost function
+
+Back propagation process (refer to GD/cost functions)
 
 \subsubsection{Activation functions}
 Why they should not be linear
 
 Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
-
-\subsubsection{Training of the network}
-Choice of cost function
-
-Back propagation process (refer to GD/cost functions)
-
 % - Why neural networks
 % - 
 % \julie{need motivation for NN, one direction FF no loops, input-hidden-output}
@@ -368,50 +383,52 @@ Back propagation process (refer to GD/cost functions)
 % - Weights and their initialization
 % - Initialization of biases  
 
-\subsection{Resampling methods\mia{copy}}
+% \subsection{Resampling methods\mia{copy}}
 
 
-When training models, error estimation is crucial both for model selection and model assessment. Without a good metric for the performance of the model it is impossible to gauge how well fit a model actually is.
-Generally, it's desirable to have as much data as possible for the training of a model. When holding off some of the data for testing, this data can then not be used for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training and giving us a better error estimation.
+% When training models, error estimation is crucial both for model selection and model assessment. Without a good metric for the performance of the model it is impossible to gauge how well fit a model actually is.
+% Generally, it's desirable to have as much data as possible for the training of a model. When holding off some of the data for testing, this data can then not be used for training. It's therefore of interest to explore methods that allow for a train-test split of the data, while still keeping as much data as possible for training and giving us a better error estimation.
 
-\subsubsection{Bootstrapping\mia{copy}}
-Bootstrapping is a general term for one such resampling method where one draws with replacement from the original data set, creating a "new" data set for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. $B$ such samples are generated, and the training repeated for each of them.
-The $b$-th bootstrap sample produces model $\hat{f}_b$ \citep[p. 249]{hastie}.
+% \subsubsection{Bootstrapping\mia{copy}}
+% Bootstrapping is a general term for one such resampling method where one draws with replacement from the original data set, creating a "new" data set for each bootstrap. Every bootstrap sample should have the same size as the original data set, $n$. $B$ such samples are generated, and the training repeated for each of them.
+% The $b$-th bootstrap sample produces model $\hat{f}_b$ \citep[p. 249]{hastie}.
 
-Using bootstrap the estimation of the error can be calculated as follows:
-%the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
+% Using bootstrap the estimation of the error can be calculated as follows:
+% %the mean of the error across the $B$ bootstrap samples \cite[p. 250]{hastie}:
 
-\begin{equation}\label{bs_error}
-    BS_{error} = \frac{1}{n}\sum_{i=0}^{n-1} L\left(y_i,\frac{1}{B}\sum_{b=1}^{B} \hat{f}_b(x_i)\right)
-\end{equation}
+% \begin{equation}\label{bs_error}
+%     BS_{error} = \frac{1}{n}\sum_{i=0}^{n-1} L\left(y_i,\frac{1}{B}\sum_{b=1}^{B} \hat{f}_b(x_i)\right)
+% \end{equation}
 
-\subsubsection{K-fold cross-validation\mia{copy}}
-\textit{K-fold cross-validation} is another method of resampling. 
-The data set is divided into $K$ parts $\mathcal{F}_k$, called folds. 
-The $K$ must be chosen by the developer as they see fit. 
-$K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
-The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv_error} \citep[p. 241]{hastie}. Her one takes into consideration that the folds $\mathcal{F}_k$ may be of different sizes.
+% \subsubsection{K-fold cross-validation\mia{copy}}
+% \textit{K-fold cross-validation} is another method of resampling. 
+% The data set is divided into $K$ parts $\mathcal{F}_k$, called folds. 
+% The $K$ must be chosen by the developer as they see fit. 
+% $K-1$ folds are used as training data, while the remaining fold is used as test data. The model trained when the $k$-th fold is held out, is denoted $f^{k}$. 
+% The procedure is repeated $K$ times, holding out a new fold each time. For k-fold cross-validation the estimated error is given as the mean of the $K$ test errors, shown in Eq. \ref{cv_error} \citep[p. 241]{hastie}. Her one takes into consideration that the folds $\mathcal{F}_k$ may be of different sizes.
 
 
-\begin{equation}\label{cv_error}
-    CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{k}({x}_i)\right) 
-\end{equation}
+% \begin{equation}\label{cv_error}
+%     CV_{error} = \frac{1}{K} \sum_{k=1}^{K} \frac{1}{|\mathcal{F}_k|} \sum_{i \in \mathcal{F}_k} L\left(y_i, f^{k}({x}_i)\right) 
+% \end{equation}
 
-There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train set. 
-The estimated error (Eq. \ref{cv_error}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. 
+% There are both advantages and disadvantages of this method. On one hand, it achieves the goal of maintaining a train-test split while keeping a sizeable train set. 
+% The estimated error (Eq. \ref{cv_error}) will be closer to the true generalization error measure. This is a consequence of the error being averaged over many different models, and thereby to a higher degree taking into account randomness associated with data-selection. 
 
-On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the latter is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
+% On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the latter is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
 
 \subsection{Evaluation measures\mia{copy}}
 
+\subsubsection{Regression}
 The \emph{mean squared error} (MSE) is a popular error measure for linear regression models, and is defined as: 
 
 \begin{equation}\label{mse}
     \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2.
 \end{equation}
 
-$n$ denotes the number of data points in the training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$. Comparing the expression above to Eq. \ref{cost_ols}, it's clear how the OLS regression method is inherently designed to minimize MSE. Given a loss-function of the squared distance between the prediction and the true value, the errors for cross-validation and bootstrapping (respectively Eq. \ref{cv_error} and Eq. \ref{bs_error}) will trivially be the equivalent of MSE. 
+$n$ denotes the number of data points in the training data, and the prediction for the i-th data point is denoted $\Tilde{y}_i$. Comparing the expression above to Eq. \ref{cost_ols}, it's clear how the OLS regression method is inherently designed to minimize MSE. 
+% Given a loss-function of the squared distance between the prediction and the true value, the errors for cross-validation and bootstrapping (respectively Eq. \ref{cv_error} and Eq. \ref{bs_error}) will trivially be the equivalent of MSE. 
 
 $R^2$ is a measure of how well the model explains the variance present in the data. 
 \begin{equation}
@@ -423,13 +440,39 @@ A prediction $\tilde \y = \bar \y$, would result in $R^2 = 0$.
 If $R^2<0$, the model is worse than a straight line.
 The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS \cite[p. 29]{martin}.
 
+\subsubsection{Classification}
+While the mean squared errors and $R^2$ measures still tells us something about the quality of a classification model, there are several other methods which can better measure the model's performance.
+One such measure is \textit{accuracy}.
+\begin{equation}\label{eq:acc}
+    \text{accuracy} = \frac{\text{correct predictions}}{\text{total predictions}}
+\end{equation}
+Accuracy is simply defined as correct predictions divided by total predictions (see Eq. \ref{eq:acc}), and is a good measure on how often the model is correct.
+There is an important weakness with accuracy, especially when considering certain types of data.
+This stems from the fact that the two types of errors in a binary classification model, \textit{false positives} and \textit{false negatives}, are in many cases not equally bad.
+A prime example of this is models based on medical data sets, trying to predict whether a patient has some disease, such as the Wisconsin breast cancer data set \cite{breast_cancer_wisconsin}.
+Clearly, in most these cases, it is worse if the models wrongly predict that a sick patient is healthy, than the other way around.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|m{8em}|m{8em}|m{8em}|}
+    \hline
+         & \textbf{predicted to have the disease} & \textbf{predicted to not have the disease} \\
+         \hline
+         \textbf{has disease} & true positive & false negative \\
+         \hline
+         \textbf{not disease} & false positive & true negative\\
+    \hline
+    \end{tabular}
+    \caption{Confusion matrix for medical data}
+    \label{tab:my_label}
+\end{table}
+An example is the 
 
 \subsection{\mia{MIA THINGS}}
 
 sigmoid, softmax, relu, leakyrelu
 mse, binary cross-entropy 
 
-Fæddy: clipping grads 
+\gaute{ clipping grads }
 
 minmax scaler + benefits of the different scalers 
 
@@ -441,7 +484,7 @@ manual grads
 
 chain rule 
 
-constant, momentum, adagrad, adagrad momentum, adam, rmsprop 
+\gaute{constant, momentum, adagrad, adagrad momentum, adam, rmsprop }
 
 recall, precision, ROC, confusion matrix 
     why standard accuracy is bad for medical data
