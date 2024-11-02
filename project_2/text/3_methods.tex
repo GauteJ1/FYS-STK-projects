@@ -1,3 +1,31 @@
-\mia{JAX will replace our analytical gradient}
+\subsubsection{Data}
+
+\subsubsection{Linear regression}
+
+\subsubsection{Logistic regression}
+
+\subsubsection{Exploration of the properties of a neural network}
+
+For the classification case, i.e. the Cancer data, we used Binary cross entropy as our \mia{cost eller loss} function. For the Franke function data, the choice was mean squared error (MSE). 
+
+As measures of performance, $R^2$ is used for the Franke function data. 
+Furthermore, accuracy, recall, precision and \mia{check this later} is used for the other data set. 
+
+Sigmoid is always utilized as the activation function in the final layer for the classification. 
+In the other data set, we do not apply any activation function. 
 
 \julie{should mention that we have chosen to not use specialized initialization methods for bias/weights, bc were testing different network architectures so it doesnt make sense to do + we have small NN so they'll converge quickly anyways.}
+
+In order to explore the properties of the different aspects of our neural network, we \mia{...}
+
+Firstly, we wanted to find a good optimizer to use for the exploration of the other moments. 
+We initialized our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. 
+Both the hidden layers had ReLU as the activation function. 
+For the Cancer data, sigmoid was used at the final layer, whereas for the Franke function data, we did not use an activation (i.e. identity). 
+Furthermore, we used a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively. 
+
+We used all six optimizers and trained six different models for each of the two different data sets. 
+We chose the optimizer that performed best for use in further explorations of the neural network. 
+
+
+\mia{JAX will replace our analytical gradient}
