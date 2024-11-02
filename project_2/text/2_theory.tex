@@ -351,8 +351,21 @@ The weighted model stems from the mathematical function for an artificial neuron
 \end{equation}
 
 Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ inputs and maps them to an output. 
-These activation functions are the key to how neural networks generalize beyond linear methods. As might be deferred, these activation functions should \textbf{not} be linear. The entire NN itself is just one big function of all it's weights and activation functions nested. Were the activation functions to be linear, the network itself would be linear - undermining the fundamental purpose of NN. 
-
+These activation functions are the key to how neural networks generalize beyond linear methods. As might be deferred, these activation functions should \textbf{not} be linear. 
+For a two dimensional NN, with activation functions given as:
+\begin{align}
+\begin{split}
+    f_1(\bold{x})&=\bold{W_0}^T\bold{x} + b_1 \\
+    f_2(\bold{x})&=\bold{W_1}^T\bold{x} + b_2 
+\end{split}
+\end{align}
+The entire network could then be expressed: 
+\begin{align}
+    \begin{split}
+        F(\bold{x})=f_2(f_1(\bold{x}))
+    \end{split}
+\end{align}
+The entire NN itself is just one big function of all it's weights and activation functions nested. Were the activation functions to be linear, the network itself would be linear - undermining the fundamental purpose of NN. 
 
 It is sometimes specified wether a network is \textit{fully connected} or not. A fully connected network, or layer, is simply connected in a way that each node receives the output from every single node in the preceding layer. Fig. \ref{fig:NN} is an example of a fully connected NN. However, a fully connected network can always act as a "not-fully connected" network simply by having some of it's weight set to $0$ and thereby nullifying the corresponding connections. 
 
