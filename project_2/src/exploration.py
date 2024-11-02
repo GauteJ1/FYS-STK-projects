@@ -12,6 +12,8 @@ from data_gen import FrankeDataGen, CancerData
 
 np.random.seed(4155) # FYS-STK4155 
 
+plt.style.use('../plot_settings.mplstyle')
+
 class Exploration:
 
     def __init__(self, type_model: str,
@@ -44,6 +46,8 @@ class Exploration:
         self.batch_sizes = batch_sizes
         self.activation_functions = activation_functions
 
+        self.accuracy_measure = r"$R^2$" if self.type_model == "continuous" else "Accuracy"
+
     def generate_data(self) -> None:
         
         """ 
@@ -73,6 +77,7 @@ class Exploration:
             self.input_size = 2
             self.output_size = 1
             self.cost_function = "MSE"
+            self.cost_function_name = "Mean squared error"
         
         elif self.type_model == 'classification':
             data = CancerData()
@@ -82,6 +87,7 @@ class Exploration:
             self.input_size = 30
             self.output_size = 1
             self.cost_function = "BinaryCrossEntropy"
+            self.cost_function_name = "Binary cross entropy"
 
         else: 
             raise ValueError("Type model must be either 'continuous' or 'classification'")
@@ -131,7 +137,7 @@ class Exploration:
 
         return best
     
-    def plot(self, measure: list, configurations: list, title: str) -> None: 
+    def plot(self, measure: list, configurations: list, title: str, y_label: str) -> None: 
             
         """
         Plots the given measure (accuracy or loss) for different configurations over epochs.
@@ -140,15 +146,37 @@ class Exploration:
             measure: List of values (accuracy or loss) over epochs for each configuration.
             configurations: List of configuration names or labels for the plot legend.
             title: Title for the plot, indicating the measure being plotted.
+            y_label: Label for the y-axis of the plot.
+
+            MIA: update here with the only plotting every 5th configuration if many + more
         """
-        
-        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-        for i, acc in enumerate(measure):
-            ax.plot(acc, label=configurations[i])
-        ax.set_xlabel("Epochs", fontsize=14)
-        ax.set_ylabel(title, fontsize=14)
-        ax.set_title(title + " for different structures", fontsize=16)
+
+        if self.type_model == 'classification':
+            
+            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+            for i, mes in enumerate(measure):
+
+                ax.plot(mes, label=configurations[i])
+
+        elif self.type_model == 'continuous':
+            
+            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+            for i, mes in enumerate(measure):
+                
+                x_axis = np.arange(50,len(mes))
+                ax.plot(x_axis, mes[50:], label=configurations[i])
+
+        else: 
+            raise ValueError("Type model must be either 'continuous' or 'classification'")
+
+
+        ax.set_xlabel("Epochs")
+        ax.set_ylabel(y_label)
+        ax.set_title(title)
         ax.legend()
+
+        plt.savefig(f"../figures/{title}_{self.type_model}.pdf")
+
         plt.show()
 
     def find_ok_optimizer(self) -> None:
@@ -184,11 +212,14 @@ class Exploration:
             test_accuracy.append(model.test_accuracy)
 
         self.best_optimizer = self.find_maximal_accuracy(self.optimizers, test_accuracy)
+        self.top_3_optimizers = [self.optimizers[i] for i in sorted(range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True)[:3]]
+        # test_loss_top_3 = [test_loss[i] for i in sorted(range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True)[:3]]
+        # test_accuracy_top_3 = [test_accuracy[i] for i in sorted(range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True)[:3]]
 
         if self.print_info:
-            print(f"Best optimizer: {self.best_optimizer}")
-            self.plot(test_loss, self.optimizers, "Loss")
-            self.plot(test_accuracy, self.optimizers, "Accuracy")
+            print(fr"Best optimizer (gives the highest {self.accuracy_measure}): {self.best_optimizer}")
+            self.plot(test_loss, self.optimizers, f"{self.cost_function_name} for different optimizers", self.cost_function_name)
+            self.plot(test_accuracy, self.optimizers, f"{self.accuracy_measure} for different optimizers", self.accuracy_measure)
 
     def find_structure(self) -> None:
 
@@ -207,7 +238,7 @@ class Exploration:
         test_accuracy = []
         permutations = []
 
-        for layers in self.num_hidden_layers:
+        for layers in tqdm(self.num_hidden_layers):
             for sizes in product(self.layer_sizes, repeat=layers):
                 permutations.append(sizes)
 
@@ -226,9 +257,9 @@ class Exploration:
         self.num_hidden_layers = len(best_list) # update number of hidden layers to the best
 
         if self.print_info:
-            print(f"Best structure: {self.best_structure}")
-            self.plot(test_loss, permutations, "Loss")
-            self.plot(test_accuracy, permutations, "Accuracy")
+            print(fr"Best structure (gives the highest {self.accuracy_measure}): {self.best_structure}")
+            self.plot(test_loss, permutations, f"{self.cost_function_name} for different structures", self.cost_function_name)
+            self.plot(test_accuracy, permutations, f"{self.accuracy_measure} for different structures", self.accuracy_measure)
         
 
     def find_activation_functions(self) -> None:
@@ -260,9 +291,9 @@ class Exploration:
         self.best_activation_functions = list(best)
 
         if self.print_info:
-            print(f"Best activation functions: {self.best_activation_functions}")
-            self.plot(test_loss, combinations_of_activations, "Loss")
-            self.plot(test_accuracy, combinations_of_activations, "Accuracy")
+            print(fr"Best activation functions (gives the highest {self.accuracy_measure}): {self.best_activation_functions}")
+            self.plot(test_loss, combinations_of_activations, f"{self.cost_function_name} for different activation functions", self.cost_function_name)
+            self.plot(test_accuracy, combinations_of_activations, f"{self.accuracy_measure} for different activation functions", self.accuracy_measure)
 
     def plot_grid(self, measure: dict, title: str):
 
@@ -274,10 +305,11 @@ class Exploration:
             title: Title for the plot, indicating the measure being plotted.
         """
 
-        num_optimizers = len(self.optimizers)
+        num_optimizers = len(self.top_3_optimizers)
 
 
-        fig, axes = plt.subplots(1,num_optimizers, figsize=(18, 12))  
+        fig, axes = plt.subplots(1,num_optimizers, figsize=(12, 12)) 
+        plt.grid(False)
         axes = axes.flatten() 
 
         for i, (optimizer, matrix) in enumerate(measure.items()):
@@ -298,6 +330,9 @@ class Exploration:
 
         
         plt.tight_layout(rect=[0, 0, 1, 0.95])  
+
+        plt.savefig(f"../figures/{title}_grid_{self.type_model}.pdf")
+
         plt.show()
 
     def grid_search_lr_batch(self, optimizer: str) -> tuple:
@@ -345,7 +380,7 @@ class Exploration:
         all_acc = {}
         all_loss = {}
 
-        for optim in self.optimizers:
+        for optim in self.top_3_optimizers:
             test_accuracy, test_loss = self.grid_search_lr_batch(optimizer=optim) 
             all_acc[optim] = test_accuracy   
             all_loss[optim] = test_loss      
@@ -355,7 +390,7 @@ class Exploration:
             self.plot_grid(all_acc, "Accuracy")
 
         best = {optim: self.find_maximal_accuracy((self.learning_rates, self.batch_sizes), all_acc[optim][:, :, -1])
-                for optim in self.optimizers}
+                for optim in self.top_3_optimizers}
 
         self.best_lr_batch = best
 
@@ -374,39 +409,92 @@ class Exploration:
         self.long_epochs = 300
         losses = []
         accuracies = []
+        accuracies2 = []
+        accuracies3 = []
 
-        for optim in tqdm(self.optimizers):
+        self.multiple_accuracy_funcs = True
+
+        for optim in tqdm(self.top_3_optimizers):
             best_lr, best_batch, _ = self.best_lr_batch[optim]
-            model = NeuralNetwork(self.best_structure, self.best_activation_functions, self.cost_function, self.type_model, optim)
+            model = NeuralNetwork(self.best_structure, self.best_activation_functions, self.cost_function, self.type_model, optim, multiple_accuracy_funcs=self.multiple_accuracy_funcs)
             model.train_network(self.inputs, self.targets, epochs=self.long_epochs, learning_rate=best_lr, batch_size=best_batch)
             losses.append(model.test_loss)
-            accuracies.append(model.test_accuracy)
+
+            if self.type_model == 'classification' and self.multiple_accuracy_funcs: 
+
+                accuracy, recall, precision = zip(*model.test_accuracy)  # Unpack each accuracy type across epochs
+                accuracies.append(accuracy)
+                accuracies2.append(recall)
+                accuracies3.append(precision)
+            
+            else:
+
+                accuracies.append(model.test_accuracy) 
 
         self.best_losses = losses
         self.best_accuracies = accuracies
+        self.recall = accuracies2
+        self.precision = accuracies3
 
-        self.best_optimizer = self.find_maximal_accuracy(self.optimizers, accuracies)
+        self.best_optimizer = self.find_maximal_accuracy(self.top_3_optimizers, accuracies)
     
     def plot_best(self) -> None:
         
         """
         Plots the accuracy over epochs for each optimizer using the best configurations identified in the search.
 
-        The plot displays either R^2 for continuous models or recall for classification models.
+        The plot displays either R^2 for continuous models or accuracy, precision and recall for classification models.
         """
 
-        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-        for i, acc in enumerate(self.best_accuracies):
-            ax.plot(acc, label=self.optimizers[i])
-        ax.set_xlabel("Epochs", fontsize=14)
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+
         if self.type_model == 'continuous':
-            ax.set_ylabel(r"$R^2$", fontsize=14)
-            ax.set_title(r"$R^2$ for best hyperparameters", fontsize=16)
+            x_axis = np.arange(50,len(self.best_accuracies[0]))
+            for i, acc in enumerate(self.best_accuracies):
+                ax.plot(x_axis, acc[50:], label=self.top_3_optimizers[i])
+
         elif self.type_model == 'classification':
-            ax.set_ylabel("recall value", fontsize=14)
-            ax.set_title("recall for best hyperparameters", fontsize=16)
+            for i, acc in enumerate(self.best_accuracies):
+                ax.plot(acc, label=self.top_3_optimizers[i])
+
+        ax.set_xlabel("Epochs")
+        ax.set_ylabel(f"{self.accuracy_measure} value")
+        ax.set_title(f"{self.accuracy_measure} for best hyperparameters")
         ax.legend()
+
+        plt.savefig(f"../figures/best_{self.type_model}.pdf")
+
         plt.show()
+
+        if self.type_model == 'classification' and self.multiple_accuracy_funcs: 
+
+            # plotting recall
+            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+            for i, acc in enumerate(self.recall):
+                ax.plot(acc, label=self.top_3_optimizers[i])
+
+            ax.set_xlabel("Epochs")
+            ax.set_ylabel("Recall value")
+            ax.set_title("Recall for best hyperparameters")
+            ax.legend()
+
+            plt.savefig(f"../figures/best_recall_{self.type_model}.pdf")
+
+            plt.show()
+
+            # plotting precision
+            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+            for i, acc in enumerate(self.precision):
+                ax.plot(acc, label=self.top_3_optimizers[i])
+
+            ax.set_xlabel("Epochs")
+            ax.set_ylabel("Precision value")
+            ax.set_title("Precision for best hyperparameters")
+            ax.legend()
+
+            plt.savefig(f"../figures/best_precision_{self.type_model}.pdf")
+
+            plt.show()
 
     def print_best(self) -> None:
         
@@ -422,9 +510,9 @@ class Exploration:
 
         # print final accuracy for the best optimizer
         if self.type_model == 'continuous':
-            print(f"Final r^2 score: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final r^2 score: {self.best_accuracies[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
         elif self.type_model == 'classification':
-            print(f"Final recall: {self.best_accuracies[self.optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final accuracy: {self.best_accuracies[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
 
 
     def do_all(self, print_into: bool = False) -> None:

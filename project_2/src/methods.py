@@ -27,11 +27,11 @@ def sigmoid_der(z):
     return sig * (1 - sig)
 
 def softmax(z):
-    e_z = jnp.exp(z - jnp.max(z, axis=1, keepdims=True))  # Adjust axis to 1 for row-wise stability
+    e_z = jnp.exp(z - jnp.max(z, axis=1, keepdims=True))  
     return e_z / jnp.sum(e_z, axis=1, keepdims=True)
 
 def softmax_vec(z):
-    e_z = jnp.exp(z - jnp.max(z))  # for numerical stability
+    e_z = jnp.exp(z - jnp.max(z))  
     return e_z / jnp.sum(e_z)
 
 def softmax_der(z):

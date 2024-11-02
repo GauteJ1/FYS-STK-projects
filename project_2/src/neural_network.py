@@ -20,6 +20,7 @@ class NeuralNetwork:
         update_strategy: str,
         manual_gradients: bool = False,
         train_test_split: bool = True,
+        multiple_accuracy_funcs: bool = False,
     ):
         self.cost_func = cost_func
 
@@ -36,6 +37,8 @@ class NeuralNetwork:
         self.update_beta = Update_Beta()  # import from learn_rate.py
         self.manual_gradients = manual_gradients
         self.train_test_split = train_test_split
+
+        self.multiple_accuracy_funcs = multiple_accuracy_funcs
 
         self.epochs = 0
 
@@ -59,11 +62,15 @@ class NeuralNetwork:
     def set_accuracy_function(self):
 
         if self.type_of_network == "classification":
-            self.accuracy_func = recall
+            self.accuracy_func = accuracy
         elif self.type_of_network == "continuous":
             self.accuracy_func = r_2
         else:
             raise ValueError("Invalid type of network")
+        
+        if self.multiple_accuracy_funcs and self.type_of_network == "classification":
+            self.accuracy_func2 = recall
+            self.accuracy_func3 = precision
 
     def set_grads(self):
 
@@ -197,8 +204,6 @@ class NeuralNetwork:
         seed_numbers = [i for i in range(epochs)]
         i = 0
 
-        # m = int(num_samples / batch_size)
-
         for epoch in range(epochs):
 
             np.random.seed(seed_numbers[i])
@@ -219,6 +224,7 @@ class NeuralNetwork:
 
             theta = self.ravel_layers(self.layers)
             theta_grad = self.ravel_layers(layers_grad)
+            theta_grad = jnp.clip(theta_grad, -1e12, 1e12)
 
             theta_updated = self.update_beta(theta, theta_grad)
 
@@ -228,12 +234,21 @@ class NeuralNetwork:
             self.loss.append(self.cost_fun(train_predictions, train_targets))
             self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
 
-            if test_inputs is not None:
+            if test_inputs is not None: 
                 test_predictions = self.predict(test_inputs)
                 self.test_loss.append(self.cost_fun(test_predictions, test_targets))
-                self.test_accuracy.append(
-                    self.accuracy_func(test_predictions, test_targets)
-                )
+
+                if self.multiple_accuracy_funcs and self.type_of_network == "classification":
+                    accuracy1 = self.accuracy_func(test_predictions, test_targets)
+                    accuracy2 = self.accuracy_func2(test_predictions, test_targets)
+                    accuracy3 = self.accuracy_func3(test_predictions, test_targets)
+
+                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3))
+
+                else:    
+                    self.test_accuracy.append(
+                        self.accuracy_func(test_predictions, test_targets)
+                    )
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
 
@@ -263,12 +278,7 @@ class NeuralNetwork:
 
             layer_grads[i] = (dC_dW, dC_db)
 
-        clipped_layer_grads = [
-            (jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12))
-            for W_grad, b_grad in layer_grads
-        ]
-
-        return clipped_layer_grads
+        return layer_grads
 
     def jaxgrad_gradient(self, inputs: np.ndarray, targets: np.ndarray):
         # Function calculating jax gradient using a separate jax_grad_cost function
@@ -290,12 +300,7 @@ class NeuralNetwork:
 
         gradients = grad(jax_grad_cost, argnums=0)(self.layers, inputs, targets)
 
-        clipped_gradients = [
-            (jnp.clip(W_grad, -1e12, 1e12), jnp.clip(b_grad, -1e12, 1e12))
-            for W_grad, b_grad in gradients
-        ]
-
-        return clipped_gradients
+        return gradients
 
     def save_network(self, file_name: str) -> None:
         # Convert JAX arrays to lists if necessary
