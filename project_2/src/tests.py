@@ -281,7 +281,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_constant_update(self):
         updater = Update_Beta()
         updater.constant(eta=self.learning_rate)
-        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+        new_beta = updater(self.beta, self.gradients)
 
 
         # Using SGD with a fixed learning rate in Optax for comparison
@@ -295,7 +295,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_momentum_update(self):
         updater = Update_Beta()
         updater.momentum_based(eta=self.learning_rate, gamma=0.9)
-        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+        new_beta = updater(self.beta, self.gradients)
 
 
         # Using Momentum in Optax for comparison
@@ -310,8 +310,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updater = Update_Beta()
         updater.adagrad(eta=self.learning_rate)
         # Perform a single update with the custom Adagrad
-        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
-
+        new_beta = updater(self.beta, self.gradients)
 
         # Using Adagrad in Optax for comparison
         optax_optimizer = optax.adagrad(learning_rate=self.learning_rate)
@@ -327,8 +326,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_adam_update(self):
         updater = Update_Beta()
         updater.adam(eta=self.learning_rate, epsilon=1e-8, b1=0.9, b2=0.999)
-        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
-
+        new_beta = updater(self.beta, self.gradients)
         # Using Adam in Optax for comparison
         optax_optimizer = optax.adam(learning_rate=self.learning_rate)
         optax_state = optax_optimizer.init(self.beta)
@@ -340,7 +338,7 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
     def test_rmsprop_update(self):
         updater = Update_Beta()
         updater.rmsprop(eta=self.learning_rate, epsilon=1e-8, b=0.9)
-        new_beta = updater(self.beta, self.gradients, param_type="weights", iter=self.iter)
+        new_beta = updater(self.beta, self.gradients)
 
 
         # Using RMSProp in Optax for comparison
