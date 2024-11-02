@@ -168,7 +168,7 @@ Logistic regression can be generalized for the non-binary case, which is then ca
 % \Pr(G=K|X=x)=\frac{1}{1 + \sum_{l=1}^{K-1}\exp(\beta_{l_0}+\beta_l^Tx))}  
 % \end{equation}
 
-\subsection{Cost functions for binary classification \julie{elns}}
+\subsection{Cost functions for binary classification \julie{elns}}\label{sec:cross-entropy}
 \julie{must remember to include maximum likelihood in theory!!}
 
 When choosing a cost-function for the training of a classification model least squares or similar methods are no longer an option. These functions account for neither the discreteness or the non-linearity of the classification task. 
@@ -313,7 +313,7 @@ Adam combines a weighted momentum ($m_t$) with a weighted average of the second 
 While optimization algorithms for adaptive learning rates are widely discussed in the literature, there is no general consensus on what algorithms are best for different applications \cite{schaul2014}.
 Hence, testing different algorithms for your specific data-set, model and problem formulation, is still the way to go.
 
-\subsubsection{Exploding gradients}
+\subsubsection{Exploding gradients}\label{sec:exploding_gradients}
 Some models, such as neural networks with many layers (see section \ref{sec:nn}), often have extremely steep cliff-like regions \citep[p. 285]{Goodfellow-et-al-2016}.
 This can cause the gradients to become extremely large, causing the update step to move the parameters too far.
 This phenomenon is known as \textit{exploding gradients}.
@@ -357,20 +357,24 @@ The simplest model for an artificial neural network is called a \textit{feed for
 \end{equation}
 \citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and directly altering either weights or biases directly are not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
-\subsubsection{Training of the network}
-To start training the NN, and navigating the landscape of the cost-function one needs a starting point. For initialization of weights and biases there are a lot of different conventions. Arguably the most common across the field, is random initialization. As the wording entails, they're then randomly initialized. 
-- Weights and biases
-    - How they are initialized
-Finnes spesialiserte metoder 
-
-Choice of cost function
-
-Back propagation process (refer to GD/cost functions)
-
 \subsubsection{Activation functions}
 Why they should not be linear
 
 Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
+
+\subsubsection{Training of the network}
+\julie{worth mentioning that the input layer does not have bias?}
+
+To start training the NN, and navigating the landscape of the cost-function, one needs a starting point \citep[p.297]{Goodfellow-et-al-2016}. For initialization of weights and biases there are a lot of different conventions. How the values are initialized can affect things like the optimization it self, convergence and the generalization of our model. One of the most important aspects is to ensure that no nodes are the same; for nodes with the same activation function, same input values and same initial values, most training methods will update these in the same manner. This again will result in a more narrow search field were not all possibilities in the cost-landscape can be reached. Although there exists ways to work around this problem it is commonly preferred to avoid this issue as best one can. Larger (distinct) initial weights will be more effective against symmetry, but will on the other hand heighten the risk of exploding gradients (section \ref{sec:exploding_gradients}) and saturated nodes. Saturated nodes is an issue where the values of the activation function approaches its maximum or minimum, resulting in vanishing gradients and thereby poor convergence. 
+
+Arguably the most common method across the field, is random initialization. As the wording entails, the weights and biases are then randomly initialized. The values are commonly selected from a Gaussian distribution, with mean zero and standard deviation 1. This method alleviates the chances of symmetrical nodes, while also mitigating the risk of too large weights. Among other methods for initialization many are specialized for specific activation functions, providing benefits like faster convergence and moderation of saturation effects. 
+
+In addition to initialization of weights and biases, the training of the model largely depends on choice of cost function, which again depends on the task at hand. How a cost function looks has in itself no restrictions, but some are more suited than others. 
+The choice of cost function is arbitrarily what dictates the landscape that is navigated in the optimization of a network. 
+For networks to be used on regression problems, one commonly uses MSE (see section \ref{sec:eval_regression}) and for those to be used on classification problems cross entropy (section \ref{sec:cross-entropy}) is by far the common choice. 
+
+backprop (gd, cost-func, manual gradients by chain-rule)
+
 % - Why neural networks
 % - 
 % \julie{need motivation for NN, one direction FF no loops, input-hidden-output}
@@ -420,7 +424,7 @@ Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
 
 \subsection{Evaluation measures\mia{copy}}
 
-\subsubsection{Regression}
+\subsubsection{Regression}\label{sec:eval_regression}
 The \emph{mean squared error} (MSE) is a popular error measure for linear regression models, and is defined as: 
 
 \begin{equation}\label{mse}
@@ -449,43 +453,66 @@ One such measure is \textit{accuracy}.
 Accuracy is simply defined as correct predictions divided by total predictions (see Eq. \ref{eq:acc}), and is a good measure on how often the model is correct.
 There is an important weakness with accuracy, especially when considering certain types of data.
 This stems from the fact that the two types of errors in a binary classification model, \textit{false positives} and \textit{false negatives}, are in many cases not equally bad.
+Furthermore, many data sets are very skewed, with one outcome having many more data points than the other.
 A prime example of this is models based on medical data sets, trying to predict whether a patient has some disease, such as the Wisconsin breast cancer data set \cite{breast_cancer_wisconsin}.
 Clearly, in most these cases, it is worse if the models wrongly predict that a sick patient is healthy, than the other way around.
+
 \begin{table}[h]
     \centering
-    \begin{tabular}{|m{8em}|m{8em}|m{8em}|}
+    \begin{tabular}{|m{8em}|m{8.5em}|m{8.5em}|}
     \hline
-         & \textbf{predicted to have the disease} & \textbf{predicted to not have the disease} \\
-         \hline
-         \textbf{has disease} & true positive & false negative \\
-         \hline
-         \textbf{not disease} & false positive & true negative\\
+        \diagbox[width=8em]{\textbf{Truth}}{\textbf{Predicted}} & \textbf{Disease} & \textbf{No disease} \\
+    \hline
+        \textbf{Disease} & true positive (TP) & false negative (FN) \\
+    \hline
+        \textbf{No disease} & false positive (FP) & true negative (TN) \\
     \hline
     \end{tabular}
     \caption{Confusion matrix for medical data}
-    \label{tab:my_label}
+    \label{tab:conf_mat}
 \end{table}
 
-An example is the 
+An example is the Norwegian mammography program, where only 3\% of the initially tested will receive follow up tests or treatment \cite{kreft_reg}.
+In this case, a model predicting everyone to be healthy would obviously be very bad, however it would get an accuracy score of 0.97, which is considered very good.
+It is also much worse to send a person with the disease home, than to send a healthy person to a follow-up consultation.
+Hence we need another solution to measure the quality of the model.
+
+A naive solution that solves the problem of skewed data sets, is removing data points from the majority set, in order to make the data set less skewed.
+This often a bad solution for two reasons.
+It reduces the original dataset by a lot of data points (in the Norwegian mammography program example a completely equally distributed data set would contain at most 6\% of the data points), which is of course much worse for training the model.
+Secondly, it does not consider the fact that the two different error types are not equally bad.
+
+\begin{align}
+    \label{eq:precision} \text{precision} &= \frac{\text{TP}}{\text{TP}+\text{FP}} \\
+    \label{eq:recall} \text{recall} &= \frac{\text{TP}}{\text{TP}+\text{FN}}
+\end{align}
+
+For these kind of models, measures such as \textit{precision} and \textit{recall} are popular.
+They both focus on the true positives, and ignore true negatives (see table \ref{tab:conf_mat}).
+Precision (Eq. \ref{eq:precision}) is the fraction predicted by the model to be positive that are positive, while recall (Eq. \ref{eq:recall}) is the fraction of positive cases that are predicted positive by the model \citep[p. 418]{Goodfellow-et-al-2016}.
+The equations uses the definitions of true positives (TP), false positives (FP) and false negatives (FN) as shown in table \ref{tab:conf_mat}.
+Clearly, recall is an important measure in medical cases, as you do not want to send patients with the disease home.
+That being said, the model need so have som level of precision in order to be useful.
+\begin{equation}\label{eq:fscore}
+    F = \frac{2\cdot \text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}
+    = \frac{2 \text{TP}}{2 \text{TP}+\text{FP}+\text{FN}}
+\end{equation}
+
+A compromise between precision and recall is the \textit{F-score} (Eq. \ref{eq:fscore}).
+An F-score close to 1 suggests that the model is good, while an F-score close to 0 is a sign of a bad model.
+Even though the F-score is good at evaluating the quality of a binary classification model, it says little about what is wrong with the model, as it does not tell you if the error stems from the precision or the recall (or both).
+Hence, one will have to also calculate the precision and recall to figure out why a model has a low F-score.
 
 \subsection{\mia{MIA THINGS}}
 
 sigmoid, softmax, relu, leakyrelu
-mse, binary cross-entropy 
 
-\gaute{ clipping grads }
+binary cross-entropy 
 
 minmax scaler + benefits of the different scalers 
 
-logreg 
-
-accuracy
 
 manual grads
 
 chain rule 
 
-\gaute{constant, momentum, adagrad, adagrad momentum, adam, rmsprop }
-
-recall, precision, ROC, confusion matrix 
-    why standard accuracy is bad for medical data
