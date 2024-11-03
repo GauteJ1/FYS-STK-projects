@@ -329,9 +329,9 @@ We only use its size as a hint to how far we might have to move to find the mini
 \subsection{Feed Forward Neural Networks}\label{sec:nn}
 Although methods like linear regression for continuous tasks and logistic regression for classification are suitable for a lot of applications, a more adaptive and versatile method is necessary to broaden the possibilities of use. 
 
-\textit{Neural networks} (NN) make no assumptions about underlying data-structures, and can be fit for a broad range of tasks, including regression and classification \citep[Neural networks]{morten}. Through \textit{layers} of \textit{nodes}, the network imitates the process of neurons firing in the brain, and can be fit to complex problems.
+\textit{Neural networks} (NN) make no assumptions about underlying data-structures, and can be fit for a broad range of tasks, including regression and classification \citep[Neural networks]{morten}. Through \textit{layers} of \textit{nodes} (often called \textit{units}), the network imitates the process of neurons firing in the brain, and can be fit to complex problems.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{project_2/figures/generic_NN.png}
     \caption{Illustration of a generic neural network. \cite[Taken from][The architecture of neural networks]{nielsen}.}
@@ -342,30 +342,16 @@ A general NN consists of an input layer, $k$ hidden layers and an output layer -
 Hidden layers are not hidden in the sense that they're not a visible part of the model; but rather that when using a trained model one never interacts with anything past the input and output layers, thus the internal nodes appear as hidden. 
 Between the nodes we have connections called \textit{weights}. These determine the influence from one particular node to another. 
 
-How many layers a NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[The architecture of Neural Networks]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a "better" architecture, however more complex tasks are commonly better solved by more "complex" networks; i.e. more layers and more nodes. 
-
 The weighted model stems from the mathematical function for an artificial neuron given as follows; 
 
 \begin{equation}\label{artifical_neuron}
     y = f\left( \sum_{i=0}^Nwx_i \right) 
 \end{equation}
 
-Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ inputs and maps them to an output. 
-These activation functions are the key to how neural networks generalize beyond linear methods. As might be deferred, these activation functions should \textbf{not} be linear. 
-For a two dimensional NN, with activation functions given as:
-\begin{align}
-\begin{split}
-    f_1(\bold{x})&=\bold{W_0}^T\bold{x} + b_1 \\
-    f_2(\bold{x})&=\bold{W_1}^T\bold{x} + b_2 
-\end{split}
-\end{align}
-The entire network could then be expressed: 
-\begin{align}
-    \begin{split}
-        F(\bold{x})=f_2(f_1(\bold{x}))
-    \end{split}
-\end{align}
-The entire NN itself is just one big function of all it's weights and activation functions nested. Were the activation functions to be linear, the network itself would be linear - undermining the fundamental purpose of NN. 
+Here $f$ is some \textit{activation function}that takes a weighted sum of $N$ inputs and maps them to an output. Activation functions are further covered in the next subsection, \ref{sec:activation_func}.
+
+How many layers an NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[The architecture of Neural Networks]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a "better" architecture, however more complex tasks are commonly better solved by more "complex" networks; i.e. more layers and more nodes. 
+
 
 It is sometimes specified wether a network is \textit{fully connected} or not. A fully connected network, or layer, is simply connected in a way that each node receives the output from every single node in the preceding layer. Fig. \ref{fig:NN} is an example of a fully connected NN. However, a fully connected network can always act as a "not-fully connected" network simply by having some of it's weight set to $0$ and thereby nullifying the corresponding connections. 
 
@@ -379,10 +365,54 @@ For each node $n$ the process can be formally expressed as:
 \citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and directly altering either weights or biases directly are not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
 
+\subsubsection{Types of activation functions}\label{sec:activation_func}
+
+The activation functions are the key to how NNs generalize beyond linear methods. As might be deferred, these activation functions should \textbf{not} be linear \citep[p.168]{Goodfellow-et-al-2016}. 
+For an NN with one hidden layer and activation functions given as:
+\begin{align}
+\begin{split}
+    f_1(\bold{x})&=\bold{W_0}^T\bold{x} + b_1 \\
+    f_2(\bold{x})&=\bold{W_1}^T\bold{x} + b_2 
+\end{split}
+\end{align}
+The entire network could then be expressed: 
+\begin{align}\label{linear_nn}
+    \begin{split}
+        F(\bold{x})&=f_2(f_1(\bold{x})) \\
+        &= \bold{W_1}^T(\bold{W_0}^T\bold{x} + b_1) + b_2 \\
+        &= \bold{W_1}^T\bold{W_0}^T\bold{x}+\bold{W_1}b_1+b_2 \\
+        &=\bold{W}^T\bold{x}+b
+    \end{split}
+\end{align}
+As Eq. \ref{linear_nn} shows, the entire NN itself is just one big chain of all it's weights and activation functions nested. Were the activation functions to be linear, the network itself would be linear - undermining the fundamental purpose of NN. 
+Beyond non-linearity there are few hard restrictions on the activation functions, granted some are to be preferred. Commonly less restrictive functions are used for regression problems, to avoid limiting the possible output scope of the network. \julie{alternatively impose the following at the start of this subsubsection} The rest of this section will use the convention of $\bold{z}$ representing the "raw output" from the previous layer. Raw output simply refers to the values before they're passed through the activation function. 
+
+One example of a common activation function for classification problems is the Sigmoid function (Eq. \ref{sigmoid}), as used in logistic regression. Tweaking the architecture of an NN, one can deduce that logistic regression is congruent to a FFNN with no hidden layers and the Sigmoid function as the activation function. 
+
+Alternatively the \textit{softmax} function is another common function for classification \citep[Logistic Regression]{morten}. 
+This is an extension of the Sigmoid function, and is also what's used in place of the sigmoid function for multinomial linear regression.
+The softmax function normalizes a vector of input values so that the resulting outputs sum to $1$. While softmax can be used in internal nodes, it is more commonly used for the output layer. For an input vector of size $K$ the softmax function for each element i is given as: 
+\begin{equation}\label{softmax}
+f(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j=1}^K e^{z_j}}
+\end{equation}
+
+
+For regression tasks the activation function \textit{ReLU} (\textit{"Rectified Linear Unit"}) is commonly used \citep[Building a feed forward neural network]{morten}; 
+\begin{equation}\label{relu}
+    f(\bold{z})_i=\max\{0, z_i\}
+\end{equation}
+As opposed to both the sigmoid and the softmax functions, ReLU does not \textit{saturate} for large positive values. The saturation of a function is an issue where the values of the function approaches its maximum or minimum, resulting in vanishing gradients and thereby poor convergence. However, ReLU suffers from an issue called \textit{the dying ReLU}. In essence this refers to nodes stagnating at zero; effectively dying. 
+
+A solution to the problem of the dying ReLU is to use leaky ReLU. 
+% Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
+
 \subsubsection{Training of the network}
 \julie{worth mentioning that the input layer does not have bias?}
 
-To start training the NN, and navigating the landscape of the cost-function, one needs a starting point \citep[p.297]{Goodfellow-et-al-2016}. For initialization of weights and biases there are a lot of different conventions. How the values are initialized can affect things like the optimization it self, convergence and the generalization of our model. One of the most important aspects is to ensure that no nodes are the same; for nodes with the same activation function, same input values and same initial values, most training methods will update these in the same manner. This again will result in a more narrow search field were not all possibilities in the cost-landscape can be reached. Although there exists ways to work around this problem it is commonly preferred to avoid this issue as best one can. Larger (distinct) initial weights will be more effective against symmetry, but will on the other hand heighten the risk of exploding gradients (section \ref{sec:exploding_gradients}) and saturated nodes. Saturated nodes is an issue where the values of the activation function approaches its maximum or minimum, resulting in vanishing gradients and thereby poor convergence. 
+To start training the NN, and navigating the landscape of the cost-function, one needs a starting point \citep[p.297]{Goodfellow-et-al-2016}. For initialization of weights and biases there are a lot of different conventions. How the values are initialized can affect things like the optimization itself, convergence and the generalization of our model. 
+One of the most important aspects is to ensure that no nodes are the same; for nodes with the same activation function, same input values and same initial values, most training methods will update these in the same manner. This again will result in a more narrow search field were not all possibilities in the cost-landscape can be reached. Although there exists ways to work around this problem it is commonly preferred to avoid this issue as best one can. 
+Larger (distinct) initial weights will be more effective against symmetry, but will on the other hand heighten the risk of exploding gradients (section \ref{sec:exploding_gradients}) and saturated nodes (\ref{sec:activation_func}). 
+
 
 Arguably the most common method across the field, is random initialization. As the wording entails, the weights and biases are then randomly initialized. The values are commonly selected from a Gaussian distribution, with mean zero and standard deviation 1. This method alleviates the chances of symmetrical nodes, while also mitigating the risk of too large weights. Among other methods for initialization many are specialized for specific activation functions, providing benefits like faster convergence and moderation of saturation effects. 
 
@@ -392,11 +422,6 @@ For networks to be used on regression problems, one commonly uses MSE (see secti
 
 backprop (gd, cost-func, manual gradients by chain-rule)
 
-\subsubsection{Types of activation functions}
-
-Why they should not be linear
-
-Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
 % - Why neural networks
 % - 
 % \julie{need motivation for NN, one direction FF no loops, input-hidden-output}
