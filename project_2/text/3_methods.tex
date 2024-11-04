@@ -60,12 +60,12 @@ We input the network shape as an array of integers, where the first element repr
 The argument for mini-batch sizes for SGD defaults to normal gradient descent if set to 0.
 
 While having implemented backpropagation with manual derivatives to find the gradients, we mainly use the \texttt{grad} function from \texttt{JAX} \cite{jax2018github} to get the gradients more efficiently.
-Our tests includes a control check that the gradients form \texttt{JAX} and our manual gradients are identical.
+Our tests includes a control check that the gradients computed by \texttt{JAX} and our manual gradients are identical.
 
 The initialization of the parameters is done with a normal distribution with expectation 0 and standard deviation 1.
 While there exists more advanced initialization schemes (see section \ref{sec:NN_init}), we decided not to spend time implementing these.
 This is due to the fact that we are using several different activation functions, and many of the initialization schemes are specialized at being good for one particular activation function.
-We also use relatively simple neural networks structures with a relatively small amount of hidden layers and nodes, meaning it does not cost us much extra time or computation power needing to spend a few more iterations training them.
+We also use relatively simple neural networks structures with a relatively small amount of hidden layers and nodes, meaning it does not cost us much extra time or computation power needing to spend a few more iterations training the models.
 
 When using SGD, we have only one update in each epoch matching the first view in the discussion in section \ref{sec:gd}.
 We make the mini-batch by making a list of all the indices of data points, shuffling it using \texttt{NumPy}'s shuffle method \cite{NumPy-Array}, and selecting the first $m$ indices (where $m$ is the size of the mini-batch).
@@ -91,10 +91,9 @@ We also implement custom functions for flattening and reshaping the weights and 
 \subsection{Exploration and testing}
 \subsubsection{Exploration of the properties of a neural network}
 
-For the Franke function data, we use mean squared error as our cost function. For the classification case, i.e. the cancer data, we opt for binary cross entropy as our cost function.
+For the Franke function data, we use mean squared error as our cost function. For the classification case, i.e. the cancer data, we opt for binary cross entropy.
 
-As a measure of performance, $R^2$ is used for the Franke function data, while accuracy is used for the Wisconsin breast cancer data set during the exploration. 
-In the end, we calculate accuracy, recall, precision, and F-score for the classification case. 
+As a measure of performance, $R^2$ is used for the Franke function data. For the Wisconsin breast cancer data set accuracy is used during the exploration of the models, and in the end we calculate accuracy, recall, precision, and F-score for evaluation. 
 
 Sigmoid is always utilized as the activation function in the final layer for the classification. 
 For the regression (Franke data), we do not apply any activation function in the final layer.
@@ -103,12 +102,12 @@ Formally, our activation function is the identity.
 First, we want to find a good optimizer to use for the exploration of the other moments. 
 To do this, we initialize our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. 
 We train the models for 300 epochs through the entire exploration process, before increasing it in the final selected model. 
-We use ReLU as activation function i both the hidden layers.
+We use ReLU as the activation function in both of the hidden layers.
 For the Cancer data, sigmoid is used at the final layer, whereas for the Franke function data, we do not use an activation (i.e. identity). 
 We use a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively.
 
 We use the following optimizers: constant, momentum, Adam, Adagrad with momentum and RMSprop. 
-A sixth optimizer, Adagrad, is also implemented, but performs so badly on the neural network for the regression case that it surpresses the visibility in the plots. 
+A sixth optimizer, Adagrad wothout momentum, is also implemented, but performs so badly on the neural network for the regression case that it surpresses the visibility in the plots. 
 We therefore remove it completely. 
 We train six different models, one for each of the optimizers, for the two different data sets. 
 We choose the optimizer that performs best for use in further explorations of the neural network. 
@@ -117,7 +116,7 @@ Next, we explore the structure of the network. We choose to test two and three h
 This amounts to 12 different combinations. 
 These values were chosen after trial and error.
 With the exploration taking quite a lot of computation time, this seems like a good set of values to explore the properties of the structure of the neural networks. 
-We find the network structure that produces the best performing model in terms of accuracy or $R^2$, and keep this accuracy for further exploration. 
+We find the network structure that produces the best performing model in terms of accuracy or $R^2$, and keep this architecture for further exploration. 
 
 After that, we study the activation functions of the hidden layers. At the final layer we choose to always use sigmoid for the classification problem and the identity function for the regression problem. 
 Three different activation functions is tested: ReLU, sigmoid, and leaky ReLU. For two hidden layers, these three activation functions can be combined in eight ways. Here, as in the previous steps, we find the best set of activation functions for each problem and continue with these. 
