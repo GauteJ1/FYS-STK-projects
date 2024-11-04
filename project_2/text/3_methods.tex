@@ -91,44 +91,52 @@ We also implement custom functions for flattening and reshaping the weights and 
 \subsection{Exploration and testing}
 \subsubsection{Exploration of the properties of a neural network}
 
-\mia{fix past present tense}
+For the Franke function data, we use mean squared error as our cost function. For the classification case, i.e. the Cancer data, we opt for Binary cross entropy as our cost function.
 
-For the Franke function data, we used mean squared error as our cost function. For the classification case, i.e. the Cancer data, we opted for Binary cross entropy as our cost function.
-
-As measures of performance, $R^2$ is used for the Franke function data. 
+As a measure of performance, $R^2$ is used for the Franke function data. 
 Furthermore, accuracy is used for the other dataset during the exploration. 
-In the end, we calculate accuracy, recall, precision and F-score for the classification case. 
+In the end, we calculate accuracy, recall, precision, and F-score for the classification case. 
 
 Sigmoid is always utilized as the activation function in the final layer for the classification. 
 For the regression (Franke data), we do not apply any activation function in the final layer.
 Formally, our activation function is the identity.
 
-In order to explore the properties of the different aspects of our neural network, we \mia{...}
+To explore the properties of the different aspects of our neural network, we \mia{...}
 
-Firstly, we wanted to find a good optimizer to use for the exploration of the other moments. 
-We initialized our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. We trained for 300 epochs in all models except the final ones. 
-Both the hidden layers had ReLU as the activation function. 
-For the Cancer data, sigmoid was used at the final layer, whereas for the Franke function data, we did not use an activation (i.e. identity). 
-Furthermore, we used a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively. 
+First, we want to find a good optimizer to use for the exploration of the other moments. 
+We initialize our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. We train for 300 epochs in all models except the final ones. 
+Both the hidden layers have ReLU as the activation function. 
+For the Cancer data, sigmoid is used at the final layer, whereas for the Franke function data, we do not use an activation (i.e. identity). 
+Furthermore, we use a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively. 
 
-We used the following optimizers: constant, momentum, Adam, Adagrad with momentum and RMSpop. 
-A sixth optimizer, Adagrad, was also implemented, but performed so badly that it surpressed the visibility in the plots. 
-We trained trained six different models, one for each of the optimizers, for the two different data sets. 
-We chose the optimizer that performed best for use in further explorations of the neural network. 
+We use the following optimizers: constant, momentum, Adam, Adagrad with momentum and RMSprop. 
+A sixth optimizer, Adagrad, is also implemented, but performs so badly on the neural network for the regression case that it surpresses the visibility in the plots. 
+We therefore remove it completely. 
+We train six different models, one for each of the optimizers, for the two different data sets. 
+We choose the optimizer that performs best for use in further explorations of the neural network. 
 
-Next, we explored the structure of the network. We chose to test two and three hidden layers with each having the size 8 or 24. 
+Next, we explore the structure of the network. We choose to test two and three hidden layers with each having the size 8 or 24. 
 This amounts to 12 different combinations. 
 These values were chosen after trial and error.
-With the exploration taking quite a lot of computation time, this seemed like a good set of values to explore the properties of the structure of a neural network. 
-We found the network structure that produced the best performing model in terms of accuracy or $R^2$ and kept this accuracy in the further exploration. 
+With the exploration taking quite a lot of computation time, this seems like a good set of values to explore the properties of the structure of a neural network. 
+We find the network structure that produces the best performing model in terms of accuracy or $R^2$ and keep this accuracy for further exploration. 
 
-Thirdly, we studied the activation functions of the hidden layers. At the final layer we chose to always use sigmoid for the classification problem and the identity function for the regression problem. 
-Three different activation functions were tested: ReLU, sigmoid, and leaky ReLU. Given that to hidden layers were found to be best in both cases, these three activation functions can be combined in eight ways. Here, as in the previous steps, we find the best set of activation functions for the problem and continue with these. 
+Thirdly, we study the activation functions of the hidden layers. At the final layer we choose to always use sigmoid for the classification problem and the identity function for the regression problem. 
+Three different activation functions is tested: ReLU, sigmoid, and leaky ReLU. For two hidden layers, these three activation functions can be combined in eight ways. Here, as in the previous steps, we find the best set of activation functions for the problem and continue with these. 
 
-Furthermore, we conducted a grid search for the best combination of initial learning rate and batch size. For both problems, we tested the following learning rates: \{0.01, 0.001, 0.0001\}. 
-For the regression problem we tested the batch sizes \{1000, 3000, 5000\}, whereas \{100, 200, 300\} were tested in the classification problem. 
-This is simply because we have a lot more data in the regression problem seeing as the data is generated from the Franke function expression. This grid search is conducted for the three best performing optimizers from the first step. 
+Furthermore, we conduct a grid search for the best combination of initial learning rate and batch size. For both problems, we test the following learning rates: \{0.01, 0.001, 0.0001\}. 
+For the regression problem, we test the batch sizes \{1000, 3000, 5000\}, whereas \{100, 200, 300\} are tested in the classification problem. 
+This is simply because we have a lot more data in the regression problem, seeing as the data is generated from the Franke function expression. This grid search is conducted for the three best-performing optimizers from the first step. 
 A combination of initial learning rate and batch size is chosen for each of the three optimizers and brought to the final stage of the exploration. 
 
 For the final step, we train the three models for a total of 500 epochs, one for each optimizer. All three use the network structure and set of activation functions found to be the best. They each have their own best combination of learning rate and batch size. 
 We find the best model among the three and record the last accuracy or $R^2$. For the classification case we also find the recall, precision and F-score. 
+
+\subsubsection{Exploration of the logistic regression}
+
+For the logistic regression model, we conduct tests for what optimizer to use and the size of the initial learning rate. 
+This is done as a grid search with the values \{0.1, 0.01, 0.001\} for the learning rate and the following six optimizers: constant, momentum, Adam, Adagrad, Adagrad with momentum, and RMSprop. 
+The different models are trained for 50 epochs. 
+The version that yields the highest accuracy is chosen. 
+We take these parameters and continue our exploration of logistic regression by testing different $\lambda$-values in the for the ridge regression penalty. Seeing as $\lambda = 0$ also is tested, this amounts to checking whether a penalty is favorable or not. 
+For the $\lambda$ value that gives the highest accuracy, we train a final model for 500 epochs and record the accuracy, recall, precision and F-score at the final step. 
