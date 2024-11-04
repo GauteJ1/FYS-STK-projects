@@ -1,12 +1,24 @@
 From our experiments, we have the general impression that neural netwroks are performing better than the classical regression methods.
 Especially in the regression problem on the Franke function data, neural networks excel in comparison to linear regression.
-We observe that while the linear regression models struggle to grasp the structure of the data, the neural networks seems to make accurate prediction, achieving an $R^2$ value of 0.77 which is very good considering the large amounts of noise included in the data set.
+We observe that while the linear regression models struggle to grasp the structure of the data, the neural networks seem to make accurate prediction, achieving an $R^2$ value of 0.77, which is very good considering the large amounts of noise included in the data set.
 We experience that relatively shallow neural networks perform best at this problem, in particular those with 2 hidden layers, with ReLU as the superior activation function.
 On the optimizer part, we get the quite surprising result that a constant learning rate achieves the best performance.
 Our belief is that this comes down to the simplicity of the problem, and that some of the other methods causes the learning rate to slow down too much in the early iterations.
+As we mostly trained our models with relatively few epochs in the exploration process, we may have favored the models with quick convergence early too much.
 
 In the classification problem, our neural networks and the classical method logistic regression has similar performance.
 As discussed, the neural network has a slightly higher precision, while logistic regression does somewhat better in the recall measure.
 This means that a positive prediction made by the neural network is more likely to be correct, however the neural networks is also more prone to wrongly categorize patients as healthy.
 Since both models achieve the exact same F-score, the decision on which is best is made upon assessing the importance of the types errors, and considering how much we value other properties such as computation time and interpretability of the models.
-Due to the fact that recal
+Due to the fact that recall is more important in medical data sets (as discussed in section \ref{sec:meas_class}) and the larger degree of interpretability in logistic regression models, we conclude that the logistic regression model is better.
+That said, we note that while we are likely to have found the absolute best logistic regression model (or at least very close to it), there are infinite opportunities within the realm of neural networks and there sure to exists a better model than ours.
+It should also be noted that the logistic regression model is technically also a neural network with no hidden layers.
+We did only test neural networks with 2-3 hidden layers, hence we could not have found that model, but we might have if we also tested neural networks with 0 hidden layers.
+
+A possible future improvement for neural networks in the classification case is implementing a custom cost function penalizing false negatives harder than false positives.
+As our neural network achieves the same accuracy and F-score as the logistic regression model, while having a lower recall and higher precision, it is likely that this could immediately lead to a better model than the logistic regression.
+This also reiterates the point of neural networks being highly flexible, and the possibility of finding even better neural networks being very high.
+
+We conclude that while neural networks performs substantially better than linear regression at predicting the noisy Franke function, they just barely equalize the performance of logistic regression in the classification problem.
+While the high flexibility of neural networks open possibilities for finding better models than we have, it also makes it harder finding those models.
+As we have not found a neural network comfortably outperforming the logistic regression model we found without much testing, we conclude that logistic regression might be a just as good alternative to neural networks for these kinds of problems.

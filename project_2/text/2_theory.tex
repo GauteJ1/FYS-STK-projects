@@ -448,7 +448,7 @@ In addition to initialization of weights and biases, the training of the model l
 The choice of cost function is arbitrarily what dictates the landscape that is navigated in the optimization of a network. Most popular optimization techniques require a cost function that can be expressed in terms of a loss function, i.e. that can be computed for each data point on its own. 
 For networks to be used on regression problems one commonly uses MSE (see section \ref{sec:eval_regression}), and for classification problems cross entropy (section \ref{sec:cross-entropy}) is by far the common choice. 
 
-\subsubsection{Training of the network}
+\subsubsection{Training the network}
 For the actual training of the network, in other words finding the optimal weights and biases, one normally uses gradient descent (see section \ref{sec:gd}). The first step in this process is finding the gradients of the cost function to navigate the parameter landscape. As each layer of a NN can be expressed as a function of its previous layer, one can imagine these expressions to quickly become quite complicated. Furthermore we have to find the partial derivatives for all weights and biases. The most used solution to this intricate problem, is called \textit{backpropagation} \citep[p. 200]{Goodfellow-et-al-2016}. While many libraries provide implementations of automatic gradients, such as PyTorch's Autograd \cite{Ansel_PyTorch_2_Faster_2024} and Tensorflow's GradiantTape \cite{Abadi_TensorFlow_Large-scale_machine_2015}, it is beneficial to understand how manual backpropagation works. Not only is this useful for debugging and ensuring code behaves as expected, but it is essential for understanding the training process. 
 
 The fundamental concept of backpropagation is the use of the chain rule from calculus. Since the network's output is a composition of functions, the chain rule allows us to systematically propagate backwards through the network and compute the derivatives effectively \citep[Ch.2]{nielsen}. 
@@ -527,7 +527,7 @@ By recursively applying this process from the output layer back to the input lay
 % On the other hand, cross-validation will be quite computationally costly for a high $K$. Another disadvantage is that there is no clear choice of $K$; here there is a trade-off between bias and variance. A smaller K leads to lower variance, but higher bias. On the other side, a higher K leads to low bias, but high variance. The extreme case of the latter is leave-out-one cross-validation (LOOCV), where every datapoint acts as a fold. It will lead to an unbiased error measure, but the variance will be quite large \citep[p. 242]{hastie}.
 
 \subsection{Scaling}\label{sec:scale}
-Scaling data before inputting it to a model is often beneficial, and sometimes a necessity \citep[Linear Regression]{morten}. Some methods, like ordinary least squares, are invariant to scaling and thus it does not affect the performance either way . For methods like ridge regression, which penalizes large coefficients, scaling the data mitigates problems related to parameters of unequal magnitudes being penalized unfairly compared to each other. For neural networks, scaling the data can be beneficial for convergence of the model, and choice of scaler normally depends on the activation functions used in the model \citep[Ch.7]{Goodfellow-et-al-2016}. Additionally models are often sensitive to extreme values / outliers, and scaling our data can help alleviate the effects of this. 
+Scaling data before giving it to a model is often beneficial, and sometimes a necessity \citep[Linear Regression]{morten}. Some methods, like ordinary least squares, are invariant to scaling and thus it does not affect the performance in any way. For methods like ridge regression, which penalizes large coefficients, scaling the data mitigates problems related to parameters of unequal magnitudes being penalized unfairly compared to each other. For neural networks, scaling the data can be beneficial for convergence of the model, and choice of scaler normally depends on the activation functions used in the model \citep[Ch.7]{Goodfellow-et-al-2016}. Additionally models are often sensitive to extreme values / outliers, and scaling the data can help alleviate the effects of this. 
 
 It's considered good practice to not scale the intercept, as it represents a constant term without variability and scaling it will often worsen it's performance, or defeat it's purpose entirely.
 
@@ -582,7 +582,7 @@ A prediction $\tilde \y = \bar \y$, would result in $R^2 = 0$.
 If $R^2<0$, the model is worse than a straight line.
 The numerator is the sum of the squared residuals, also called RSS. The denominator is the total sum of squares, in short TSS \cite[p. 29]{martin}.
 
-\subsubsection{Classification}
+\subsubsection{Classification}\label{sec:meas_class}
 While the mean squared errors and $R^2$ measures could give us a rough grasp about the quality of a classification model, there are several other methods better suited to measure the model's performance.
 One such measure is \textit{accuracy}.
 \begin{equation}\label{eq:acc}
