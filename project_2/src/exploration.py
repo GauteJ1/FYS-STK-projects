@@ -12,8 +12,8 @@ from data_gen import FrankeDataGen, CancerData
 
 np.random.seed(4155) # FYS-STK4155 
 
-plt.style.use('../plot_settings.mplstyle')
 sns.set_theme()
+plt.style.use('../plot_settings.mplstyle')
 
 class Exploration:
 
