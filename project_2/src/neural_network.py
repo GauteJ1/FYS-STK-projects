@@ -10,6 +10,11 @@ from learn_rate import Update_Beta
 
 
 class NeuralNetwork:
+
+    """
+    A class for creating and training a neural network
+    """
+
     def __init__(
         self,
         network_shape: list[int],
@@ -20,7 +25,8 @@ class NeuralNetwork:
         manual_gradients: bool = False,
         train_test_split: bool = True,
         multiple_accuracy_funcs: bool = False,
-    ):
+    ) -> None:
+        
         self.cost_func = cost_func
 
         self.activation_funcs = [globals()[func] for func in activation_funcs]
@@ -41,7 +47,16 @@ class NeuralNetwork:
 
         self.epochs = 0
 
-    def set_update_strategy(self):
+    def set_update_strategy(self) -> None:
+
+        """
+        Set the update strategy for the neural network
+
+        Raises
+        ------
+        ValueError
+            If the update strategy is not supported
+        """
 
         if self.update_strategy == "Constant":
             self.update_beta.constant(self.learning_rate)
@@ -58,7 +73,16 @@ class NeuralNetwork:
         else:
             raise ValueError("Unsupported update strategy")
 
-    def set_accuracy_function(self):
+    def set_accuracy_function(self) -> None:
+
+        """
+        Set the accuracy function for the neural network
+
+        Raises
+        ------
+        ValueError
+            If the type of network is not supported
+        """
 
         if self.type_of_network == "classification":
             self.accuracy_func = accuracy
@@ -72,7 +96,11 @@ class NeuralNetwork:
             self.accuracy_func3 = precision
             self.accuracy_func4 = f1score
 
-    def set_grads(self):
+    def set_grads(self) -> None:
+
+        """
+        Set the gradient function for the neural network
+        """
 
         if self.manual_gradients:
             self.gradient = self.manual_gradient
@@ -80,6 +108,17 @@ class NeuralNetwork:
             self.gradient = self.jaxgrad_gradient
 
     def set_cost_function(self) -> None:
+
+        """
+        Set the cost function for the neural network
+
+        Raises
+        ------
+        ValueError
+            If the cost function is not supported
+        """
+
+
         if self.cost_func == "MSE":
             self.cost_fun = mse
         elif self.cost_func == "CrossEntropy":
@@ -92,6 +131,15 @@ class NeuralNetwork:
         self.cost_fun_der = grad(self.cost_fun, 0)
 
     def create_layers(self, network_shape: list[int]) -> list:
+
+        """
+        Create the layers of the neural network. Initialize the weights and biases with random values from a normal distribution.
+
+        Returns
+        -------
+        list
+            A list of tuples containing the weights and biases for each layer
+        """
 
         layers = []
         i_size = network_shape[0]
@@ -106,7 +154,17 @@ class NeuralNetwork:
 
         return layers
 
-    def ravel_layers(self, layers):
+    def ravel_layers(self, layers: list) -> np.ndarray:
+
+        """
+        Ravel the layers of the neural network
+
+        Returns
+        -------
+        np.ndarray
+            A raveled array of the layers
+        """
+
         theta = np.array([])
 
         for layer in layers:
@@ -115,7 +173,17 @@ class NeuralNetwork:
 
         return theta.ravel()
 
-    def reshape_layers(self, theta) -> list:
+    def reshape_layers(self, theta: np.ndarray) -> list:
+
+        """
+        Reshape the layers of the neural network
+
+        Returns
+        -------
+        list
+            A list of tuples containing the weights and biases for each layer
+        """
+
         network_shape = self.network_shape
 
         layers = []
@@ -275,7 +343,7 @@ class NeuralNetwork:
             dC_dW = jnp.dot(dC_dz.T, layer_input)
             dC_db = jnp.mean(dC_dz, axis=0)
 
-            dC_db *= inputs.shape[0]  ## MIA: check out this!!! Makes manuel == jaxgrad
+            dC_db *= inputs.shape[0]  
 
             layer_grads[i] = (dC_dW, dC_db)
 
