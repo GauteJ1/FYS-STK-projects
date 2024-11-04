@@ -1,7 +1,9 @@
 import numpy as np
 import jax
+import jax.numpy as jnp
+from tqdm import tqdm
 
-from methods import sigmoid, recall
+from methods import sigmoid, recall, accuracy, precision, f1score
 from neural_network import NeuralNetwork
 from learn_rate import Update_Beta
 
@@ -13,12 +15,14 @@ class LogReg:
         l2_reg_param: float,
         update_strategy: str,
         train_test_split: bool = True,
+        multiple_accuracy_funcs: bool = True,
     ):
         self.input_shape = input_shape
         self.output_shape = output_shape
 
         self.activation = sigmoid
-        self.accuracy_func = recall
+        self.accuracy_func = accuracy
+        
         self.l2_reg_param = l2_reg_param
 
         self.update_strategy = update_strategy
@@ -30,7 +34,13 @@ class LogReg:
         bias = np.random.rand(output_shape)
         self.model = (weights, bias)
 
-        self.eps = 1e-10  # Small constant to avoid division by zero errors due to machine precision
+        self.multiple_accuracy_funcs = multiple_accuracy_funcs
+        if self.multiple_accuracy_funcs:
+            self.accuracy_func2 = recall
+            self.accuracy_func3 = precision
+            self.accuracy_func4 = f1score
+
+        self.eps = 1e-8  # Small constant to avoid division by zero errors due to machine precision
 
     def set_update_strategy(self, learning_rate):
         if self.update_strategy == "Constant":
@@ -50,13 +60,12 @@ class LogReg:
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         weights, bias = self.model
-        z = weights @ x + bias
+        z = jnp.dot(x, weights.T) + bias
         y = self.activation(z)
 
         return y
 
-    def cost(self, inputs: np.ndarray, targets: np.ndarray) -> float:
-        preds = self.predict(inputs)
+    def cost(self, preds: np.ndarray, targets: np.ndarray) -> float:
 
         preds = np.clip(preds, self.eps, 1 - self.eps)
 
@@ -76,27 +85,27 @@ class LogReg:
 
         def jax_cost(model, inputs, targets):
             weights, bias = model
-            z = weights @ inputs + bias
+            z = jnp.dot(inputs, weights.T) + bias
             y = self.activation(z)
 
-            preds = np.clip(y, self.eps, 1 - self.eps)
+            preds = jnp.clip(y, self.eps, 1 - self.eps) # to avoid nan
 
             cost = 0
             for p, y in zip(preds, targets):
                 if y == 1:
-                    cost -= np.log(p)
+                    cost -= jnp.log(p)
                 else:
-                    cost -= np.log(1 - p)
+                    cost -= jnp.log(1 - p)
 
-            cost += self.l2_reg_param * np.mean(weights**2)
+            cost += self.l2_reg_param * jnp.mean(weights**2)
 
-            return cost
+            return cost[0]
 
         # Use jax to calculate gradients
         gradients = jax.grad(jax_cost, 0)(self.model, inputs, targets)
 
         # Avoid exploding gradients
-        gradients = np.clip(gradients, -1e12, 1e12)
+        #gradients = jnp.clip(gradients, -1e12, 1e12)
 
         return gradients
 
@@ -172,12 +181,12 @@ class LogReg:
 
             layers_grad = self.gradient(batch_inputs, batch_targets)
 
-            theta = self.ravel_layers(self.layers)
+            theta = self.ravel_layers(self.model)
             theta_grad = self.ravel_layers(layers_grad)
 
             theta_updated = self.update_beta(theta, theta_grad)
 
-            self.layers = self.reshape_layers(theta_updated)
+            self.model = self.reshape_layers(theta_updated)
 
             train_predictions = self.predict(train_inputs)
             self.loss.append(self.cost(train_predictions, train_targets))
@@ -186,6 +195,16 @@ class LogReg:
             if test_inputs is not None:
                 test_predictions = self.predict(test_inputs)
                 self.test_loss.append(self.cost(test_predictions, test_targets))
-                self.test_accuracy.append(
-                    self.accuracy_func(test_predictions, test_targets)
-                )
+
+                if self.multiple_accuracy_funcs:
+                    accuracy1 = self.accuracy_func(test_predictions, test_targets)
+                    accuracy2 = self.accuracy_func2(test_predictions, test_targets)
+                    accuracy3 = self.accuracy_func3(test_predictions, test_targets)
+                    accuracy4 = self.accuracy_func4(test_predictions, test_targets)
+
+                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3, accuracy4))
+
+                else: 
+                    self.test_accuracy.append(
+                        self.accuracy_func(test_predictions, test_targets)
+                    )

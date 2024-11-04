@@ -69,16 +69,15 @@ class FrankeDataGen(DataGen):
         else:
             self.z = term1 + term2 + term3 + term4
 
-
 class CancerData(DataGen):
     def __init__(self, data_points: int = 569) -> None:
         super().__init__(data_points)
         self.__get_data()
 
     def __get_data(self):
-        api.dataset_download_files('uciml/breast-cancer-wisconsin-data', path='data', unzip=True)
+        api.dataset_download_files('uciml/breast-cancer-wisconsin-data', path='../data', unzip=True)
 
-        data = pd.read_csv("data/data.csv")
+        data = pd.read_csv("../data/data.csv")
         self.x = data.drop(["diagnosis", "id", "Unnamed: 32"], axis=1)
         self.y = data["diagnosis"].map({'B': 0, 'M': 1})
 

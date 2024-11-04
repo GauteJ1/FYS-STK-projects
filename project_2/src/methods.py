@@ -95,20 +95,26 @@ def recall(predictions, targets):
     # turn to binary values
     predictions = jnp.where(predictions >= 0.5, 1, 0)
     true_positives = jnp.sum(predictions * targets)
-    actual_positives = jnp.sum(targets)
-    recall_val = true_positives / (actual_positives + 1e-15)
-    # check for values outside the range [0, 1]
+    false_negatives = jnp.sum((1 - predictions) * targets)
 
+    recall_val = true_positives / (true_positives + false_negatives + 1e-15)
     if recall_val < 0 or recall_val > 1:
         raise ValueError(f"Recall value outside the range [0, 1]: {recall_val}")
     
     return recall_val
 
 def precision(predictions, targets):
+    
     predictions = jnp.where(predictions >= 0.5, 1, 0)
     true_positives = jnp.sum(predictions * targets)
-    predicted_positives = jnp.sum(predictions)
-    return true_positives / (predicted_positives + 1e-15)
+    false_positives = jnp.sum(predictions * (1 - targets))
+
+    precision_val = true_positives / (true_positives + false_positives + 1e-15)
+
+    if precision_val < 0 or precision_val > 1:
+        raise ValueError(f"Precision value outside the range [0, 1]: {precision_val}")
+    
+    return precision_val
 
 def f1score(predictions, targets):
     precision_val = precision(predictions, targets)

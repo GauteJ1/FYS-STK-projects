@@ -71,6 +71,7 @@ class NeuralNetwork:
         if self.multiple_accuracy_funcs and self.type_of_network == "classification":
             self.accuracy_func2 = recall
             self.accuracy_func3 = precision
+            self.accuracy_func4 = f1score
 
     def set_grads(self):
 
@@ -242,8 +243,9 @@ class NeuralNetwork:
                     accuracy1 = self.accuracy_func(test_predictions, test_targets)
                     accuracy2 = self.accuracy_func2(test_predictions, test_targets)
                     accuracy3 = self.accuracy_func3(test_predictions, test_targets)
+                    accuracy4 = self.accuracy_func4(test_predictions, test_targets)
 
-                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3))
+                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3, accuracy4))
 
                 else:    
                     self.test_accuracy.append(

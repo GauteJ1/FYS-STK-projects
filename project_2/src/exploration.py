@@ -13,6 +13,7 @@ from data_gen import FrankeDataGen, CancerData
 np.random.seed(4155) # FYS-STK4155 
 
 plt.style.use('../plot_settings.mplstyle')
+sns.set_theme()
 
 class Exploration:
 
@@ -150,24 +151,12 @@ class Exploration:
 
             MIA: update here with the only plotting every 5th configuration if many + more
         """
-
-        if self.type_model == 'classification':
             
-            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-            for i, mes in enumerate(measure):
-
-                ax.plot(mes, label=configurations[i])
-
-        elif self.type_model == 'continuous':
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+        for i, mes in enumerate(measure):
             
-            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-            for i, mes in enumerate(measure):
-                
-                x_axis = np.arange(50,len(mes))
-                ax.plot(x_axis, mes[50:], label=configurations[i])
-
-        else: 
-            raise ValueError("Type model must be either 'continuous' or 'classification'")
+            x_axis = np.arange(50,len(mes))
+            ax.plot(x_axis, mes[50:], label=configurations[i])
 
 
         ax.set_xlabel("Epochs")
@@ -307,7 +296,7 @@ class Exploration:
         num_optimizers = len(self.top_3_optimizers)
 
         # Create subplots and shared colorbar
-        fig, axes = plt.subplots(1, num_optimizers, figsize=(12, 12))
+        fig, axes = plt.subplots(1, num_optimizers, figsize=(14, 12))
         axes = axes.flatten()
 
         # Get global min and max values for the color scale across all matrices
@@ -327,7 +316,7 @@ class Exploration:
                         cbar_kws={'label': title}, 
                         annot_kws={"size": 20})
 
-            axes[i].set_title(f"{optimizer}", fontsize=40)
+            axes[i].set_title(f"{optimizer}", fontsize=30)
             axes[i].grid(False)
             if i == 1:
                 axes[i].set_xlabel("Batch Size", fontsize=25)
@@ -344,6 +333,7 @@ class Exploration:
         fig.colorbar(axes[0].collections[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
 
         plt.savefig(f"../figures/{title}_grid_{self.type_model}.pdf")
+        plt.savefig(f"../figures/{title}_grid_{self.type_model}.png")
         plt.show()
 
 
@@ -369,7 +359,7 @@ class Exploration:
             lr_accuracies = []
             for batch_size in self.batch_sizes:
                 model = NeuralNetwork(self.best_structure, self.best_activation_functions, 
-                                    self.cost_function, self.type_model, optimizer)  
+                                    self.cost_function, self.type_model, optimizer)
                 model.train_network(self.inputs, self.targets, epochs=self.intermediary_epochs, 
                                     learning_rate=lr, batch_size=batch_size)
                 lr_losses.append(model.test_loss)
@@ -418,11 +408,12 @@ class Exploration:
             best_optimizer: Optimizer with the highest final accuracy.
         """
 
-        self.long_epochs = 300
+        self.long_epochs = 500
         losses = []
         accuracies = []
         accuracies2 = []
         accuracies3 = []
+        accuracies4 = []
 
         self.multiple_accuracy_funcs = True
 
@@ -434,10 +425,11 @@ class Exploration:
 
             if self.type_model == 'classification' and self.multiple_accuracy_funcs: 
 
-                accuracy, recall, precision = zip(*model.test_accuracy)  # Unpack each accuracy type across epochs
+                accuracy, recall, precision, f1 = zip(*model.test_accuracy)  # Unpack each accuracy type across epochs
                 accuracies.append(accuracy)
                 accuracies2.append(recall)
                 accuracies3.append(precision)
+                accuracies4.append(f1)
             
             else:
 
@@ -447,6 +439,7 @@ class Exploration:
         self.best_accuracies = accuracies
         self.recall = accuracies2
         self.precision = accuracies3
+        self.f1 = accuracies4
 
         self.best_optimizer = self.find_maximal_accuracy(self.top_3_optimizers, accuracies)
     
@@ -460,14 +453,9 @@ class Exploration:
 
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
 
-        if self.type_model == 'continuous':
-            x_axis = np.arange(50,len(self.best_accuracies[0]))
-            for i, acc in enumerate(self.best_accuracies):
-                ax.plot(x_axis, acc[50:], label=self.top_3_optimizers[i])
-
-        elif self.type_model == 'classification':
-            for i, acc in enumerate(self.best_accuracies):
-                ax.plot(acc, label=self.top_3_optimizers[i])
+        x_axis = np.arange(50,len(self.best_accuracies[0]))
+        for i, acc in enumerate(self.best_accuracies):
+            ax.plot(x_axis, acc[50:], label=self.top_3_optimizers[i])
 
         ax.set_xlabel("Epochs")
         ax.set_ylabel(f"{self.accuracy_measure} value")
@@ -478,37 +466,21 @@ class Exploration:
 
         plt.show()
 
-        if self.type_model == 'classification' and self.multiple_accuracy_funcs: 
+        # plot loss 
 
-            # plotting recall
-            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-            for i, acc in enumerate(self.recall):
-                ax.plot(acc, label=self.top_3_optimizers[i])
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+        for i, loss in enumerate(self.best_losses):
+            x_axis = np.arange(50,len(loss))
+            ax.plot(x_axis, loss[50:], label=self.top_3_optimizers[i])
 
-            ax.set_xlabel("Epochs")
-            ax.set_ylabel("Recall value")
-            ax.set_title("Recall for best hyperparameters")
-            ax.legend()
+        ax.set_xlabel("Epochs")
+        ax.set_ylabel("Loss value")
+        ax.set_title("Loss for best hyperparameters")
+        ax.legend()
 
-            plt.savefig(f"../figures/best_recall_{self.type_model}.pdf")
+        plt.savefig(f"../figures/best_loss_{self.type_model}.pdf")
 
-            plt.show()
-
-            # plotting precision
-            fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-            for i, acc in enumerate(self.precision):
-                ax.plot(acc, label=self.top_3_optimizers[i])
-
-            ax.set_xlabel("Epochs")
-            ax.set_ylabel("Precision value")
-            ax.set_title("Precision for best hyperparameters")
-            ax.legend()
-
-            plt.savefig(f"../figures/best_precision_{self.type_model}.pdf")
-
-            plt.show()
-
-            # make confusion matrix
+        plt.show()
 
     def print_best(self) -> None:
         
@@ -527,6 +499,9 @@ class Exploration:
             print(f"Final r^2 score: {self.best_accuracies[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
         elif self.type_model == 'classification':
             print(f"Final accuracy: {self.best_accuracies[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final recall: {self.recall[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final precision: {self.precision[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
+            print(f"Final f1: {self.f1[self.top_3_optimizers.index(self.best_optimizer)][-1]}")
 
 
     def do_all(self, print_into: bool = False) -> None:

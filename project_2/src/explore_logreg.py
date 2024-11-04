@@ -11,7 +11,6 @@ from log_reg import LogReg
 
 np.random.seed(4155)  # FYS-STK4155
 
-
 class ExploreLogReg:
 
     def __init__(self) -> None:
