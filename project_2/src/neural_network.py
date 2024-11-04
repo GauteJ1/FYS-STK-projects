@@ -3,7 +3,6 @@ import jax
 import numpy as np
 import json as json
 from methods import *
-from tqdm import tqdm
 from jax import grad
 
 

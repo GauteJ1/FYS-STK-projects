@@ -1,9 +1,6 @@
 import jax.numpy as jnp
 import numpy as np  
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import r2_score
-import torch
-
 
 
 def ReLU(z):

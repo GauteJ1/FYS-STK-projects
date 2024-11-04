@@ -4,7 +4,6 @@ import jax.numpy as jnp
 from tqdm import tqdm
 
 from methods import sigmoid, recall, accuracy, precision, f1score
-from neural_network import NeuralNetwork
 from learn_rate import Update_Beta
 
 class LogReg:

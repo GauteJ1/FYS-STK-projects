@@ -10,6 +10,10 @@ from jax import grad
 import jax as jax
 from sklearn.metrics import accuracy_score, mean_squared_error, r2_score, recall_score
 
+import sys
+import os
+sys.path.append(os.path.abspath("./src"))
+
 from neural_network import NeuralNetwork
 from methods import *
 from data_gen import FrankeDataGen, CancerData
@@ -20,12 +24,14 @@ torch.manual_seed(4155)
 
 class TestNeuralNetworkComparison(unittest.TestCase):
 
-    """ Testing the custom NeuralNetwork class against PyTorch for a continuous regression task.
+    """ 
+    Testing the custom NeuralNetwork class against PyTorch for a continuous regression task.
     """
 
     def setUp(self):
 
-        """ Set up the test case with the Franke function data and a simple neural network.
+        """ 
+        Set up the test case with the Franke function data and a simple neural network.
         """
         
         data = FrankeDataGen(noise=False)

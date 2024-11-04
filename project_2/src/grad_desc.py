@@ -1,16 +1,8 @@
 import numpy as np
 import jax
 import jax.numpy as jnp
-from jax import jit
-from tqdm import tqdm
 from data_gen import DataGen, Poly1D2Deg
 from learn_rate import Update_Beta
-
-# We will have to revisit structuring, this i just an initial idea based on the first couple of tasks in the weekly assignment
-# Possibly, the main class should not be OLS/Ridge, and they would rather be possible function options for the gradient or something
-
-# Have not tuned the learning rate yet
-
 
 class Model:
 
