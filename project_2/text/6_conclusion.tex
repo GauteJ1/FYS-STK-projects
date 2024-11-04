@@ -1,4 +1,12 @@
 From our experiments, we have the general impression that neural netwroks are performing better than the classical regression methods.
 Especially in the regression problem on the Franke function data, neural networks excel in comparison to linear regression.
 We observe that while the linear regression models struggle to grasp the structure of the data, the neural networks seems to make accurate prediction, achieving an $R^2$ value of 0.77 which is very good considering the large amounts of noise included in the data set.
-We experience that relatively shallo
+We experience that relatively shallow neural networks perform best at this problem, in particular those with 2 hidden layers, with ReLU as the superior activation function.
+On the optimizer part, we get the quite surprising result that a constant learning rate achieves the best performance.
+Our belief is that this comes down to the simplicity of the problem, and that some of the other methods causes the learning rate to slow down too much in the early iterations.
+
+In the classification problem, our neural networks and the classical method logistic regression has similar performance.
+As discussed, the neural network has a slightly higher precision, while logistic regression does somewhat better in the recall measure.
+This means that a positive prediction made by the neural network is more likely to be correct, however the neural networks is also more prone to wrongly categorize patients as healthy.
+Since both models achieve the exact same F-score, the decision on which is best is made upon assessing the importance of the types errors, and considering how much we value other properties such as computation time and interpretability of the models.
+Due to the fact that recal
