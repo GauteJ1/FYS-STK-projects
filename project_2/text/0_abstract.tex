@@ -5,6 +5,8 @@ In this paper we compare the performance of linear regression, with both ordinar
 Furthermore we implement logistic regression, and compare its performance with neural networks on a classification task, based on the Wisconsin breast cancer data set \cite{breast_cancer_wisconsin}.
 
 We find that our best neural networks perform better than linear regression at predicting the Franke data, however we emphasize the fact that neural networks are computationally heavier and less interpretable than the linear regression models.
-Our best neural network model for this data set has \gaute{n} hidden layers with \gaute{...} nodes, trained using \gaute{...} with learning rate $\eta =$ \gaute{...}, achieving an MSE of \gaute{...}, while our best linear regression model had an MSE of $0.0987$.
+Our best neural network model achieves an $R^2$ value of $0.83$, far outperforming the best linear regression model at an $R^2$ of $0.37$.
+We find that the accuracy of the neural network trained to solve a classification problem is $0.97$, equal to logistic regression. We prefer the logistic regression model as it has better recall.
 
-\gaute{for the classifcation case ...}
+
+%for this data set has two hidden layers with 24 nodes each, and ReLU as the activation function for both hidden layers. The batch size used is 1000 and the initial learning rate 0.01. The network is trained with a constant optimizer. to perform equally well as a logistic regression model. The best neural network is trained with RMSprop optimizer, two hidden layers of size 24 and 8, and sigmoid and leaky ReLU as the activation functions at the hidden layers. The accuracy score obtained from this network

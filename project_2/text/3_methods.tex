@@ -35,17 +35,17 @@ More details about how the data is produced is available in \textcite{Street1993
 
 \subsubsection{Data handling}
 To make sure the models learn the underlying structure of the data, instead of just copying the set of data points, we split our data in a training set and a test set.
-This is common practice in machine learning, and is known as \textit{train-test split}.
+This is common practice in machine learning problems, and is known as \textit{train-test split}.
 By setting aside 30\% of the data as test data, we make sure that the model can, after being trained on the training set, predict new data points it has never seen before with a reasonable accuracy.
 When presenting accuracy and error numbers in the results used for comparing models, we use the measures on the test data unless indicated otherwise.
 
-The Franke data has input in range $[0, 1]$ for both variables.
+The Franke data has input in the range $[0, 1]$ for both variables.
 This means that min-max scaling (Eq. \ref{min-max}) would have no effect on the data, as it is already min-max scaled.
 We tested using standard scaling (Eq. \ref{standardize}), however this gave worse results, hence we decided on not scaling the data.
-Our theory for why min-max scaling (not scaling) gave the best result, is that \gaute{jeg vet da faen, jeg...}
+% %Our theory for why min-max scaling (not scaling) gave the best result, is that \gaute{jeg vet da faen, jeg...}
 
 For classification, we also tested both min-max scaling (Eq. \ref{min-max}) and standard scaling (Eq. \ref{standardize}), described in section \ref{sec:scale}.
-When testing the neural networks, it became clear that min-max was superior also in this case.
+When testing logitstic regression and the neural networks, it became clear that min-max was superior in both cases.
 
 \subsection{Implementation of the models}
 \subsubsection{Linear regression}
@@ -55,17 +55,17 @@ For linear regression, we reuse our earlier implementation of ordinary least squ
 \subsubsection{Neural network}\label{sec:nn_imp}
 
 We implement a flexible neural network class in our code, enabling it to work for both classification and regression problems, with different structures, cost functions, activation functions and learning rate algorithms.
-Having cost functions, number and size of layers, activation functions, mini-batch sizes and gradient descent methods as arguments when setting up the class allows us to easily explore different models.
+Having cost functions, number and size of layers, activation functions, mini-batch sizes and gradient descent methods as arguments when setting up the class, allows us to easily explore different models.
 We input the network shape as an array of integers, where the first element represents the input shape, the last element represents the output shape and the rest represent the sizes of the hidden layers.
 The argument for mini-batch sizes for SGD defaults to normal gradient descent if set to 0.
 
 While having implemented backpropagation with manual derivatives to find the gradients, we mainly use the \texttt{grad} function from \texttt{JAX} \cite{jax2018github} to get the gradients more efficiently.
-Our tests includes a control check that the values form \texttt{JAX} and our manual values are identical.
+Our tests includes a control check that the gradients form \texttt{JAX} and our manual gradients are identical.
 
 The initialization of the parameters is done with a normal distribution with expectation 0 and standard deviation 1.
 While there exists more advanced initialization schemes (see section \ref{sec:NN_init}), we decided not to spend time implementing these.
 This is due to the fact that we are using several different activation functions, and many of the initialization schemes are specialized at being good for one particular activation function.
-We also have relative simple neural networks structures with a relative small amount of hidden layers and nodes, meaning it did not cost us much needing to spend a little more time training them.
+We also use relatively simple neural networks structures with a relatively small amount of hidden layers and nodes, meaning it does not cost us much extra time or computation power needing to spend a few more iterations training them.
 
 When using SGD, we have only one update in each epoch matching the first view in the discussion in section \ref{sec:gd}.
 We make the mini-batch by making a list of all the indices of data points, shuffling it using \texttt{NumPy}'s shuffle method \cite{NumPy-Array}, and selecting the first $m$ indices (where $m$ is the size of the mini-batch).
@@ -79,35 +79,33 @@ Since the networks in this paper are relatively small and fast to train, we did 
 
 \subsubsection{Logistic regression}
 
-As explained in the theory, a logistic regression model is in essence a neural networks with no hidden layers and the sigmoid function as activation.
+As explained in the theory, a logistic regression model is in essence a neural network with no hidden layers and the sigmoid function as activation.
 Our implementation is inspired by this; we make the layers similarly as in the neural network code, just limited to only having one layer.
-Furthermore, we implemented cross entropy as the cost function inside the class, adding a $l_2$ regularization part to it, with parameter $\lambda$ defaulting to 0.
+Furthermore, we implemented cross entropy as the cost function inside the class, adding an $l_2$ regularization part to it, with parameter $\lambda$ defaulting to 0.
 
 We initiate our weights and biases using a normal distribution with expectation 0 and standard deviation 1.
 While we could have used specialized initiation schemes as described in section \ref{sec:NN_init}, we reached convergence fast enough with the naive approach to not prioritize that.
 We use \texttt{JAX} \cite{jax2018github} to get the numerical gradients while training the model, and implement our mini-batch code as in the neural network case.
-We also implement custom functions for flattening and reshaping the weights and biases, but we use different functions for logistic regression that for neural networks, since we can make them much simpler and somewhat faster as logistic regression has an easier structure.
+We also implement custom functions for flattening and reshaping the weights and biases, but we use different functions for logistic regression than for neural networks, since we can make them much simpler and somewhat faster as logistic regression has an easier structure.
 
 \subsection{Exploration and testing}
 \subsubsection{Exploration of the properties of a neural network}
 
-For the Franke function data, we use mean squared error as our cost function. For the classification case, i.e. the Cancer data, we opt for Binary cross entropy as our cost function.
+For the Franke function data, we use mean squared error as our cost function. For the classification case, i.e. the cancer data, we opt for binary cross entropy as our cost function.
 
-As a measure of performance, $R^2$ is used for the Franke function data. 
-Furthermore, accuracy is used for the other dataset during the exploration. 
+As a measure of performance, $R^2$ is used for the Franke function data, while accuracy is used for the Wisconsin breast cancer data set during the exploration. 
 In the end, we calculate accuracy, recall, precision, and F-score for the classification case. 
 
 Sigmoid is always utilized as the activation function in the final layer for the classification. 
 For the regression (Franke data), we do not apply any activation function in the final layer.
 Formally, our activation function is the identity.
 
-To explore the properties of the different aspects of our neural network, we \mia{...}
-
 First, we want to find a good optimizer to use for the exploration of the other moments. 
-We initialize our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. We train for 300 epochs in all models except the final ones. 
-Both the hidden layers have ReLU as the activation function. 
+To do this, we initialize our neural network model with a learning rate of 0.005 and two hidden layers of size 4 and 8 respectively. 
+We train the models for 300 epochs through the entire exploration process, before increasing it in the final selected model. 
+We use ReLU as activation function i both the hidden layers.
 For the Cancer data, sigmoid is used at the final layer, whereas for the Franke function data, we do not use an activation (i.e. identity). 
-Furthermore, we use a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively. 
+We use a batch size of 200 and 1000 for the Cancer data and the Franke function data respectively.
 
 We use the following optimizers: constant, momentum, Adam, Adagrad with momentum and RMSprop. 
 A sixth optimizer, Adagrad, is also implemented, but performs so badly on the neural network for the regression case that it surpresses the visibility in the plots. 
@@ -118,11 +116,11 @@ We choose the optimizer that performs best for use in further explorations of th
 Next, we explore the structure of the network. We choose to test two and three hidden layers with each having the size 8 or 24. 
 This amounts to 12 different combinations. 
 These values were chosen after trial and error.
-With the exploration taking quite a lot of computation time, this seems like a good set of values to explore the properties of the structure of a neural network. 
-We find the network structure that produces the best performing model in terms of accuracy or $R^2$ and keep this accuracy for further exploration. 
+With the exploration taking quite a lot of computation time, this seems like a good set of values to explore the properties of the structure of the neural networks. 
+We find the network structure that produces the best performing model in terms of accuracy or $R^2$, and keep this accuracy for further exploration. 
 
-Thirdly, we study the activation functions of the hidden layers. At the final layer we choose to always use sigmoid for the classification problem and the identity function for the regression problem. 
-Three different activation functions is tested: ReLU, sigmoid, and leaky ReLU. For two hidden layers, these three activation functions can be combined in eight ways. Here, as in the previous steps, we find the best set of activation functions for the problem and continue with these. 
+After that, we study the activation functions of the hidden layers. At the final layer we choose to always use sigmoid for the classification problem and the identity function for the regression problem. 
+Three different activation functions is tested: ReLU, sigmoid, and leaky ReLU. For two hidden layers, these three activation functions can be combined in eight ways. Here, as in the previous steps, we find the best set of activation functions for each problem and continue with these. 
 
 Furthermore, we conduct a grid search for the best combination of initial learning rate and batch size. For both problems, we test the following learning rates: \{0.01, 0.001, 0.0001\}. 
 For the regression problem, we test the batch sizes \{1000, 3000, 5000\}, whereas \{100, 200, 300\} are tested in the classification problem. 
