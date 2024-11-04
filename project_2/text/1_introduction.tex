@@ -9,19 +9,19 @@
 % - learning rate + batch size 
 % - compare to results from linreg/logreg 
 
-Our society has grown gradually more data-driven in the last decades, and the number of important systems and decisions which are ran by data models is only increasing.
-Neural networks, being large adaptive machine learning models able to use large amounts of data to make accurate predictions, have rapidly moved from being a theoretical niche into being in the front of everybody's minds.
-They are currently the cause of revolutionary changes within a wide range of fields, including healthcare, finance, education and transportation.
+As our society has grown gradually more data-driven in the last decades, the number of important systems and decisions which are driven by data models is only increasing.
+Neural networks, being large adaptive machine learning models able to use large amounts of data to make accurate predictions, have rapidly moved from being a theoretical niche to being at the front of everybody's minds.
+For a wide range of fields, including healthcare, finance, education and transportation - neural networks are currently the cause of revolutionary changes.
 
-Even though they have been made popular in recent years, neural networks is not a new concept.
-The idea of making computational models inspired by neurons in the brain originates in a paper by neurophysiologist Warren McCulloch and mathematician Walter Pitts in 1943 \citep[p. 4]{NN_history}.
-However at that time neither the computational power or the algorithms required to train such networks were available.
-An important step was made when the backpropagation algorithm was popularized in 1986 \citep[p. 5]{NN_history}, however the explosion in popularity did not happen earlier than the last decade.
+Even though they have only shot to fame in more recent years, neural networks are not a new concept.
+The idea of making computational models inspired by neurons in the brain originated in 1943, in a paper by neurophysiologist Warren McCulloch and mathematician Walter Pitts \citep[p. 4]{NN_history}.
+However, at the time neither the computational power or the algorithms required to train such networks were available.
+An important step was made when the backpropagation algorithm was popularized in 1986 \citep[p. 5]{NN_history}, but it was not before the last decade neural networks exploded in popularity.
 
-Neural networks have gradually replaced linear and logistic regression models, as well as being applied in novel problems.
-However, it is not given that they will always perform better than the classical models.
-They do also require more computational power, and often more data to be trained.
-In this paper we will apply both linear regression and neural networks to a regression problem, and logistic regression and neural networks to a classification problem.
+Neural networks have gradually replaced linear and logistic regression models, and are now being being used to solve an increasing range of novel problems.
+However, it is not a given that they will always perform better than classic, simpler models.
+Neural networks also require significantly more computational power, and often more data to be trained.
+In this paper we will apply neural networks alongside linear regression for a regression problem, and logistic regression for a classification problem to compare and analyze the performance. 
 
 For the regression problem we consider the Franke function \cite{frank}.
 We implement a framework for testing different network architectures, activation functions and gradient descent algorithms to find the best possible neural network model for the problem.
@@ -30,7 +30,7 @@ We then compare its overall mean squared error on a test set with the results we
 In the classification case we consider the Wisconsin breast cancer data \cite{breast_cancer_wisconsin}, containing data on breast cancer patients, as well as whether or not they had the disease.
 We implement logistic regression, and compare it to our best performing neural network model.
 
-We start out by covering the theoretical background our work is based on.
-After that we describe our implementations of the different methods, how they were tested and give reasons for decisions made during that process.
+We start out by covering the theoretical background on which our work is based.
+After that we describe our implementations of the different methods, how they were tested and give reasons for decisions made during the process.
 The results will follow, including an interpretation and a critical discussion on which type of models perform best, based on different measures.
 Based on this we conclude on the quality of the neural network models on these problems, compared to linear and logistic regression.
