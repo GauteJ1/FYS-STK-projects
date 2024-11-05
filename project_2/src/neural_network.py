@@ -91,6 +91,7 @@ class NeuralNetwork:
         else:
             raise ValueError("Invalid type of network")
         
+        # for the classification case, we can also calculate recall, precision and f1-score
         if self.multiple_accuracy_funcs and self.type_of_network == "classification":
             self.accuracy_func2 = recall
             self.accuracy_func3 = precision
@@ -207,7 +208,21 @@ class NeuralNetwork:
         return layers
 
     def predict(self, inputs: np.ndarray) -> np.ndarray:
-        # Simple feed forward pass
+
+        """
+        Predict the output of the neural network
+
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+
+        Returns
+        -------
+        np.ndarray
+            The predicted output
+        """
+
         a = inputs
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             z = jnp.dot(a, W.T) + b
@@ -216,8 +231,23 @@ class NeuralNetwork:
         return a
 
     def feed_forward_saver(self, inputs: np.ndarray) -> tuple:
+
+        """
+        Feed forward the input data through the neural network and save the inputs and activations for each layer
+
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+
+        Returns
+        -------
+        tuple
+            A tuple containing the inputs, zs and the final activation
+        """
+
         layer_inputs = []
-        zs = []
+        zs = [] # Save the z values for later use
         a = inputs
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             layer_inputs.append(a)
@@ -236,7 +266,25 @@ class NeuralNetwork:
         learning_rate: float,
         batch_size: int = 100,
     ) -> None:
+        
+        """
+        Train the neural network
 
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+        targets : np.ndarray
+            The target data
+        epochs : int
+            The number of epochs to train the network
+        learning_rate : float
+            The learning rate
+        batch_size : int, optional
+            The batch size, by default 100
+        """
+
+        # splitting into training and testing data if train_test_split is True
         if self.train_test_split:
 
             train_inputs, test_inputs = inputs
@@ -262,6 +310,7 @@ class NeuralNetwork:
         self.batch_size = batch_size
         self.epochs += epochs
 
+        # Set the accuracy function, update strategy (optimizer), gradients and cost function
         self.set_accuracy_function()
         self.set_update_strategy()
         self.set_grads()
@@ -269,6 +318,7 @@ class NeuralNetwork:
 
         num_samples = train_inputs.shape[0]
 
+        # ensuring new seed for each epoch, but reproducibility between runs
         seed_numbers = [i for i in range(epochs)]
         i = 0
 
@@ -277,6 +327,7 @@ class NeuralNetwork:
             np.random.seed(seed_numbers[i])
             i += 1
 
+            # Shuffle the data and create the batch
             if batch_size != 0:
                 random_idx = np.linspace(0, num_samples - 1, num_samples, dtype=int)
                 np.random.shuffle(random_idx)
@@ -288,6 +339,7 @@ class NeuralNetwork:
                 batch_inputs = train_inputs
                 batch_targets = train_targets
 
+            # Calculate the gradients
             layers_grad = self.gradient(batch_inputs, batch_targets)
 
             theta = self.ravel_layers(self.layers)
@@ -298,10 +350,12 @@ class NeuralNetwork:
 
             self.layers = self.reshape_layers(theta_updated)
 
+            # predictions, loss and accuracy
             train_predictions = self.predict(train_inputs)
             self.loss.append(self.cost_fun(train_predictions, train_targets))
             self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
 
+            # calculate test loss and accuracy if test data is provided
             if test_inputs is not None: 
                 test_predictions = self.predict(test_inputs)
                 self.test_loss.append(self.cost_fun(test_predictions, test_targets))
@@ -320,6 +374,22 @@ class NeuralNetwork:
                     )
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
+
+        """
+        Calculate the gradients manually
+
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+        target : np.ndarray
+            The target data
+
+        Returns
+        -------
+        list
+            A list of tuples containing the gradients for each layer
+        """
 
         layer_inputs, zs, predict = self.feed_forward_saver(inputs)
 
@@ -350,9 +420,42 @@ class NeuralNetwork:
         return layer_grads
 
     def jaxgrad_gradient(self, inputs: np.ndarray, targets: np.ndarray):
-        # Function calculating jax gradient using a separate jax_grad_cost function
+        
+        """
+        Calculate the gradients using JAX
+
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+        targets : np.ndarray
+            The target data
+
+        Returns
+        -------
+        list
+            A list of tuples containing the gradients for each layer
+        """
+
 
         def jax_grad_predict(layers: list[float], inputs: np.ndarray) -> np.ndarray:
+
+            """
+
+            Predict the output of the neural network using JAX
+
+            Parameters  
+            ----------
+            layers : list[float]
+                The layers of the neural network
+            inputs : np.ndarray
+                The input data
+
+            Returns
+            -------
+            np.ndarray
+                The predicted output
+            """
 
             a = inputs
             for (W, b), activation_func in zip(layers, self.activation_funcs):
@@ -362,8 +465,26 @@ class NeuralNetwork:
 
         def jax_grad_cost(
             layers: list[float], inputs: np.ndarray, targets: np.ndarray
-        ) -> np.ndarray:
-            # Mimicing cost, but with layers as argument to use jax.grad on it
+            ) -> np.ndarray:
+            
+            """
+            Calculate the cost function using JAX
+
+            Parameters
+            ----------
+            layers : list[float]
+                The layers of the neural network
+            inputs : np.ndarray
+                The input data
+            targets : np.ndarray
+                The target data
+
+            Returns
+            -------
+            np.ndarray
+                The cost function
+            """
+
             predictions = jax_grad_predict(layers, inputs)
             return self.cost_fun(predictions, targets)
 
@@ -372,7 +493,16 @@ class NeuralNetwork:
         return gradients
 
     def save_network(self, file_name: str) -> None:
-        # Convert JAX arrays to lists if necessary
+
+        """
+        Save the neural network to a JSON file
+
+        Parameters
+        ----------
+        file_name : str
+            The name of the file
+        """
+        
         network_info = {
             "network_shape": [layer[0].shape[1] for layer in self.layers],
             "activation_funcs": [func.__name__ for func in self.activation_funcs],
@@ -397,11 +527,24 @@ class NeuralNetwork:
 
     @classmethod
     def load_network(cls, file_name: str) -> "NeuralNetwork":
-        # Load network info from JSON and initialize a new instance with it
+       
+        """
+        Load a neural network from a JSON file
+
+        Parameters
+        ----------
+        file_name : str
+            The name of the file
+
+        Returns
+        -------
+        NeuralNetwork
+            A new instance of the NeuralNetwork class
+        """
+
         with open(file_name, "r") as file:
             network_info = json.load(file)
 
-        # Create a new instance with the loaded parameters
         model = cls(
             network_info["network_shape"],
             network_info["activation_funcs"],
@@ -411,7 +554,6 @@ class NeuralNetwork:
             network_info["manual_gradients"],
         )
 
-        # Set additional attributes
         model.layers = [(np.array(W), np.array(b)) for W, b in network_info["layers"]]
         model.loss = network_info.get("loss_history", [])
         model.accuracy = network_info.get("accuracy_history", [])
