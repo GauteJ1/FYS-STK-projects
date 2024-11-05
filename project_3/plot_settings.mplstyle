@@ -1,0 +1,29 @@
+# plot_settings.mplstyle
+
+# Lines and markers
+lines.linewidth: 2.0
+lines.markersize: 6
+lines.markeredgewidth: 1
+
+# Font settings
+font.size: 12
+# setting font to cambria math 
+font.family: STIXGeneral
+font.serif: stix
+
+# Axes
+axes.titlesize: 20      
+axes.labelsize: 18    
+axes.spines.top: False  
+axes.spines.right: False 
+axes.grid: True         
+axes.grid.axis: both
+axes.grid.which: major
+axes.linewidth: 1.2
+
+# Grid line settings 
+grid.linewidth: 0.5
+grid.color: lightgray
+
+# Legend
+legend.fontsize: 16

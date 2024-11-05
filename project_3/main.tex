@@ -1,0 +1,52 @@
+\documentclass[aps,rmp,reprint,amsmath,amssymb,twocolumn,floatfix]{revtex4-1}
+
+% Include the configuration file
+\input{project_3/config}
+
+\begin{document}
+
+\title{Project 3 title}
+
+\author{Bjørnstad, Johannessen, and Merlid}
+% \affiliation{Department of Mathematics, University of Oslo, N-0316 Oslo, Norway}
+\date{\today}
+\affiliation{Department of Physics; UiO}
+
+
+\begin{abstract}
+\input{project_3/text/0_abstract}
+\end{abstract}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+\input{project_3/text/1_introduction}\label{sec:introduction}
+
+\section{Theory}
+\input{project_3/text/2_theory}
+
+\section{Method}
+\input{project_3/text/3_methods}
+
+\section{Results and discussion}
+\input{project_3/text/4_results}
+
+%\section{Discussion}
+%\input{project_3/text/5_discussion}
+
+\section{Conclusion}
+\input{project_3/text/6_conclusion}
+
+\clearpage
+\addcontentsline{toc}{section}{\protect\numberline{}References} % add references to table of contents
+\bibliography{project_3/References} % add references to this file
+
+
+\clearpage
+\appendix
+\section{Appendix: Source code}
+\label{appendix}
+\input{project_3/text/appendix}
+\clearpage
+\end{document}

@@ -1,0 +1,14 @@
+jupyter
+matplotlib
+numpy
+scipy
+seaborn
+pillow
+pytest
+scikit-learn
+kagglehub
+jax
+tqdm 
+torch
+optax
+kaggle
