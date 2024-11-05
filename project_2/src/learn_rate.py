@@ -4,13 +4,11 @@ from jax._src.typing import Array
 
 
 class Update_Beta:
-
     """
     Class for updating the beta values in the gradient descent (optimizers)
     """
 
     def __init__(self) -> None:
-
         """
         Initializes rate type and iteration count
         """
@@ -19,7 +17,6 @@ class Update_Beta:
         self.iter_count = 1
 
     def reset(self):
-
         """
         Resets the iteration count and the previous values
         """
@@ -65,7 +62,7 @@ class Update_Beta:
         b1: float = 0.9,
         b2: float = 0.999,
     ) -> None:
-        
+
         self.eta = eta
         self.epsilon = epsilon
         self.b1 = b1
@@ -83,7 +80,6 @@ class Update_Beta:
         self.s_prev = None
 
     def __call__(self, beta: Array, gradients: Array) -> Array:
-
         """
         Updates the beta values based on the learning rate type
         """

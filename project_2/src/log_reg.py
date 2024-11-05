@@ -6,6 +6,7 @@ from tqdm import tqdm
 from methods import sigmoid, recall, accuracy, precision, f1score
 from learn_rate import Update_Beta
 
+
 class LogReg:
     """
     Class for logistic regression
@@ -26,7 +27,7 @@ class LogReg:
 
         self.activation = sigmoid
         self.accuracy_func = accuracy
-        
+
         self.l2_reg_param = l2_reg_param
 
         self.update_strategy = update_strategy
@@ -47,7 +48,6 @@ class LogReg:
         self.eps = 1e-8  # Small constant to avoid division by zero errors due to machine precision
 
     def set_update_strategy(self, learning_rate):
-
         """
         Sets the update strategy for the gradient descent (i.e. the optimizer)
 
@@ -73,7 +73,6 @@ class LogReg:
             raise ValueError("Unsupported update strategy")
 
     def predict(self, x: np.ndarray) -> np.ndarray:
-        
         """
         Predicts the output of the model
 
@@ -90,7 +89,6 @@ class LogReg:
         return y
 
     def cost(self, preds: np.ndarray, targets: np.ndarray) -> float:
-
         """
         Calculates the cost function
 
@@ -115,7 +113,6 @@ class LogReg:
         return cost
 
     def gradient(self, inputs, targets):
-
         """
         Calculates the gradient of the cost function
 
@@ -126,7 +123,6 @@ class LogReg:
         """
 
         def jax_cost(model, inputs, targets):
-            
             """
             calculates the cost function for the model using jax
 
@@ -148,7 +144,7 @@ class LogReg:
             z = jnp.dot(inputs, weights.T) + bias
             y = self.activation(z)
 
-            preds = jnp.clip(y, self.eps, 1 - self.eps) # to avoid nan
+            preds = jnp.clip(y, self.eps, 1 - self.eps)  # to avoid nan
 
             cost = 0
             for p, y in zip(preds, targets):
@@ -165,13 +161,11 @@ class LogReg:
         gradients = jax.grad(jax_cost, 0)(self.model, inputs, targets)
 
         # Avoid exploding gradients
-        #gradients = jnp.clip(gradients, -1e12, 1e12)
+        # gradients = jnp.clip(gradients, -1e12, 1e12)
 
         return gradients
 
-
     def ravel_layers(self, model):
-
         """
         Ravel the layers of the model
 
@@ -193,7 +187,6 @@ class LogReg:
         return theta.ravel()
 
     def reshape_layers(self, theta) -> list:
-
         """
         Reshape the raveled model
 
@@ -210,7 +203,7 @@ class LogReg:
 
         input_shape = self.input_shape
         output_shape = self.output_shape
-        weight_size = input_shape*output_shape
+        weight_size = input_shape * output_shape
 
         weights = np.reshape(
             theta[:weight_size],
@@ -220,7 +213,6 @@ class LogReg:
 
         return (weights, bias)
 
-
     def train_model(
         self,
         inputs: np.ndarray,
@@ -229,7 +221,6 @@ class LogReg:
         learning_rate: float,
         batch_size: int = 100,
     ) -> None:
-        
         """
         Trains the model
 
@@ -309,9 +300,11 @@ class LogReg:
                     accuracy3 = self.accuracy_func3(test_predictions, test_targets)
                     accuracy4 = self.accuracy_func4(test_predictions, test_targets)
 
-                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3, accuracy4))
+                    self.test_accuracy.append(
+                        (accuracy1, accuracy2, accuracy3, accuracy4)
+                    )
 
-                else: 
+                else:
                     self.test_accuracy.append(
                         self.accuracy_func(test_predictions, test_targets)
                     )

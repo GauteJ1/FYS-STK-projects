@@ -18,21 +18,20 @@ from learn_rate import Update_Beta
 np.random.seed(4155)
 torch.manual_seed(4155)
 
-class TestNeuralNetworkComparison(unittest.TestCase):
 
-    """ 
+class TestNeuralNetworkComparison(unittest.TestCase):
+    """
     Testing the custom NeuralNetwork class against PyTorch for a continuous regression task.
     """
 
     def setUp(self):
-
-        """ 
+        """
         Set up the test case with the Franke function data and a simple neural network.
         """
-        
+
         data = FrankeDataGen(noise=False)
-        self.inputs = jnp.column_stack((data.x.flatten(), data.y.flatten()))  
-        self.targets = data.z.ravel().reshape(-1, 1)  
+        self.inputs = jnp.column_stack((data.x.flatten(), data.y.flatten()))
+        self.targets = data.z.ravel().reshape(-1, 1)
 
         self.network_shape = [2, 8, 1]
         self.activation_funcs = ["ReLU", "identity"]
@@ -45,18 +44,17 @@ class TestNeuralNetworkComparison(unittest.TestCase):
         self.train_test_split = False
 
         self.custom_model = NeuralNetwork(
-            self.network_shape, 
-            self.activation_funcs, 
-            self.cost_func, 
+            self.network_shape,
+            self.activation_funcs,
+            self.cost_func,
             self.type_of_network,
             self.update_strategy,
             self.manual_gradients,
-            self.train_test_split
+            self.train_test_split,
         )
 
     def train_pytorch_model(self, inputs, targets, epochs, learning_rate):
-
-        """ 
+        """
         Train a simple PyTorch model for comparison with the custom model.
 
         Parameters
@@ -79,7 +77,6 @@ class TestNeuralNetworkComparison(unittest.TestCase):
         inputs_tensor = torch.tensor(np.array(inputs), dtype=torch.float32)
         targets_tensor = torch.tensor(np.array(targets), dtype=torch.float32)
 
-
         class PyTorchModel(nn.Module):
             def __init__(self):
                 super(PyTorchModel, self).__init__()
@@ -93,7 +90,6 @@ class TestNeuralNetworkComparison(unittest.TestCase):
                 x = self.relu(self.fc1(x))
                 x = self.identity(self.fc2(x))
                 return x
-
 
         model = PyTorchModel()
 
@@ -116,7 +112,6 @@ class TestNeuralNetworkComparison(unittest.TestCase):
             model.fc2.weight.copy_(torch.tensor(layers[1][0], dtype=torch.float32))
             model.fc2.bias.copy_(torch.tensor(layers[1][1], dtype=torch.float32))
 
-
         criterion = nn.MSELoss()
         optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
@@ -129,48 +124,50 @@ class TestNeuralNetworkComparison(unittest.TestCase):
 
         return loss.item()
 
-
     def test_custom_vs_pytorch(self):
-
-        """ 
+        """
         Test the custom model against PyTorch for a continuous regression task.
         """
 
         n_epochs = 1000
         learning_rate = 0.001
-        batch_size = 10201 # Full batch, i.e. like no batching
+        batch_size = 10201  # Full batch, i.e. like no batching
 
         self.custom_model.train_network(
-            self.inputs, 
-            self.targets, 
-            epochs=n_epochs, 
+            self.inputs,
+            self.targets,
+            epochs=n_epochs,
             learning_rate=learning_rate,
-            batch_size=batch_size, 
+            batch_size=batch_size,
         )
 
         custom_loss = self.custom_model.loss
-        
-        pytorch_loss = self.train_pytorch_model(self.inputs, self.targets, epochs=n_epochs, learning_rate=learning_rate)
+
+        pytorch_loss = self.train_pytorch_model(
+            self.inputs, self.targets, epochs=n_epochs, learning_rate=learning_rate
+        )
 
         acceptable_loss_diff = 0.05
-        self.assertAlmostEqual(custom_loss[-1], pytorch_loss, delta=acceptable_loss_diff, 
-                            msg="Final loss differs too much from PyTorch model in the continuous case.")
-        
+        self.assertAlmostEqual(
+            custom_loss[-1],
+            pytorch_loss,
+            delta=acceptable_loss_diff,
+            msg="Final loss differs too much from PyTorch model in the continuous case.",
+        )
 
     # comparing manual_gradients=False and manual_gradients=True for the custom model
     def test_manual_vs_jax_gradients(self):
-
-        """ 
+        """
         Test the custom model against JAX for gradient computation.
         """
         model = NeuralNetwork(
-            network_shape=[2, 8, 1], 
-            activation_funcs=["ReLU", "sigmoid"], 
-            cost_func="MSE", 
+            network_shape=[2, 8, 1],
+            activation_funcs=["ReLU", "sigmoid"],
+            cost_func="MSE",
             type_of_network="continuous",
             update_strategy="Constant",
-            manual_gradients=False, # has nothing to say as we call manual_gradient and jaxgrad_gradient directly 
-            train_test_split=False
+            manual_gradients=False,  # has nothing to say as we call manual_gradient and jaxgrad_gradient directly
+            train_test_split=False,
         )
 
         # Define test case with mock data
@@ -183,16 +180,16 @@ class TestNeuralNetworkComparison(unittest.TestCase):
         jax_grads = model.jaxgrad_gradient(test_inputs, test_targets)
 
         # Assert numerical equivalence within tolerance
-        for (manual, jax) in zip(manual_grads, jax_grads):
+        for manual, jax in zip(manual_grads, jax_grads):
             for m_grad, j_grad in zip(manual, jax):
                 self.assertTrue(
                     np.allclose(m_grad, j_grad, atol=1e-5),
-                    msg="Gradients differ at a layer"
+                    msg="Gradients differ at a layer",
                 )
 
-class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
 
-    """ 
+class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
+    """
     Testing the custom NeuralNetwork class against PyTorch for a binary classification task.
     """
 
@@ -221,17 +218,16 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
 
         # Initialize custom model
         self.custom_model = NeuralNetwork(
-            self.network_shape, 
-            self.activation_funcs, 
-            self.cost_func, 
+            self.network_shape,
+            self.activation_funcs,
+            self.cost_func,
             self.type_of_network,
             self.update_strategy,
             self.manual_gradients,
-            self.train_test_split
+            self.train_test_split,
         )
 
     def train_pytorch_model(self, inputs, targets, epochs, learning_rate):
-
         """
         Train a simple PyTorch model for comparison with the custom model.
 
@@ -244,7 +240,7 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         epochs : int
             The number of epochs to train the model.
         learning_rate : float
-            The learning rate for the optimizer.    
+            The learning rate for the optimizer.
 
         Returns
         -------
@@ -256,12 +252,12 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         targets_tensor = torch.tensor(targets, dtype=torch.float32)
 
         class PyTorchModel(nn.Module):
-
-            """ 
+            """
             PyTorch model for binary classification.
             """
+
             def __init__(self):
-                """ 
+                """
                 Initialize the model with the same architecture as the custom model.
                 """
                 super(PyTorchModel, self).__init__()
@@ -269,7 +265,7 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
                 self.fc2 = nn.Linear(32, 16)
                 self.fc3 = nn.Linear(16, 1)
                 self.sigmoid = nn.Sigmoid()
-                self.relu = nn.ReLU()   
+                self.relu = nn.ReLU()
 
             def forward(self, x):
                 """
@@ -302,7 +298,6 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
             model.fc3.weight.copy_(torch.tensor(layers[2][0], dtype=torch.float32))
             model.fc3.bias.copy_(torch.tensor(layers[2][1], dtype=torch.float32))
 
-
         criterion = nn.BCELoss()
         optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
@@ -322,13 +317,13 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         # Test parameters
         epochs = 1000
         learning_rate = 0.001
-        batch_size = 569 # Full batch, i.e. like no batching
+        batch_size = 569  # Full batch, i.e. like no batching
 
         # Train custom model
         self.custom_model.train_network(
-            self.inputs, 
-            self.targets, 
-            epochs=epochs, 
+            self.inputs,
+            self.targets,
+            epochs=epochs,
             learning_rate=learning_rate,
             batch_size=batch_size,
         )
@@ -336,19 +331,25 @@ class TestNeuralNetworkBinaryClassificationComparison(unittest.TestCase):
         custom_loss = self.custom_model.loss
 
         # Train PyTorch model
-        pytorch_loss = self.train_pytorch_model(self.inputs, self.targets, epochs=epochs, learning_rate=learning_rate)
+        pytorch_loss = self.train_pytorch_model(
+            self.inputs, self.targets, epochs=epochs, learning_rate=learning_rate
+        )
 
         # Compare final losses with an acceptable tolerance
         acceptable_loss_diff = 0.05
-        self.assertAlmostEqual(custom_loss[-1], pytorch_loss, delta=acceptable_loss_diff, 
-                               msg="Final loss differs too much from PyTorch model in the classification case.")
+        self.assertAlmostEqual(
+            custom_loss[-1],
+            pytorch_loss,
+            delta=acceptable_loss_diff,
+            msg="Final loss differs too much from PyTorch model in the classification case.",
+        )
+
 
 class TestUpdateBetaWithOptax(unittest.TestCase):
-
     """
     Test the custom Update_Beta class against Optax for various update strategies.
     """
-    
+
     def setUp(self):
         """
         Set up the test case with initial parameters and gradients.
@@ -373,10 +374,11 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updates, _ = optax_optimizer.update(self.gradients, optax_state, self.beta)
         optax_beta = self.beta + updates
 
-        self.assertTrue(jnp.allclose(new_beta, optax_beta), "Constant update does not match Optax")
+        self.assertTrue(
+            jnp.allclose(new_beta, optax_beta), "Constant update does not match Optax"
+        )
 
     def test_momentum_update(self):
-
         """
         Test the momentum update strategy against Optax.
         """
@@ -391,10 +393,11 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updates, _ = optax_optimizer.update(self.gradients, optax_state, self.beta)
         optax_beta = self.beta + updates
 
-        self.assertTrue(jnp.allclose(new_beta, optax_beta), "Momentum update does not match Optax")
+        self.assertTrue(
+            jnp.allclose(new_beta, optax_beta), "Momentum update does not match Optax"
+        )
 
     def test_adagrad_update(self):
-
         """
         Test the Adagrad update strategy against Optax.
         """
@@ -411,11 +414,12 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         optax_beta = self.beta + updates
 
         # Assert numerical equivalence between custom and Optax implementations
-        self.assertTrue(jnp.allclose(new_beta, optax_beta, atol=1e-2), "Adagrad update does not match Optax ")
-
+        self.assertTrue(
+            jnp.allclose(new_beta, optax_beta, atol=1e-2),
+            "Adagrad update does not match Optax ",
+        )
 
     def test_adam_update(self):
-
         """
         Test the Adam update strategy against Optax.
         """
@@ -429,10 +433,12 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updates, _ = optax_optimizer.update(self.gradients, optax_state, self.beta)
         optax_beta = self.beta + updates
 
-        self.assertTrue(jnp.allclose(new_beta, optax_beta, atol=1e-6), "Adam update does not match Optax")
+        self.assertTrue(
+            jnp.allclose(new_beta, optax_beta, atol=1e-6),
+            "Adam update does not match Optax",
+        )
 
     def test_rmsprop_update(self):
-
         """
         Test the RMSprop update strategy against Optax.
         """
@@ -441,23 +447,25 @@ class TestUpdateBetaWithOptax(unittest.TestCase):
         updater.rmsprop(eta=self.learning_rate, epsilon=1e-8, b=0.9)
         new_beta = updater(self.beta, self.gradients)
 
-
         # Using RMSProp in Optax for comparison
-        optax_optimizer = optax.rmsprop(learning_rate=self.learning_rate, decay=0.9, eps=1e-8)
+        optax_optimizer = optax.rmsprop(
+            learning_rate=self.learning_rate, decay=0.9, eps=1e-8
+        )
         optax_state = optax_optimizer.init(self.beta)
         updates, _ = optax_optimizer.update(self.gradients, optax_state, self.beta)
         optax_beta = self.beta + updates
 
-        self.assertTrue(jnp.allclose(new_beta, optax_beta), "RMSprop update does not match Optax")
+        self.assertTrue(
+            jnp.allclose(new_beta, optax_beta), "RMSprop update does not match Optax"
+        )
+
 
 class TestFunctions(unittest.TestCase):
-
     """
     Test the custom activation functions and metrics against JAX and PyTorch.
     """
 
     def setUp(self):
-
         """
         Set up the test case with initial parameters and data.
         """
@@ -465,9 +473,8 @@ class TestFunctions(unittest.TestCase):
         self.z = jnp.array([1.0, -1.0, 2.0, -2.0])
         self.predictions = jnp.array([[0.3, 0.7], [0.8, 0.2]])
         self.targets = jnp.array([[0, 1], [1, 0]])
-    
-    def test_relu(self):
 
+    def test_relu(self):
         """
         Test the ReLU function against JAX.
         """
@@ -477,7 +484,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "ReLU function mismatch")
 
     def test_relu_derivative(self):
-
         """
         Test the ReLU derivative against JAX.
         """
@@ -487,7 +493,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "ReLU derivative mismatch")
 
     def test_leaky_relu(self):
-       
         """
         Test the Leaky ReLU function against torch.
         """
@@ -498,7 +503,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "Leaky ReLU function mismatch")
 
     def test_leaky_relu(self):
-        
         """
         Test the Leaky ReLU function against torch.
         """
@@ -509,17 +513,15 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "Leaky ReLU function mismatch")
 
     def test_sigmoid(self):
-
         """
         Test the Sigmoid function against JAX.
         """
-        
+
         expected = jax_nn.sigmoid(self.z)
         actual = sigmoid(self.z)
         self.assertTrue(jnp.allclose(actual, expected), "Sigmoid function mismatch")
 
     def test_sigmoid_derivative(self):
-
         """
         Test the Sigmoid derivative against JAX.
         """
@@ -529,7 +531,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "Sigmoid derivative mismatch")
 
     def test_softmax(self):
-        
         """
         Test the Softmax function against JAX.
         """
@@ -540,7 +541,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "Softmax function mismatch")
 
     def test_accuracy(self):
-        
         """
         Test the accuracy metric against sklearn.
         """
@@ -552,19 +552,19 @@ class TestFunctions(unittest.TestCase):
         self.assertAlmostEqual(actual, expected, msg="Binary accuracy mismatch")
 
     def test_accuracy_one_hot(self):
-            
         """
         Test the one-hot accuracy metric against sklaearn.
         """
 
         predictions = jnp.array([[0.1, 0.9], [0.8, 0.2]])
         targets = jnp.array([[0, 1], [1, 0]])
-        expected = accuracy_score(jnp.argmax(targets, axis=1), jnp.argmax(predictions, axis=1))
+        expected = accuracy_score(
+            jnp.argmax(targets, axis=1), jnp.argmax(predictions, axis=1)
+        )
         actual = accuracy_one_hot(predictions, targets)
         self.assertAlmostEqual(actual, expected, msg="One-hot accuracy mismatch")
 
     def test_r2_score(self):
-
         """
         Test the R2 score metric against sklearn.
         """
@@ -576,11 +576,9 @@ class TestFunctions(unittest.TestCase):
         self.assertAlmostEqual(actual, expected, msg="R2 score mismatch")
 
     def test_mse(self):
-
         """
         Test the MSE metric against sklearn.
         """
-       
 
         predictions = jnp.array([3.0, -0.5, 2.0, 7.0])
         targets = jnp.array([2.5, 0.0, 2.0, 8.0])
@@ -589,7 +587,6 @@ class TestFunctions(unittest.TestCase):
         self.assertAlmostEqual(actual, expected, msg="MSE mismatch")
 
     def test_cross_entropy_loss(self):
-        
         """
         Test the cross-entropy loss against JAX.
         """
@@ -605,7 +602,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(jnp.allclose(actual, expected), "Cross-entropy loss mismatch")
 
     def test_binary_cross_entropy(self):
-
         """
         Test the binary cross-entropy loss against torch.
         """
@@ -614,11 +610,14 @@ class TestFunctions(unittest.TestCase):
         target_tensor = torch.tensor([0, 1, 0, 1], dtype=torch.float32)
         criterion = nn.BCELoss()
         expected = criterion(predictions, target_tensor).item()
-        actual = binary_cross_entropy(predictions.detach().numpy(), target_tensor.detach().numpy())
-        self.assertTrue(np.allclose(actual, expected), "Binary cross-entropy loss mismatch")
+        actual = binary_cross_entropy(
+            predictions.detach().numpy(), target_tensor.detach().numpy()
+        )
+        self.assertTrue(
+            np.allclose(actual, expected), "Binary cross-entropy loss mismatch"
+        )
 
     def test_recall(self):
-
         """
         Test the recall metric against sklearn.
         """

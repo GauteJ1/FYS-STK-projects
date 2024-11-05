@@ -3,33 +3,34 @@ import kagglehub
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import os
-os.environ['KAGGLE_USERNAME'] = "miamer"
-os.environ['KAGGLE_KEY'] = "7b87a5fea36501c8f5ca5a35d5e88c8d"
+
+os.environ["KAGGLE_USERNAME"] = "miamer"
+os.environ["KAGGLE_KEY"] = "7b87a5fea36501c8f5ca5a35d5e88c8d"
 from kaggle.api.kaggle_api_extended import KaggleApi
+
 api = KaggleApi()
 api.authenticate()
 
 
-
 np.random.seed(4155)
 
-class DataGen: 
-    """ 
+
+class DataGen:
+    """
     Base class for data generation
     """
+
     def __init__(self, data_points: int) -> None:
 
         self.data_points = data_points
 
 
 class Poly1D2Deg(DataGen):
-
     """
     Generates data for a 1D polynomial of 2nd degree
     """
 
     def __init__(self, data_points: int) -> None:
-
         """
         Initializes the class and generates the data
         """
@@ -39,7 +40,6 @@ class Poly1D2Deg(DataGen):
         self.__calc_y()
 
     def __calc_y(self):
-
         """
         Calculates the y-values for the polynomial
         """
@@ -50,18 +50,19 @@ class Poly1D2Deg(DataGen):
         noise = 0.2
 
         self.y = (
-            a + b * self.x + c * self.x**2 
+            a
+            + b * self.x
+            + c * self.x**2
             + noise * np.random.randn(self.data_points, 1)
         )
 
-class FrankeDataGen(DataGen):
 
+class FrankeDataGen(DataGen):
     """
     Generates data for the Franke function
     """
 
     def __init__(self, data_points: int = 101, noise: bool = False) -> None:
-
         """
         Initializes the class and generates the data
         """
@@ -71,8 +72,7 @@ class FrankeDataGen(DataGen):
         self.__generate_data()
 
     def __generate_data(self) -> None:
-            
-        """ 
+        """
         Generates the data for the Franke function on a 2D grid
         with noise of 0.3 times a normal distribution
         """
@@ -101,14 +101,13 @@ class FrankeDataGen(DataGen):
         else:
             self.z = term1 + term2 + term3 + term4
 
-class CancerData(DataGen):
 
+class CancerData(DataGen):
     """
     Generates data for the breast cancer dataset
     """
 
     def __init__(self, data_points: int = 569) -> None:
-            
         """
         Initializes the class and generates the data
         """
@@ -117,18 +116,19 @@ class CancerData(DataGen):
         self.__get_data()
 
     def __get_data(self):
-
         """
         Downloads the breast cancer dataset from Kaggle
         Maps the diagnosis to 0 and 1
         Scales the data
         """
 
-        api.dataset_download_files('uciml/breast-cancer-wisconsin-data', path='../data', unzip=True)
+        api.dataset_download_files(
+            "uciml/breast-cancer-wisconsin-data", path="../data", unzip=True
+        )
 
         data = pd.read_csv("../data/data.csv")
         self.x = data.drop(["diagnosis", "id", "Unnamed: 32"], axis=1)
-        self.y = data["diagnosis"].map({'B': 0, 'M': 1})
+        self.y = data["diagnosis"].map({"B": 0, "M": 1})
 
         self.scale_data()
 

@@ -4,14 +4,13 @@ import jax.numpy as jnp
 from data_gen import DataGen, Poly1D2Deg
 from learn_rate import Update_Beta
 
-class Model:
 
+class Model:
     """
     Class for the model to be used in the gradient descent
     """
 
     def __init__(self, data: DataGen, model_type: str) -> None:
-        
         """
         Initializes the class and sets the data and model type
         """
@@ -28,7 +27,6 @@ class Model:
         self.custom_init = False
 
     def makeX(self, deg: int):
-
         """
         Creates the design matrix X
         """
@@ -42,7 +40,6 @@ class Model:
         return X
 
     def set_update(self, tpe, eta, gamma):
-
         """
         Sets the update strategy (optimizer) for the gradient descent
         """
@@ -63,7 +60,6 @@ class Model:
         return update
 
     def analytical_gradient(self, X, y, Lambda=0.1):
-            
         """
         Calculates the analytical gradient for the model
         """
@@ -114,7 +110,6 @@ class Model:
         return jax.grad(f)
 
     def set_custom_initial_val(self, init_beta: np.ndarray) -> None:
-
         """
         Sets the initial value of beta to a custom value
 
@@ -135,7 +130,6 @@ class Model:
         epochs: int = 10000,
         batch_size: int = 0,
     ):
-        
         """
         Performs the gradient descent
 

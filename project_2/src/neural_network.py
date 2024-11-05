@@ -10,7 +10,6 @@ from learn_rate import Update_Beta
 
 
 class NeuralNetwork:
-
     """
     A class for creating and training a neural network
     """
@@ -26,7 +25,7 @@ class NeuralNetwork:
         train_test_split: bool = True,
         multiple_accuracy_funcs: bool = False,
     ) -> None:
-        
+
         self.cost_func = cost_func
 
         self.activation_funcs = [globals()[func] for func in activation_funcs]
@@ -48,7 +47,6 @@ class NeuralNetwork:
         self.epochs = 0
 
     def set_update_strategy(self) -> None:
-
         """
         Set the update strategy for the neural network
 
@@ -74,7 +72,6 @@ class NeuralNetwork:
             raise ValueError("Unsupported update strategy")
 
     def set_accuracy_function(self) -> None:
-
         """
         Set the accuracy function for the neural network
 
@@ -90,7 +87,7 @@ class NeuralNetwork:
             self.accuracy_func = r_2
         else:
             raise ValueError("Invalid type of network")
-        
+
         # for the classification case, we can also calculate recall, precision and f1-score
         if self.multiple_accuracy_funcs and self.type_of_network == "classification":
             self.accuracy_func2 = recall
@@ -98,7 +95,6 @@ class NeuralNetwork:
             self.accuracy_func4 = f1score
 
     def set_grads(self) -> None:
-
         """
         Set the gradient function for the neural network
         """
@@ -109,7 +105,6 @@ class NeuralNetwork:
             self.gradient = self.jaxgrad_gradient
 
     def set_cost_function(self) -> None:
-
         """
         Set the cost function for the neural network
 
@@ -118,7 +113,6 @@ class NeuralNetwork:
         ValueError
             If the cost function is not supported
         """
-
 
         if self.cost_func == "MSE":
             self.cost_fun = mse
@@ -132,7 +126,6 @@ class NeuralNetwork:
         self.cost_fun_der = grad(self.cost_fun, 0)
 
     def create_layers(self, network_shape: list[int]) -> list:
-
         """
         Create the layers of the neural network. Initialize the weights and biases with random values from a normal distribution.
 
@@ -156,7 +149,6 @@ class NeuralNetwork:
         return layers
 
     def ravel_layers(self, layers: list) -> np.ndarray:
-
         """
         Ravel the layers of the neural network
 
@@ -175,7 +167,6 @@ class NeuralNetwork:
         return theta.ravel()
 
     def reshape_layers(self, theta: np.ndarray) -> list:
-
         """
         Reshape the layers of the neural network
 
@@ -208,7 +199,6 @@ class NeuralNetwork:
         return layers
 
     def predict(self, inputs: np.ndarray) -> np.ndarray:
-
         """
         Predict the output of the neural network
 
@@ -231,7 +221,6 @@ class NeuralNetwork:
         return a
 
     def feed_forward_saver(self, inputs: np.ndarray) -> tuple:
-
         """
         Feed forward the input data through the neural network and save the inputs and activations for each layer
 
@@ -247,7 +236,7 @@ class NeuralNetwork:
         """
 
         layer_inputs = []
-        zs = [] # Save the z values for later use
+        zs = []  # Save the z values for later use
         a = inputs
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             layer_inputs.append(a)
@@ -266,7 +255,6 @@ class NeuralNetwork:
         learning_rate: float,
         batch_size: int = 100,
     ) -> None:
-        
         """
         Train the neural network
 
@@ -356,25 +344,29 @@ class NeuralNetwork:
             self.accuracy.append(self.accuracy_func(train_predictions, train_targets))
 
             # calculate test loss and accuracy if test data is provided
-            if test_inputs is not None: 
+            if test_inputs is not None:
                 test_predictions = self.predict(test_inputs)
                 self.test_loss.append(self.cost_fun(test_predictions, test_targets))
 
-                if self.multiple_accuracy_funcs and self.type_of_network == "classification":
+                if (
+                    self.multiple_accuracy_funcs
+                    and self.type_of_network == "classification"
+                ):
                     accuracy1 = self.accuracy_func(test_predictions, test_targets)
                     accuracy2 = self.accuracy_func2(test_predictions, test_targets)
                     accuracy3 = self.accuracy_func3(test_predictions, test_targets)
                     accuracy4 = self.accuracy_func4(test_predictions, test_targets)
 
-                    self.test_accuracy.append((accuracy1, accuracy2, accuracy3, accuracy4))
+                    self.test_accuracy.append(
+                        (accuracy1, accuracy2, accuracy3, accuracy4)
+                    )
 
-                else:    
+                else:
                     self.test_accuracy.append(
                         self.accuracy_func(test_predictions, test_targets)
                     )
 
     def manual_gradient(self, inputs: np.ndarray, target: np.ndarray) -> list[float]:
-
         """
         Calculate the gradients manually
 
@@ -413,14 +405,13 @@ class NeuralNetwork:
             dC_dW = jnp.dot(dC_dz.T, layer_input)
             dC_db = jnp.mean(dC_dz, axis=0)
 
-            dC_db *= inputs.shape[0]  
+            dC_db *= inputs.shape[0]
 
             layer_grads[i] = (dC_dW, dC_db)
 
         return layer_grads
 
     def jaxgrad_gradient(self, inputs: np.ndarray, targets: np.ndarray):
-        
         """
         Calculate the gradients using JAX
 
@@ -437,14 +428,12 @@ class NeuralNetwork:
             A list of tuples containing the gradients for each layer
         """
 
-
         def jax_grad_predict(layers: list[float], inputs: np.ndarray) -> np.ndarray:
-
             """
 
             Predict the output of the neural network using JAX
 
-            Parameters  
+            Parameters
             ----------
             layers : list[float]
                 The layers of the neural network
@@ -465,8 +454,7 @@ class NeuralNetwork:
 
         def jax_grad_cost(
             layers: list[float], inputs: np.ndarray, targets: np.ndarray
-            ) -> np.ndarray:
-            
+        ) -> np.ndarray:
             """
             Calculate the cost function using JAX
 
@@ -493,7 +481,6 @@ class NeuralNetwork:
         return gradients
 
     def save_network(self, file_name: str) -> None:
-
         """
         Save the neural network to a JSON file
 
@@ -502,7 +489,7 @@ class NeuralNetwork:
         file_name : str
             The name of the file
         """
-        
+
         network_info = {
             "network_shape": [layer[0].shape[1] for layer in self.layers],
             "activation_funcs": [func.__name__ for func in self.activation_funcs],
@@ -527,7 +514,6 @@ class NeuralNetwork:
 
     @classmethod
     def load_network(cls, file_name: str) -> "NeuralNetwork":
-       
         """
         Load a neural network from a JSON file
 
