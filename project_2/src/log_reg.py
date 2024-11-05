@@ -7,6 +7,10 @@ from methods import sigmoid, recall, accuracy, precision, f1score
 from learn_rate import Update_Beta
 
 class LogReg:
+    """
+    Class for logistic regression
+    """
+
     def __init__(
         self,
         input_shape: int,
@@ -16,6 +20,7 @@ class LogReg:
         train_test_split: bool = True,
         multiple_accuracy_funcs: bool = True,
     ):
+
         self.input_shape = input_shape
         self.output_shape = output_shape
 
@@ -42,6 +47,16 @@ class LogReg:
         self.eps = 1e-8  # Small constant to avoid division by zero errors due to machine precision
 
     def set_update_strategy(self, learning_rate):
+
+        """
+        Sets the update strategy for the gradient descent (i.e. the optimizer)
+
+        Raises
+        ------
+        ValueError
+            If the update strategy is not supported
+        """
+
         if self.update_strategy == "Constant":
             self.update_beta.constant(learning_rate)
         elif self.update_strategy == "Momentum":
@@ -58,6 +73,16 @@ class LogReg:
             raise ValueError("Unsupported update strategy")
 
     def predict(self, x: np.ndarray) -> np.ndarray:
+        
+        """
+        Predicts the output of the model
+
+        Returns
+        -------
+        y : np.ndarray
+            The predicted output
+        """
+
         weights, bias = self.model
         z = jnp.dot(x, weights.T) + bias
         y = self.activation(z)
@@ -65,6 +90,15 @@ class LogReg:
         return y
 
     def cost(self, preds: np.ndarray, targets: np.ndarray) -> float:
+
+        """
+        Calculates the cost function
+
+        Returns
+        -------
+        cost : float
+            The cost function
+        """
 
         preds = np.clip(preds, self.eps, 1 - self.eps)
 
@@ -82,7 +116,34 @@ class LogReg:
 
     def gradient(self, inputs, targets):
 
+        """
+        Calculates the gradient of the cost function
+
+        Returns
+        -------
+        gradients : np.ndarray
+            The gradients of the cost function
+        """
+
         def jax_cost(model, inputs, targets):
+            
+            """
+            calculates the cost function for the model using jax
+
+            Parameters
+            ----------
+            model : tuple
+                The model weights and bias
+            inputs : np.ndarray
+                The input data
+            targets : np.ndarray
+                The target data
+
+            Returns
+            -------
+            cost : float
+            """
+
             weights, bias = model
             z = jnp.dot(inputs, weights.T) + bias
             y = self.activation(z)
@@ -110,6 +171,21 @@ class LogReg:
 
 
     def ravel_layers(self, model):
+
+        """
+        Ravel the layers of the model
+
+        Parameters
+        ----------
+        model : tuple
+            The model weights and bias
+
+        Returns
+        -------
+        theta : np.ndarray
+            The raveled model
+        """
+
         theta = np.array([])
         theta = np.append(theta, np.ravel(model[0]))
         theta = np.append(theta, np.ravel(model[1]))
@@ -117,6 +193,21 @@ class LogReg:
         return theta.ravel()
 
     def reshape_layers(self, theta) -> list:
+
+        """
+        Reshape the raveled model
+
+        Parameters
+        ----------
+        theta : np.ndarray
+            The raveled model
+
+        Returns
+        -------
+        model : list
+            The reshaped model
+        """
+
         input_shape = self.input_shape
         output_shape = self.output_shape
         weight_size = input_shape*output_shape
@@ -138,6 +229,23 @@ class LogReg:
         learning_rate: float,
         batch_size: int = 100,
     ) -> None:
+        
+        """
+        Trains the model
+
+        Parameters
+        ----------
+        inputs : np.ndarray
+            The input data
+        targets : np.ndarray
+            The target data
+        epochs : int
+            The number of epochs
+        learning_rate : float
+            The learning rate
+        batch_size : int, optional
+            The batch size, by default 100
+        """
 
         if self.train_test_split:
 

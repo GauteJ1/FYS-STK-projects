@@ -5,11 +5,24 @@ from jax._src.typing import Array
 
 class Update_Beta:
 
+    """
+    Class for updating the beta values in the gradient descent (optimizers)
+    """
+
     def __init__(self) -> None:
+
+        """
+        Initializes rate type and iteration count
+        """
+
         self.rate_type = ""
         self.iter_count = 1
 
     def reset(self):
+
+        """
+        Resets the iteration count and the previous values
+        """
 
         self.prev_v = None
         self.G = None
@@ -18,22 +31,26 @@ class Update_Beta:
         self.iter_count = 1
 
     def constant(self, eta: float) -> None:
+
         self.eta = eta
         self.rate_type = "Constant"
 
     def momentum_based(self, eta: float, gamma: float) -> None:
+
         self.eta = eta
         self.gamma = gamma
         self.rate_type = "Momentum"
         self.prev_v = None
 
     def adagrad(self, eta: float, delta: float = 1e-8) -> None:
+
         self.eta = eta
         self.delta = delta
         self.rate_type = "Adagrad"
         self.G = None
 
     def adagrad_momentum(self, eta: float, gamma: float, delta: float = 1e-8) -> None:
+
         self.eta = eta
         self.gamma = gamma
         self.delta = delta
@@ -48,6 +65,7 @@ class Update_Beta:
         b1: float = 0.9,
         b2: float = 0.999,
     ) -> None:
+        
         self.eta = eta
         self.epsilon = epsilon
         self.b1 = b1
@@ -57,6 +75,7 @@ class Update_Beta:
         self.s_prev = None
 
     def rmsprop(self, eta: float = 1e-3, epsilon: float = 1e-8, b: float = 0.9) -> None:
+
         self.eta = eta
         self.epsilon = epsilon
         self.b = b
@@ -64,6 +83,10 @@ class Update_Beta:
         self.s_prev = None
 
     def __call__(self, beta: Array, gradients: Array) -> Array:
+
+        """
+        Updates the beta values based on the learning rate type
+        """
 
         if self.rate_type == "Constant":
             return beta - self.eta * gradients

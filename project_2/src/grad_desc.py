@@ -6,7 +6,16 @@ from learn_rate import Update_Beta
 
 class Model:
 
+    """
+    Class for the model to be used in the gradient descent
+    """
+
     def __init__(self, data: DataGen, model_type: str) -> None:
+        
+        """
+        Initializes the class and sets the data and model type
+        """
+
         self.x = data.x
         self.y = data.y
         self.n = data.data_points
@@ -19,8 +28,12 @@ class Model:
         self.custom_init = False
 
     def makeX(self, deg: int):
-        # Add dimension 2 option to this if we want to use Franke/Terrain
 
+        """
+        Creates the design matrix X
+        """
+
+        # Add dimension 2 option to this if we want to use Franke/Terrain
         # Design matrix including the intercept
         # No scaling of data of and all data used for training (for now)
         X = np.zeros((self.n, deg))
@@ -29,6 +42,10 @@ class Model:
         return X
 
     def set_update(self, tpe, eta, gamma):
+
+        """
+        Sets the update strategy (optimizer) for the gradient descent
+        """
         update = Update_Beta()
         if tpe == "Constant":
             update.constant(eta)
@@ -46,12 +63,25 @@ class Model:
         return update
 
     def analytical_gradient(self, X, y, Lambda=0.1):
+            
+        """
+        Calculates the analytical gradient for the model
+        """
+
         if self.model_type == "OLS":
             return lambda beta: 2.0 / self.n * X.T @ (X @ beta - y)
         elif self.model_type == "Ridge":
             return lambda beta: 2.0 / self.n * X.T @ (X @ beta - y) + 2 * Lambda * beta
 
     def loss(self):
+        """
+        calculates the loss function for the model
+
+        Returns
+        -------
+        loss : function
+            The loss function
+        """
         if self.model_type == "OLS":
             loss = lambda X, y, beta, Lambda: jnp.mean((X @ beta - y) ** 2)
         elif self.model_type == "Ridge":
@@ -61,10 +91,39 @@ class Model:
         return loss
 
     def gradient(self, X, y, Lambda=0.1):
+        """
+        Calculates the gradient of the loss function
+
+        Parameters
+        ----------
+        X : np.ndarray
+            The design matrix
+        y : np.ndarray
+            The target values
+        Lambda : float, optional
+            The regularization parameter, by default 0.1
+
+        Returns
+        -------
+        function
+            The gradient of the loss function
+        """
+
         f = lambda beta: self.loss()(X, y, beta, Lambda)
+
         return jax.grad(f)
 
     def set_custom_initial_val(self, init_beta: np.ndarray) -> None:
+
+        """
+        Sets the initial value of beta to a custom value
+
+        Parameters
+        ----------
+        init_beta : np.ndarray
+            The initial value of beta
+        """
+
         self.custom_init = True
         self.init_beta = init_beta
 
@@ -76,6 +135,23 @@ class Model:
         epochs: int = 10000,
         batch_size: int = 0,
     ):
+        
+        """
+        Performs the gradient descent
+
+        Parameters
+        ----------
+        tpe : str, optional
+            The type of optimizer, by default "Constant"
+        eta : float, optional
+            The learning rate, by default 0.05
+        gamma : float, optional
+            The momentum parameter, by default 0.05
+        epochs : int, optional
+            The number of epochs, by default 10000
+        batch_size : int, optional
+            The batch size, by default 0
+        """
 
         if batch_size == 0:
             batch_size = self.n
