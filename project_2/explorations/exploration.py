@@ -1,13 +1,15 @@
 import numpy as np
+import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from itertools import product
 from tqdm import tqdm
-
 import sys
 import os
+
+# ensuring the src folder is in the python path for the imports
 sys.path.append(os.path.abspath("../src"))
 
 from neural_network import NeuralNetwork
@@ -16,10 +18,15 @@ from data_gen import FrankeDataGen, CancerData
 
 np.random.seed(4155) # FYS-STK4155 
 
+# plot settings
 sns.set_theme()
 plt.style.use('../plot_settings.mplstyle')
 
 class Exploration:
+
+    """
+    Class for exploring different hyperparameters for neural networks.
+    """
 
     def __init__(self, type_model: str,
                  optimizers: list[str], 
@@ -33,14 +40,22 @@ class Exploration:
         """
         Initializes the Exploration class for neural network experimentation.
 
-        Parameters:
-            type_model: Model type ('continuous' or 'classification').
-            optimizers: Optimizers to test.
-            layer_sizes: Hidden layer sizes to explore.
-            num_hidden_layers: Number of hidden layers to explore.
-            learning_rates: Learning rates to test.
-            batch_sizes: Batch sizes to test.
-            activation_functions: Activation functions to test.
+        Parameters/Attributes:
+        ----------
+        type_model : str
+            Type of model to train, either 'continuous' or 'classification'.
+        optimizers : list[str]
+            List of optimizers to test.
+        layer_sizes : list[int]
+            List of sizes for hidden layers.
+        num_hidden_layers : list[int]
+            List of number of hidden layers to test.
+        learning_rates : list[float]
+            List of learning rates to test.
+        batch_sizes : list[float]
+            List of batch sizes to test.
+        activation_functions : list[str]
+            List of activation functions to test.   
         """
 
         self.type_model = type_model    
@@ -145,7 +160,7 @@ class Exploration:
     def plot(self, measure: list, configurations: list, title: str, y_label: str) -> None: 
             
         """
-        Plots the given measure (accuracy or loss) for different configurations over epochs.
+        Plots the given measure (accuracy or loss) for different configurations over epochs, starting from epoch 50.
 
         Parameters:
             measure: List of values (accuracy or loss) over epochs for each configuration.
@@ -153,7 +168,7 @@ class Exploration:
             title: Title for the plot, indicating the measure being plotted.
             y_label: Label for the y-axis of the plot.
 
-            MIA: update here with the only plotting every 5th configuration if many + more
+        Saves the plot as a PDF file in the figures folder and displays it.
         """
             
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
@@ -296,6 +311,8 @@ class Exploration:
         Parameters:
             measure: Dictionary with optimizers as keys and 3D matrices of values (accuracy or loss) as values.
             title: Title for the plot, indicating the measure being plotted.
+
+        Saves the plot as a PDF file in the figures folder and displays it.
         """
         num_optimizers = len(self.top_3_optimizers)
 
@@ -376,7 +393,7 @@ class Exploration:
     
     def grid_search_for_optimizer(self) -> None:
         """
-        Performs a grid search over all optimizers, storing test loss and accuracy for each combination of
+        Performs a grid search over best three optimizers, storing test loss and accuracy for each combination of
         learning rate and batch size.
 
         Attributes Updated:
@@ -403,12 +420,14 @@ class Exploration:
     def make_best(self) -> None:
         
         """
-        Trains the model with the best parameters found (optimizer, learning rate, batch size, structure, 
-        and activation functions) for an extended number of epochs. Records test loss and accuracy for each optimizer.
+        Trains the model with the best parameters found (learning rate, batch size, structure, and activation functions) for the three
+        top optimizers for 500 epochs. Records test loss and accuracy for each optimizer.
+
+        For the classification model, also records recall, precision, and F1 score.
 
         Attributes Updated:
-            best_losses: List of final test losses for each optimizer.
-            best_accuracies: List of final test accuracies for each optimizer.
+            best_losses: List of final test losses for each top three optimizer.
+            best_accuracies: List of final test accuracies for each top three optimizer.
             best_optimizer: Optimizer with the highest final accuracy.
         """
 
@@ -450,10 +469,11 @@ class Exploration:
     def plot_best(self) -> None:
 
         """
-        Plots the final test accuracy and loss for the best hyperparameters found for each optimizer.
+        Plots the final test accuracy and loss for the best hyperparameters found for each top three optimizer optimizer.
+
+        Saves the plots as PDF files in the figures folder and displays them.
         """
 
-        # plot accuracy/R^2
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
 
         x_axis = np.arange(50,len(self.best_accuracies[0]))
@@ -489,6 +509,7 @@ class Exploration:
         """
         Prints the best hyperparameters found in the search, including optimizer, structure, activation functions, 
         learning rate, batch size, and final accuracy or R^2 score.
+        For classification models, also prints final recall, precision, and F1 score.
         """
 
         print(f"Best optimizer: {self.best_optimizer}")
