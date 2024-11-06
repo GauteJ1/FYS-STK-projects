@@ -1,10 +1,20 @@
-From our experiments, we have the general impression that neural netwroks are performing better than the classical regression methods.
-Especially in the regression problem on the Franke function data, neural networks excel in comparison to linear regression.
-We observe that while the linear regression models struggle to grasp the structure of the data, the neural networks seem to make accurate prediction, achieving an $R^2$ value of 0.77, which is very good considering the large amounts of noise included in the data set.
-We experience that relatively shallow neural networks perform best at this problem, in particular those with 2 hidden layers, with ReLU as the superior activation function.
-On the optimizer part, we get the quite surprising result that a constant learning rate achieves the best performance.
-Our belief is that this comes down to the simplicity of the problem, and that some of the other methods causes the learning rate to slow down too much in the early iterations.
-As we mostly trained our models with relatively few epochs in the exploration process, we may have favored the models with quick convergence too much.
+From our experiments, we have the general impression that neural networks are performing quite similar to classical regression methods for simpler data sets. 
+In the regression problem on the Franke function data, we experience that relatively shallow neural networks perform best, in particular those with 2 hidden layers. 
+Variants of ReLu and leaky ReLU are superior as activation functions for this kind of regression problem.
+Furthermore, the Adam optimizer quickly converges to the best performing model.
+This regression problem seems to be well-suited for simpler models, such as linear regression. 
+A preference for simpler models is also supported from the fact that the more shallow networks perform better than deeper ones, which is most likely due to overfitting. 
+In addition, we take into consideration that linear regression is more interpretable and offers easier  implementation. 
+Linear regression therefore outperforms neural networks in our case, both in terms of the slightly higher $R^2$ and the aforementioned properties. 
+It should be noted that our implementation is likely not the best possible neural network for this task, and one could produce a model that outperforms the linear regression. 
+However, as both $R^2$ values are close to the upper limit of $0.89$ for this amount of noise, pursuing further analysis on this does not seem worthwhile.
+
+%Especially in the regression problem on the Franke function data, neural networks excel in comparison to linear regression.
+%We observe that while the linear regression models struggle to grasp the structure of the data, the neural networks seem to make accurate prediction, achieving an $R^2$ value of 0.77, which is very good considering the large amounts of noise included in the data set.
+%We experience that relatively shallow neural networks perform best at this problem, in particular those with 2 hidden layers, with ReLU as the superior activation function.
+%On the optimizer part, we get the quite surprising result that a constant learning rate achieves the best performance.
+%Our belief is that this comes down to the simplicity of the problem, and that some of the other methods causes the learning rate to slow down too much in the early iterations.
+%As we mostly trained our models with relatively few epochs in the exploration process, we may have favored the models with quick convergence too much.
 
 In the classification problem, our neural networks and the classical method logistic regression has similar performance.
 As discussed, the neural network has a slightly higher precision, while logistic regression does somewhat better in the recall measure.
@@ -19,6 +29,9 @@ A possible future improvement for neural networks in the classification case is 
 As our neural network achieves the same accuracy and F-score as the logistic regression model, while having a lower recall and higher precision, it is likely that this could immediately lead to a better model than the logistic regression.
 This also reiterates the point of neural networks being highly flexible, and the possibility of finding even better neural networks being very high.
 
-We conclude that while neural networks performs substantially better than linear regression at predicting the noisy Franke function, they just barely equalize the performance of logistic regression in the classification problem.
+%We conclude that while neural networks performs substantially better than linear regression at predicting the noisy Franke function, they just barely equalize the performance of logistic regression in the classification problem.
+We conclude that linear regression models are well-suited to the regression problem on the Franke function data, slightly outperforming our neural networks. 
+For the classification task, the neural networks barely equalize the performance of logistic regression. 
 While the high flexibility of neural networks open possibilities for finding better models than we have, it also makes it harder finding those models.
-As we have not found a neural network comfortably outperforming the logistic regression model we found without much testing, we conclude that logistic regression might be a just as good alternative to neural networks for these kinds of problems.
+
+As we have not found a neural network comfortably outperforming the either the linear or logistic regression model we found without much testing, we conclude that both linear and logistic regression might be a just as good alternative to neural networks for these kinds of problems.

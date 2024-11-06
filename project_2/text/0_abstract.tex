@@ -4,9 +4,10 @@ Classic models as linear and logistic regression are easier to interpret and sim
 In this paper we compare the performance of linear regression, with both ordinary least squares and ridge, to neural networks with a range of architectures and activation functions, on the noisy Franke data set \cite{frank}, where we reuse our previous implementations of linear regression models \cite{project1}.
 Furthermore we implement logistic regression, and compare its performance with neural networks on a classification task, based on the Wisconsin breast cancer data set \cite{breast_cancer_wisconsin}.
 
-We find that a linear regression model performs equally well as our best neural network at predicting the Franke function data. 
+We find that a linear regression model performs slightly better than our best neural network at predicting the Franke function data. 
 %however we emphasize the fact that neural networks are computationally heavier and less interpretable than the linear regression models.
-Both our best neural network model and the linear regression model achieves an $R^2$ value of $0.85$. Linear regression is preffered seeing as neural networks are computationally heavier and less interpretable.
+Our best neural network model achieves an $R^2$ value of $0.85$, while the linear regression model reaches $0.86$.
+Neural networks are computationally heavier and less interpretable, so linear regression is preferred for many reasons. 
 We find that the accuracy of the neural network trained to solve a classification problem is $0.97$, equal to logistic regression. We prefer the logistic regression model as it has better recall.
 
 
