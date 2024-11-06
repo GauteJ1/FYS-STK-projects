@@ -243,10 +243,11 @@ class Exploration:
         self.best_optimizer = self.find_maximal_accuracy(self.optimizers, test_accuracy)
         self.top_3_optimizers = [
             self.optimizers[i]
-            for i in sorted(
-                range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True
-            )[:3]
+                for i in sorted(
+                    range(len(test_accuracy)), key=lambda x: test_accuracy[x][-1], reverse=True
+                )[:3]
         ]
+        print(f"Top 3 optimizers: {self.top_3_optimizers}")
         # test_loss_top_3 = [test_loss[i] for i in sorted(range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True)[:3]]
         # test_accuracy_top_3 = [test_accuracy[i] for i in sorted(range(len(test_accuracy)), key=lambda x: test_accuracy[x], reverse=True)[:3]]
 
