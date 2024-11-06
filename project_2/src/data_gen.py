@@ -96,7 +96,7 @@ class FrankeDataGen(DataGen):
                 + term2
                 + term3
                 + term4
-                + 0.3 * np.random.normal(0, 1, self.x.shape)
+                + 0.1 * np.random.normal(0, 1, self.x.shape)
             )
         else:
             self.z = term1 + term2 + term3 + term4

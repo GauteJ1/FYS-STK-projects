@@ -92,7 +92,7 @@ class Exploration:
         """
 
         if self.type_model == "continuous":
-            data = FrankeDataGen()
+            data = FrankeDataGen(noise=True)
             x_data = jnp.column_stack((data.x.flatten(), data.y.flatten()))
             y_data = data.z.ravel().reshape(-1, 1)
 
