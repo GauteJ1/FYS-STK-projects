@@ -10,7 +10,7 @@ We have generated the data for the regression problem using the Franke function 
 \end{split}
 \end{align}
 \begin{align}\label{eq:franke_noise}
-    f^*(x,y) &= f(x, y) + \frac{3}{10} \mathcal{N}(0, 1)
+    f^*(x,y) &= f(x, y) + \frac{1}{10} \mathcal{N}(0, 1)
 \end{align}
 The Franke function is defined by Eq. \ref{eq:franke}, on the domain $[0, 1]^2$. 
 In order to challenge the models, and test them for weaknesses such as overfitting, we have added a stochastic noise term to the function, as can be seen in Eq. \ref{eq:franke_noise}, where $f(x,y)$ is as defined in \ref{eq:franke}.
@@ -20,8 +20,8 @@ All further references to the Franke function in the results and discussions ref
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=1\linewidth]{project_1/figures/figures_in_report/franke_func_noise.pdf}
-\caption{The Franke function for $x,y \in [0,1]$ with added noise term: $(3/10) \mathcal{N}(0, 1)$.}
+\includegraphics[width=1\linewidth]{project_2/figures/franke_func_noise.pdf}
+\caption{The Franke function for $x,y \in [0,1]$ with added noise term: $(1/10) \mathcal{N}(0, 1)$.}
 \label{fig:franke_noise}
 \end{figure}
 

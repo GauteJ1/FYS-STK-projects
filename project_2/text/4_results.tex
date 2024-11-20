@@ -6,7 +6,7 @@ This way we can evaluate the convergence in the later epochs without the low acc
 \subsubsection{Neural network}
 
 Based on the initial search, using the momentum optimizer seems to be a good choice for further investigation.
-Furthermore, we note that the constant optimizer and the RMSprop optimizer make up the best three together with the momentum optimizer.
+Furthermore, we note that the Adam optimizer and the RMSprop optimizer make up the best three together with the momentum optimizer.
 
 \begin{figure}[h!]
     \centering
@@ -23,7 +23,7 @@ A network with few but wide layers allows for capturing complex interactions, wh
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_2/figures/$R^2$ for different activation functions_continuous.pdf}
-    \caption{The $R^2$ for different choices of activation functions for the two hidden layers. Identity is always used as the final activation function. The best $R^2$ is found when using ReLU at both hidden layers.}
+    \caption{The $R^2$ for different choices of activation functions for the two hidden layers. Identity is always used as the final activation function. The best $R^2$ is found when we use leaky ReLU at the first hidden layer and ReLU at the second.}
     \label{fig:activation_franke}
 \end{figure}
 
@@ -33,25 +33,27 @@ The three worst performing models are those with sigmoid as the activation funct
 This is likely due to the fact that sigmoid is not designed for problems where one might want target values outside the range [0,1].
 In the case where the sigmoid outputs something close to 1, and the backpropagation pushes it to become even larger, we might experience vanishing gradients, causing the training to halt before our wanted convergence point.
 The four best ones are the ones that combines leaky ReLU and ReLU (both orders) and just one or the other. 
-The very best model has ReLU at both hidden layers. 
+The very best model has leaky ReLU at the first hidden layer and ReLU and the second.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\linewidth]{project_2/figures/r2_grid_cont.png}
+    \includegraphics[width=1.0\linewidth]{project_2/figures/r2_grid_final.png}
     \caption{The $R^2$ on the test set for different sets of learning rates and batch sizes for the three best optimizers.}
     \label{fig:grid_franke}
 \end{figure}
 
-Using (2,24,24,1) as the network structure and (ReLU, ReLU, identity) as the activation functions, the grid search for the best combination of initial learning rate and batch size is shown in Fig. \ref{fig:grid_franke}. The three best optimizers, constant, momentum, and RMSprop, are used. 
+Using (2,24,24,1) as the network structure and (leaky ReLU, ReLU, identity) as the activation functions, the grid search for the best combination of initial learning rate and batch size is shown in Fig. \ref{fig:grid_franke}. The three best optimizers, momentum, Adam, and RMSprop, are used. 
 We look for the combination that gives the highest $R^2$ on the test set for each of the optimizers. 
 
 For both momentum and RMSProp, the optimal seems to be a balanced learning rate of order of magnitude $10^{-3}$.
-With constant learning rate however, a higher learning rate of magnitude $10^{-2}$ is preferred.
-As momentum has an extra term adding to the gradient, while RMSProp divides the gradient on a factor larger than one, we would have expected the optimal learning rates of these models to be on either side of that of the constant optimizer (momentum being lower, RMSProp higher).
+For the Adam optimizer however, a higher learning rate of magnitude $10^{-2}$ is preferred.
+%As momentum has an extra term adding to the gradient, while RMSProp divides the gradient on a factor larger than one, we would have expected the optimal learning rates of these models to be on either side of that of the constant optimizer (momentum being lower, RMSProp higher).
 
-The best combination of learning rate and batch size for the constant optimizer is (0.01, 1000). For the momentum optimizer we find it to be (0.001, 5000). Lastly, the model trained with RMSprop optimizer obtains the highest $R^2$ with the combination (0.001,1000). 
-The impact of the batch size is not very large, which could be due to the case that 1000 data points is enough to get a representative subset of the total data.
-Smaller batch sizes performing slightly better could be due to some degree of randomness improving the learning steps.
+The best combination of learning rate and batch size for the Adam optimizer is (0.01, 5000). For the momentum optimizer we find it to be (0.001, 5000). Lastly, the model trained with RMSprop optimizer obtains the highest $R^2$ with the combination (0.001,5000). 
+The impact of the batch size is not very large, but a batch size of 5000 slightly outperforms both 1000 and 3000 in all nine cases represented in Fig. \ref{fig:grid_franke}. 
+As the $R^2$ is similar across batch sizes, it may seem that 1000 data points is enough to get a representative subset of the total data, but that 5000 provides a small advantage. 
+%which could be due to the case that 1000 data points is enough to get a representative subset of the total data.
+%Smaller batch sizes performing slightly better could be due to some degree of randomness improving the learning steps.
 
 
 \begin{figure}[h!]
@@ -61,15 +63,22 @@ Smaller batch sizes performing slightly better could be due to some degree of ra
     \label{fig:best_franke}
 \end{figure}
 
-The best model reaches an $R^2$ score of $0.83$. This model is trained with the constant optimizer. 
+The best model reaches an $R^2$ score of $0.85$. This model is trained with the Adam optimizer as seen in Fig. \ref{fig:best_franke}.
 
 \subsubsection{Comparison to linear regression}
 
 
-In our previous work, \textcite{project1}, the maximal $R^2$ for the ordinary least squares model was found to be $0.37$. 
-This is far lower than the $R^2 = 0.83$ obtained from the neural network.
-This shows that our neural network model performs substantially better than any linear regression model.
-The added flexibility and possible complexity in the neural networks make them superior to linear regression when the data to be modeled does not contain linear dependencies.
+In our previous work, \textcite{project1}, the maximal $R^2$ for the ordinary least squares model was found to be $0.86$. 
+This is a slightly higher value than obtained from the neural network. 
+
+By calculating the $R^2$ between the Franke function data with no noise and the one with noise, we find a value of 0.89. 
+This can be considered the maximum attainable $R^2$ for a dataset with this level of noise, disregarding any lucky results that might push the value higher, i.e. how much of the noise in the data is theoretically explainable.
+
+Values of $0.85$ and $0.86$ for the neural network and the linear regression model respectively, are therefore very good. 
+
+%This is far lower than the $R^2 = 0.83$ obtained from the neural network.
+%This shows that our neural network model performs substantially better than any linear regression model.
+%The added flexibility and possible complexity in the neural networks make them superior to linear regression when the data to be modeled does not contain linear dependencies.
 
 \subsection{Breast cancer data}
 
