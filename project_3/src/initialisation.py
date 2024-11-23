@@ -30,7 +30,7 @@ def initialize(network_shape: list[int], method: str = "Standard") -> list:
 
     def standard_normal(input: int, output: int) -> tuple[int]:
         b = np.random.randn(output)
-        W = np.random.randn(input, output)
+        W = np.random.randn(output, input) #mia: changes here
         return W, b
 
     def xavier(input: int, output: int) -> tuple[int]:
@@ -41,7 +41,7 @@ def initialize(network_shape: list[int], method: str = "Standard") -> list:
         """
         b = np.zeros(output)
         limit = np.sqrt(6 / float(input + output))
-        W = np.random.uniform(low=-limit, high=limit, size=(input, output))
+        W = np.random.uniform(low=-limit, high=limit, size=(output, input))
         return W, b
 
     def he(input: int, output: int) -> tuple[int]:
@@ -52,7 +52,7 @@ def initialize(network_shape: list[int], method: str = "Standard") -> list:
         """
         b = np.zeros(output)
         limit = np.sqrt(2 / float(input))
-        W = np.random.normal(0.0, limit, size=(input, output))
+        W = np.random.normal(0.0, limit, size=(output,input))
         return W, b
 
     match method:
