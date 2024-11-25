@@ -1,5 +1,6 @@
 import torch
 from torch.autograd import grad
+from neural_network import NeuralNetwork
 
 
 def cost_PDE(x, t, nn_pred):
@@ -20,15 +21,21 @@ def cost_PDE(x, t, nn_pred):
 
 def cost_initial(x, t, nn_pred):
 
+    x = x.clone().detach().requires_grad_(True)
+    t = t.clone().detach().requires_grad_(True)
+
     t = torch.zeros_like(t)
 
     nn_out = nn_pred(x, t)
     initial = torch.sin(torch.pi * x)
 
-    return torch.mean((nn_out - initial) ** 2).item()
+    return torch.mean((nn_out - initial) ** 2)
 
 
 def cost_boundary(x, t, nn_pred):
+
+    x = x.clone().detach().requires_grad_(True)
+    t = t.clone().detach().requires_grad_(True)
 
     L = 1
 
@@ -38,7 +45,7 @@ def cost_boundary(x, t, nn_pred):
     x0_out = nn_pred(x0, t)
     x1_out = nn_pred(x1, t)
 
-    return torch.mean(x0_out**2 + x1_out**2).item()
+    return torch.mean(x0_out**2 + x1_out**2)
 
 
 def total_cost(x, t, nn_pred):
