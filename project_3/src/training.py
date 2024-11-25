@@ -12,12 +12,12 @@ from data_gen import RodDataGen
 torch.manual_seed(123)
 
 learning_rate = 1e-3
-epochs = 200
+epochs = 1000
 batch_size = 3000
 Nx = 100
 Nt = 100
 
-model_nn = NeuralNetwork([2, 50, 50, 32, 1], ["tanh", "tanh", "sigmoid"], "he")
+model_nn = NeuralNetwork([2, 50, 50, 50, 1], ["tanh", "tanh", "sigmoid"], "he")
 
 optimizer = torch.optim.Adam(model_nn.parameters(), lr=learning_rate)
 
