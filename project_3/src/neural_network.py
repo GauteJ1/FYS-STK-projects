@@ -6,37 +6,37 @@ class NeuralNetwork(nn.Module):
         super().__init__()
         self.flatten = nn.Flatten()
 
-        # Create layers from input list
-        layers = []
+        layers_list = []
         for i in range(len(layers) - 1):
-            layers.append(nn.Linear(layers[i], layers[i + 1]))
+
+            layers_list.append(nn.Linear(layers[i], layers[i + 1]))
 
             if i < len(activations):
                 match activations[i]:
                     case "ReLU":
-                        layers.append(nn.ReLU())
+                        layers_list.append(nn.ReLU())
                     case "sigmoid":
-                        layers.append(nn.Sigmoid())
+                        layers_list.append(nn.Sigmoid())
                     case "tanh":
-                        layers.append(nn.Tanh())
+                        layers_list.append(nn.Tanh())
 
-        self.nn_model = nn.Sequential(*layers)
+        self.nn_model = nn.Sequential(*layers_list)
 
         def init_weights(m):
             if init == "xavier" or init == None:
                 if isinstance(m, nn.Linear):
-                    torch.nn.init.xavier_uniform(m.weight)
+                    torch.nn.init.xavier_uniform_(m.weight)
             elif init == "he":
                 if isinstance(m, nn.Linear):
-                    torch.nn.init.kaiming_normal(m.weight)
+                    torch.nn.init.kaiming_normal_(m.weight)
             else:
                 raise ValueError(f"{init} is not a valid initialization")
 
         self.nn_model.apply(init_weights)
 
     def forward(self, x, t):
-        x = self.flatten(x)
-        t = self.flatten(t)
-        data = torch.cat((x, t), dim=1)
-        logits = self.nn_model(data)
+
+        X = torch.cat((x,t),axis = 1)
+        logits = self.nn_model(X)
+        
         return logits

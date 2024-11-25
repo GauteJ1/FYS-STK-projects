@@ -3,15 +3,19 @@ from torch.autograd import grad
 
 
 def cost_PDE(x, t, nn_pred):
+    x = x.clone().detach().requires_grad_(True)
+    t = t.clone().detach().requires_grad_(True)
 
     nn_out = nn_pred(x, t)
 
-    x_deriv = grad(nn_out, x, grad_outputs=torch.ones_like(nn_out))
-    xx_deriv = grad(x_deriv, x)
+    dx = torch.autograd.grad(nn_out, x, torch.ones_like(nn_out), create_graph=True)[0]
+    dxx = torch.autograd.grad(dx, x, torch.ones_like(dx), create_graph=True)[0]
+    dt = torch.autograd.grad(nn_out, t, torch.ones_like(nn_out), create_graph=True)[0]
 
-    t_deriv = grad(nn_out, t)
+    residual = dxx - dt
+    cost = torch.mean(residual**2)
 
-    return torch.mean((xx_deriv - t_deriv) ** 2)
+    return cost
 
 
 def cost_initial(x, t, nn_pred):
