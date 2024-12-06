@@ -1,3 +1,5 @@
+ \section{Appendix: Source code}
+
 The code used for this project is available at
 \url{https://github.com/GauteJ1/FYS-STK-projects}. In-
 structions for running the code are located in
@@ -5,3 +7,89 @@ structions for running the code are located in
 are easily reproducible in the Jupyter notebook files in
 this repository, by following the instructions mentioned
 above.
+
+\section{Appendix: Derivation of analytical solution}\label{appendixB}
+
+We want to solve the following equation (Note that this is Eq. \ref{eq:diffu} with $L=1$):
+\begin{align}\label{ana:equation}
+\frac{\partial^2 u(x,t)}{\partial x^2}  &=\frac{\partial u(x,t)}{\partial t}, \ t>0, \ x\in [0, 1] \\
+\label{ana:init}
+u(x, 0) &= \sin(\pi x), \quad 0 < x < 1 \\
+\begin{split}
+\label{ana:bound}
+    u(0,t) &= 0, \quad t\geq 0 \\
+    u(1,t) &= 0, \quad t\geq 0
+\end{split}
+\end{align}
+
+We start by making an assumption, ansatz, that the solution $u(x,t)$ can be written on the form
+\begin{equation}\label{ana:ansatz}
+u(x,t) = X(x)T(t)
+\end{equation}
+for some functions $X,\ T$ which only depend on $x,\ t$ respectively.
+Inserting equation \ref{ana:ansatz} into equation \ref{ana:equation}, we get
+
+\begin{align}
+    X''(x)T(t) &= X(x) T'(x) \nonumber \\
+    \frac{X''(x)}{X(x)} &= \frac{T'(t)}{T(t)} \label{ana:sepa}
+\end{align}
+
+As the left hand side of equation \ref{ana:sepa} only depends on $x$, while the right side only depends on $t$, they both have to equal some constant, say $-\lambda$. The minus sign is included for convenience, see \textcite[p. 90]{tveitoPDE}.
+
+\begin{equation}
+     \frac{X''(x)}{X(x)} = -\lambda = \frac{T'(t)}{T(t)} \label{ana:seplmbda}
+\end{equation}
+
+We start by solving the left side of equation \ref{ana:seplmbda}.
+
+\begin{equation*}
+    X''(x) = -\lambda X(x)
+\end{equation*}
+From equations \ref{ana:bound} and \ref{ana:sepa}, we get the boundary conditions 
+$X(0) = X(1) = 0$.
+Setting $\lambda = (k\pi)^2$, we see that this has solution
+\begin{equation*}
+    X(x) = \sin(k \pi x) , \quad k \in \mathbb{N}
+\end{equation*}
+
+While we in the general case would have to use linear combinations of a family of solutions $X_k(x) = \sin(k \pi x)$ for $k \in \mathbb{N}$, however, due to our simple initial condition (Eq. \ref{ana:init}), we see that $k=1$ is the only valid solution. 
+For more details on the general case, see \textcite[p. 92]{tveitoPDE}.
+\begin{equation}\label{ana:xsol}
+        X(x) = \sin(\pi x)
+\end{equation}
+
+Now, using $\lambda = (k\pi)^2 = \pi^2$, we can easily solve the left side of equation \ref{ana:seplmbda}.
+The equation now becomes the following:
+\begin{equation*}
+    T'(t) = -\lambda T(t) = -\pi^2 T(t)
+\end{equation*}
+This is easy to solve by integrating both sides of the equation.
+\begin{equation}\label{ana:tsol}
+    T(t) = e^{-\pi^2 t} + c
+\end{equation}
+The $c$ in equation \ref{ana:tsol} is a constant.
+Due to the initial condition of the problem (Eq. \ref{ana:init}) and our solution for $X(x)$ (Eq. \ref{ana:xsol}), we must have $T(0) = 1$, and hence $c = 0$.
+Combining equations \ref{ana:xsol} and \ref{ana:tsol} (by inserting their values into Eq. \ref{ana:ansatz}), we get the final solution.
+\begin{equation}
+    u(x,t) = \sin(\pi x) e^{-\pi^2 t}
+\end{equation}
+
+To conclude this appendix, we check our solution by inserting it into equations \ref{ana:equation}, \ref{ana:init} and \ref{ana:bound}.
+
+For equation \ref{ana:equation}, we calculate the left and right hand sides separately.
+\begin{align}
+    \label{ana:xcheck}
+    \frac{\partial^2 u(x,t)}{\partial x^2} &= \left(-\pi^2 \sin(\pi x)\right) e^{-\pi^2 t} \\
+    \label{ana:tcheck}
+    \frac{\partial u(x,t)}{\partial t} &=  \sin(\pi x) \left(-\pi^2 e^{-\pi^2 t}\right)
+\end{align}
+We see that the left hand side (Eq. \ref{ana:xcheck}) and the right hand side (Eq. \ref{ana:tcheck}) are equivalent.
+Furthermore, the initial conditions (Eq. \ref{ana:init}) and boundary conditions (Eq. \ref{ana:bound}) are checked below.
+
+\begin{align*}
+    u(x, 0) &= \sin(\pi x) e^{-\pi^2 0} = \sin(\pi x) \\
+    u(0, t) &= \sin(0)e^{-\pi^2 t} = 0 \\
+    u(1, t) &= \sin(\pi)e^{-\pi^2 t} = 0
+\end{align*}
+
+This concludes the derivation of the analytic solution.
