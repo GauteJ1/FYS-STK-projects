@@ -19,6 +19,8 @@ class NeuralNetwork(nn.Module):
                         layers_list.append(nn.Sigmoid())
                     case "tanh":
                         layers_list.append(nn.Tanh())
+                    case "leakyReLU":
+                        layers_list.append(nn.LeakyReLU())
 
         self.nn_model = nn.Sequential(*layers_list)
 

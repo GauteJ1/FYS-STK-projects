@@ -204,16 +204,16 @@ def n_layers_search(best_value_layers, best_activation):
 
 if __name__ == "__main__":
 
-    seeds = [123]#, 426, 47]
-    layers_num = [2, 3]#, 4]
-    layer_sizes = [10, 50]# 100]
-    activation_funcs = ["tanh", "ReLU"]#, "sigmoid"]
+    seeds = [123, 426, 47]
+    layers_num = [2, 3, 4]
+    layer_sizes = [10, 25, 50, 100]
+    activation_funcs = ["tanh", "ReLU", "sigmoid", "leakyReLU"]
 
     initial_layer_size = 2
     final_layer_size = 1
 
     learning_rate = 1e-3
-    epochs = 1000
+    epochs = 2
     batch_size = 3000
     Nx = 100
     Nt = 100
