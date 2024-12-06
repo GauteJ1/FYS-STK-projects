@@ -101,19 +101,31 @@ and boundary conditions
     u(L, t)=0 \quad t\ge 0.
 \end{equation}
 
-By making a slight assumption about the form of the solution and using the initial conditions, one can derive the analytical solution given:
+For this given equation, with conditions above, the analytical solution is found to be: 
 
 \begin{equation}\label{analytical_sol}
     u(x,t) = \sin(\pi x) e^{-\pi^2 t}
 \end{equation}
 
-By insertion in the PDE and it's condition it is easily verified. The full derivation as well as verification of the solution can be found in Appendix \ref{appendixB}.
+By insertion in the PDE and it's conditions it is easily verified. The full derivation by separation of variables, as well as verification of the solution, can be found in Appendix \ref{appendixB}.
 
 \subsection{Finite difference schemes}\label{sec:FD}
-\gaute{Include discussion on numerical stability for each method used}
-\subsubsection{Forward Euler}
+While the analytical solution is relatively simple to find for some PDEs, such as the diffusion equation shown above, other PDEs are difficult or impossible to solve analytically.
+When considering these PDEs, we usually find an approximation to the solution.
+There are many ways of doing this, including collocation methods, Galerkin methods, finite element methods, and finite difference schemes.
+Due to them being easy to implement, flexible, and theoretically approachable, finite difference schemes are very popular.
 
-% \subsubsection{Other higher order and general derivation?}
+The main idea behind finite difference schemes is to divide your domain into discrete points.
+Given a PDE $\mathcal{L}u=f$, $u : [0, L] \times [0, T] \to \mathbb{R}$, we start by creating discrete points $(x_j, t_n) = (j \Delta x, n\Delta t)$, where $\Delta x = L/N_x$ and $\Delta t = T/N_t$.
+We denote the approximation at each point by $u_j^n = u(x_j, t_n)$.
+
+We proceed by approximating the derivatives of the PDE using Taylor expansions around $u_j^n$.
+For the diffusion equation, we have the following approximations at the point $(x_j, t_n)$.
+
+\begin{align}
+    \frac{\partial u}{\partial t}(x_j, t_n) &= \frac{}{}
+\end{align}
+
 
 \subsection{Neural Networks \julie{copy}} 
 
@@ -284,12 +296,11 @@ By recursively applying this process from the output layer back to the input lay
 
 \subsection{Gradient descent \julie{copy}} \label{sec:gd}
 %morten lecture notes
-In the case of linear regression and least squares (section \ref{Linreg}), the optimal coefficients for minimizing the cost function can easily be found analytically. This is however not always the case; for more complicated methods, like logistic regression and neural networks, the steps for optimizing the model are not as simple and in many cases can only be approximated numerically \citep[Week 40]{morten}.  
-One method for this type of numeric optimization, and arguably the most popular one, is \textit{gradient descent} (GD). In addition to benefits of efficiency and performance, gradient descents triumphs in it's versatility as it can be used for a wide range of optimization problems - including linear regression, logistic regression, neural networks, and many more. 
-
+For complicated methods like neural networks, optimal solutions are seldom straight forward to obtain, and often numerical approximation is the only feasible approach \citep[Week 40]{morten}.  
+One method for this type of numeric optimization, and arguably the most popular one, is \textit{gradient descent} (GD). In addition to benefits of efficiency and performance, gradient descent triumphs in it's versatility as it can be used for a wide range of optimization problems - including linear regression, logistic regression, neural networks, and many more. 
 
 Imagining the graph of a cost function as a hilly landscape; global and local minima as valleys, poorer solutions as hills - GD seeks to land in the deepest valley, i.e. the global minimum. 
-By looking at the slope of the landscape one can keep taking steps in the steepest descending direction, and this way hopefully end up at this minimum.
+By looking at the slope of the landscape one can keep taking steps in the steepest descending direction, and this way hopefully end up at the global minimum.
 
 \begin{equation}\label{eq:gd}
     -\nabla_\theta C(\theta) = -\begin{bmatrix}
@@ -329,69 +340,60 @@ For the rest of the report, any mention of SGD is to be understood as an impleme
 \subsubsection{Learning rate}
 For both GD and SGD, the gradients are multiplied by a \textit{learning rate} $\eta_t$ when updating the model.
 This learning rate is a positive scalar, usually chosen of small value to make each update relatively small \citep[p. 84]{Goodfellow-et-al-2016}.
-As a gradient is only representative for the change at the exact point of calculation, making too large of an update to the model based on a gradient is risky. By changing the model to much, i.e. moving it too far, one could be moving to areas of the function that are topographically very different than the starting point. In the worst case, a large step could overshoot the minimum.
+As a gradient is only representative for the change at the exact point of calculation, making too large of an update to the model based on a gradient is risky. By changing the model to much, i.e. moving it too far in the landscape, one could be moving to areas of the function that are topographically very different than the starting point. In the worst case, a large step could overshoot the minimum.
 
 While having too large of a learning rate could result in overshooting the minimum, and hence not reaching convergence; too small of a learning rate also has it's disadvantages. 
 The smaller the learning rate, the more iterations are required to approach the minima, causing the training to become computationally heavier. To find a balance between the two, some opt for choosing a learning rate by trial error.
 % One might still elect to choose a constant model by trial and error.
-
-Since the drawbacks of a low learning rate are most unfavorable in the early iterations, and a too high learning rate mostly causes problems in the later iterations, an intuitive solution is to start with a higher learning rate and reduce it after a set number of iterations.
-\begin{equation}\label{eq:line_search}
-    C(\theta_t - \eta \nabla_\theta C(\theta_t))
-\end{equation}
-Another approach is calculating the function in Eq. \ref{eq:line_search} for different values of $\eta$, and choosing the $\eta$ resulting in the smallest value. This technique is called \textit{line search} \citep[p. 84]{Goodfellow-et-al-2016}.
-As computing every possible value of $\eta$ would resemble an exhaustive search, line search still requires us to manually choose a set of learning rates, and every step in the iteration is limited to choose one of those learning rates.
-
+% Since the drawbacks of a low learning rate are most unfavorable in the early iterations, and a too high learning rate mostly causes problems in the later iterations, an intuitive solution is to start with a higher learning rate and reduce it after a set number of iterations.
+% \begin{equation}\label{eq:line_search}
+%     C(\theta_t - \eta \nabla_\theta C(\theta_t))
+% \end{equation}
+% Another approach is calculating the function in Eq. \ref{eq:line_search} for different values of $\eta$, and choosing the $\eta$ resulting in the smallest value. This technique is called \textit{line search} \citep[p. 84]{Goodfellow-et-al-2016}.
+% As computing every possible value of $\eta$ would resemble an exhaustive search, line search still requires us to manually choose a set of learning rates, and every step in the iteration is limited to choose one of those learning rates.
 A more common alternative is to opt for \textit{adaptive learning rate} algorithms.
 
-\subsubsection{Adaptive learning rates}
-Both regular and stochastic gradient descent faces several issues when trying to approach the global minimum.
-Problematic points in the loss function, such as local minima and saddle points can cause the iterative procedure to lose progress \citep[p. 116-117]{Ketkar2017}.
-In addition, as described above, a constant learning rate is hard to tune, and can cause issues both being too large and too small within the same optimization problem.
-To address these issues, a series of algorithmic variations have been proposed GD/SGD (i.e. Eq. \ref{eq:updt_std}) to replace the step of updating the model.
-Some of these algorithms requires us to initialize different parameters to be updated in each iteration.
-If nothing else is explicitly stated, all the iteratively updated parameters in the algorithms below (except $\theta$) are initiated as 0 or 0-vectors.
+% \subsubsection{Adaptive learning rates}
+% Both regular and stochastic gradient descent faces several issues when trying to approach the global minimum.
+In addition to constant learning rates being hard to tune, problematic points in the loss function such as local minima and saddle points can cause the iterative procedure to lose progress \citep[p. 116-117]{Ketkar2017}.
+To address these issues, a series of algorithmic variations have been proposed to replace the step of updating the model (Eq. \ref{eq:updt_std}).
+% A common technique in these algorithms, is to utilize information from the previous updates to improve the next one.
+% One of the more simple algorithms achieving this, is the \textit{momentum} algorithm.
+% In this algorithm, one uses a fraction of the update from the previous step, to help us guide the next.
+% \begin{align}\label{eq:updt_mom}
+% \begin{split}
+%     v_t &= \gamma v_{t-1} + \eta_t \nabla_{\theta}C(\theta_t) \\
+%     \theta_{t+1} &= \theta_t - v_t
+% \end{split}
+% \end{align}
+% Note that this algorithm requires us to tune two constants ($\eta$ and $\gamma$), instead of only one constant as in the original case.
+% Other optimizing methods focus on adjusting the learning rate for each iteration. One such algorithm is the \textit{AdaGrad} algorithm, which sums the squares of all previous gradients, and scales the learning rate in each iteration by the inverse of the square root of this sum \citep[p. 303]{Goodfellow-et-al-2016}.
+% \begin{equation}\label{eq:updt_ada}
+% \begin{split}
+%     g_t &= \nabla_{\theta}C(\theta_t)   \\
+%     G_t &= G_{t-1} + {g}_t^2          \\
+%     \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
+% \end{split}
+% \end{equation}
+% The update-step of AdaGrad is displayed in Eq. \ref{eq:updt_ada}, where $g_t^2$ is $g_t$ squared element-wise.
+% The $\delta$ in Eq. \ref{eq:updt_ada} is a small constant added for numerical stability.
+% It is commonly chosen to be around the range $10^{-7}$ to $10^{-8}$ \citep[p. 304]{Goodfellow-et-al-2016}.
+% It is also possible to combine the momentum and AdaGrad algorithms, by replacing the gradient in momentum with the update in the last line of the AdaGrad algorithm.
+% The \textit{RMSProp} algorithm is an improved version of the AdaGrad algorithm, designed to keep the learning rate from shrinking to fast in non-convex areas of the cost function \citep[p. 122]{Ketkar2017}.
+% \begin{equation}\label{eq:updt_rms}
+% \begin{split}
+%     g_t &= \nabla_{\theta}C(\theta_t)   \\
+%     G_t &= \rho G_{t-1} + (1-\rho)g_t^2              \\
+%     \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
+% \end{split}
+% \end{equation}
+% RMSProp is implemented by the algorithm described in Eq. \ref{eq:updt_rms}.
+% Compared to AdaGrad, RMSProp uses a exponentially decaying average, discarding history from the extreme past \citep[p. 304]{Goodfellow-et-al-2016}.
+% The algorithm introduces a new parameter $\rho$ controlling this moving average.
+% RMSProp can also be combined with momentum as described for the AdaGrad algorithm.
 
-A common technique in these algorithms, is to utilize information from the previous updates to improve the next one.
-One of the more simple algorithms achieving this, is the \textit{momentum} algorithm.
-In this algorithm, one uses a fraction of the update from the previous step, to help us guide the next.
-\begin{align}\label{eq:updt_mom}
-\begin{split}
-    v_t &= \gamma v_{t-1} + \eta_t \nabla_{\theta}C(\theta_t) \\
-    \theta_{t+1} &= \theta_t - v_t
-\end{split}
-\end{align}
-This method replaces the update-step of Eq. \ref{eq:updt_std} with Eq. \ref{eq:updt_mom}. Intuitively one could imagine going full force down a hill (towards the global minimum); with standard implementations of GD or SGD, one could easily be stopped by local minima along the way. By including some of the previous momentum, one heightens the chance of escaping the local minimum and continuing toward the global minimum. 
-Note that this algorithm requires us to tune two constants ($\eta$ and $\gamma$), instead of only one constant as in the original case.
-
-Other optimizing methods focus on adjusting the learning rate for each iteration. One such algorithm is the \textit{AdaGrad} algorithm, which sums the squares of all previous gradients, and scales the learning rate in each iteration by the inverse of the square root of this sum \citep[p. 303]{Goodfellow-et-al-2016}.
-\begin{equation}\label{eq:updt_ada}
-\begin{split}
-    g_t &= \nabla_{\theta}C(\theta_t)   \\
-    G_t &= G_{t-1} + {g}_t^2          \\
-    \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
-\end{split}
-\end{equation}
-The update-step of AdaGrad is displayed in Eq. \ref{eq:updt_ada}, where $g_t^2$ is $g_t$ squared element-wise.
-The $\delta$ in Eq. \ref{eq:updt_ada} is a small constant added for numerical stability.
-It is commonly chosen to be around the range $10^{-7}$ to $10^{-8}$ \citep[p. 304]{Goodfellow-et-al-2016}.
-It is also possible to combine the momentum and AdaGrad algorithms, by replacing the gradient in momentum with the update in the last line of the AdaGrad algorithm.
-
-The \textit{RMSProp} algorithm is an improved version of the AdaGrad algorithm, designed to keep the learning rate from shrinking to fast in non-convex areas of the cost function \citep[p. 122]{Ketkar2017}.
-\begin{equation}\label{eq:updt_rms}
-\begin{split}
-    g_t &= \nabla_{\theta}C(\theta_t)   \\
-    G_t &= \rho G_{t-1} + (1-\rho)g_t^2              \\
-    \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
-\end{split}
-\end{equation}
-RMSProp is implemented by the algorithm described in Eq. \ref{eq:updt_rms}.
-Compared to AdaGrad, RMSProp uses a exponentially decaying average, discarding history from the extreme past \citep[p. 304]{Goodfellow-et-al-2016}.
-The algorithm introduces a new parameter $\rho$ controlling this moving average.
-RMSProp can also be combined with momentum as described for the AdaGrad algorithm.
-
-One of the most widely used adaptive learning rate optimization algorithms in the recent years is \textit{Adam}.
-This algorithm computes the updates by maintaing weighted averages of both $g_t$ and $g_t^2$ \citep[p. 123]{Ketkar2017}.
+One of the most widely used adaptive learning rate optimization algorithms in the recent years is \textit{Adam} - Adaptive Moment Estimation.
+This algorithm combines a weighted momentum ($m_t$) with a weighted average of the second order gradients ($v_t$), and computes the updates by maintaining weighted averages of both $g_t$ and $g_t^2$ \citep[p. 123]{Ketkar2017}.
 \begin{equation}\label{eq:updt_adam}
 \begin{split}
     g_t &= \nabla_{\theta}C(\theta_{t-1})   \\
@@ -402,21 +404,24 @@ This algorithm computes the updates by maintaing weighted averages of both $g_t$
     \theta_{t} &= \theta_{t-1} - \eta_t \frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}
 \end{split}
 \end{equation}
-While Adam has more hyper-parameters than any of the above-mentioned algorithms, these parameters have intuitive interpretations and require little tuning \cite{kingba}.
-Adam combines a weighted momentum ($m_t$) with a weighted average of the second order gradients ($v_t$) similar to RMSProp.
 
-While optimization algorithms for adaptive learning rates are widely discussed in the literature, there is no general consensus on what algorithms are best for different applications \cite{schaul2014}.
-Hence, testing different algorithms for your specific data-set, model and problem formulation, is the way to go.
+While Adam has more hyper-parameters than many other learning-rate algorithms, these parameters have intuitive interpretations and require little tuning \cite{kingba}.
+% Adam combines a weighted momentum .
+% This method replaces the update-step of Eq. \ref{eq:updt_std} with Eq. \ref{eq:updt_adam}.
+% For an intuitive motivation of the use of momentum, one could imagine going full force down a hill (towards the global minimum); with standard implementations of GD or SGD, one could easily be stopped by local minima along the way. 
+By including some of the previous momentum and the second derivatives, one heightens the chance of escaping the local minimum and continuing toward the global minimum. 
+% While optimization algorithms for adaptive learning rates are widely discussed in the literature, there is no general consensus on what algorithms are best for different applications \cite{schaul2014}.
+% Hence, testing different algorithms for your specific data-set, model and problem formulation, is the way to go.
 
-\subsubsection{Exploding gradients}\label{sec:exploding_gradients}
-Some models, such as neural networks with many layers (see section \ref{sec:nn}), often have extremely steep cliff-like regions \citep[p. 285]{Goodfellow-et-al-2016}.
-This can cause the gradients to become extremely large, causing the update-step to move the parameters too far.
-This phenomenon is known as \textit{exploding gradients}.
-While this may cause serious problems for the learning process, it has an easy solution.
-Through a process called \textit{gradient clipping}, we simply rescale the norm of the gradients whenever it goes above some threshold \citep[p. 93]{Ketkar2017}.
+% \subsubsection{Exploding gradients}\label{sec:exploding_gradients}
+% Some models, such as neural networks with many layers (see section \ref{sec:nn}), often have extremely steep cliff-like regions \citep[p. 285]{Goodfellow-et-al-2016}.
+% This can cause the gradients to become extremely large, causing the update-step to move the parameters too far.
+% This phenomenon is known as \textit{exploding gradients}.
+% While this may cause serious problems for the learning process, it has an easy solution.
+% Through a process called \textit{gradient clipping}, we simply rescale the norm of the gradients whenever it goes above some threshold \citep[p. 93]{Ketkar2017}.
 
-If $g$ denotes the gradient and $c$ is our threshold, we set $\hat{g} = \frac{c}{|g|}g$ if $|g|>c$, and use $\hat{g}$ as the gradient in the learning step.
-As the most important information supplied by the gradient is the direction towards a lower value of the cost function, this method causes no harm by scaling the gradient.
-The size of the gradient is used only as a hint to how far we might have to move to find the minima, but if this value proposes a very large step, gradient clipping intervenes, making dangerously large steps less likely to happen \citep[p. 286]{Goodfellow-et-al-2016}.
+% If $g$ denotes the gradient and $c$ is our threshold, we set $\hat{g} = \frac{c}{|g|}g$ if $|g|>c$, and use $\hat{g}$ as the gradient in the learning step.
+% As the most important information supplied by the gradient is the direction towards a lower value of the cost function, this method causes no harm by scaling the gradient.
+% The size of the gradient is used only as a hint to how far we might have to move to find the minima, but if this value proposes a very large step, gradient clipping intervenes, making dangerously large steps less likely to happen \citep[p. 286]{Goodfellow-et-al-2016}.
 
 % \subsection{Physics informed neural networks?}
