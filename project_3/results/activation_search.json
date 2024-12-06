@@ -1,0 +1,50 @@
+[
+    {
+        "n_layers": 2,
+        "value_layers": 10,
+        "activation": "tanh",
+        "final_loss": 9.382970809936523
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 10,
+        "activation": "ReLU",
+        "final_loss": 0.49178212881088257
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 50,
+        "activation": "tanh",
+        "final_loss": 9.237312316894531
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 50,
+        "activation": "ReLU",
+        "final_loss": 0.4956967383623123
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 10,
+        "activation": "tanh",
+        "final_loss": 1.1924417614936829
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 10,
+        "activation": "ReLU",
+        "final_loss": 0.9482357800006866
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 50,
+        "activation": "tanh",
+        "final_loss": 0.8375539779663086
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 50,
+        "activation": "ReLU",
+        "final_loss": 0.5081607401371002
+    }
+]
