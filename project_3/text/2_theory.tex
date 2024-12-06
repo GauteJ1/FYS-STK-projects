@@ -1,6 +1,7 @@
 \subsection{Partial differential equations}
 A differential equation is an expression of a function in terms of it's derivative(s), in such a way that the function itself can be determined through solving the equation \citep[p. 1-4]{tveitoPDE}. I.e. the solution to a differential equation will be the function that satisfies the equation. Differential equations are again split into two main categories, \textit{ordinary differential equations} (ODE) and \textit{partial differential equations} (PDE). An ODE involves only derivatives with regards to a single variable, while PDEs include the partial derivatives of a multi-variable function. This report will only cover PDEs. 
 
+\gaute{Do be fixxez}
 The form of a PDE will vary a lot depending on the expression itself, but broadly speaking they often appear similar to a variant of one of the following generic equations: 
 \begin{equation}
     \frac{\partial u(\bold{x})}{\partial x_i} = \frac{\partial u(\bold{x})}{\partial x_j}
@@ -8,13 +9,10 @@ The form of a PDE will vary a lot depending on the expression itself, but broadl
 \begin{equation}
     \frac{\partial^2 u(\bold{x})}{\partial^2x_i} - K(u(\bold{x})) \frac{\partial^2u(\bold{x})}{\partial^2x_j} = 0
 \end{equation}
+\gaute{Do be fixxez}
 Here $u$ denotes some multi-variable function with variables $\bold{x}$, where $x_i$ and $x_j$ denote two of these variables. Furthermore $\frac{\partial u(\bold{x})}{\partial x_i}$ denotes the partial derivative of the function with regards to the $i$-th variable. $K(\bold{x})$ is some other function of the variables. The degree of derivation is arbitrarily chosen for the examples above, and may vary in either direction for different equations. Very commonly PDEs will more specifically regard a time-dependent function $u(\bold{x}, t)$. This is especially common for any PDE modelling real-world systems. 
 
 The solution of a PDE can normally be found either analytically by solving the equation directly, or through a broad range of numerical methods. These methods usually provide an approximation of the exact solution, but by tweaking parameters the approximate solution will commonly converge towards the exact. Numerical approximations will be further covered in section \ref{sec:FD}.
-
-\julie{could add examples of PDE's, left for potential fluff later}
-
-\julie{assuming homogeneous/nonhomogeneous and linear/nonlinear is not of relevance, thus left out}
 
 \subsubsection{Initial and boundary conditions}
 \julie{Need to locate the specific pages to cite}
@@ -24,9 +22,10 @@ Initial conditions are normally associated with time-dependent systems, but can 
 \begin{equation}
     u(\bold{x}, 0) = g(\bold{x})
 \end{equation}
+\julie{weird sentence? drop again and etc?}
 Again, $g$ represents a general expression and can be a scalar, a function, a vector, etc depending on the nature of the problem. 
 
-Boundary conditions are similar to initial conditions, but in stead of describing a state at some starting point the condition now provides the state of the system at some boundary point. These boundary points commonly describe points at the edges of a functions domain. For a PDE of a function $u(x,t)$ on the domain $[0, L]$, the boundary conditions might be stated
+Boundary conditions are similar to initial conditions, but instead of describing a state at some starting point the condition now provides the state of the system at some boundary point. These boundary points commonly describe points at the edges of a functions domain. For a PDE of a function $u(x,t)$ on the domain $[0, L]$, the boundary conditions might be stated
 \begin{equation}
     \begin{split}
         u(0, t) &= g_1(t), \quad t\geq0 \\
@@ -90,10 +89,24 @@ Boundary conditions:
 \end{align}
 
 \subsubsection{Analytical solution}
+This report considers the heat equation with $L=1$, the initial condition
+\begin{equation}
+u(x, 0) = \sin(\pi x)    
+\end{equation}
+and boundary conditions
+\begin{equation}
+    u(0, t)=0 \quad t\ge0
+\end{equation}
+\begin{equation}
+    u(L, t)=0 \quad t\ge 0.
+\end{equation}
+
+By making a slight assumption about the form of the solution and using the initial conditions, one can derive the analytical solution given:
+
 \begin{equation}\label{analytical_sol}
     u(x,t) = \sin(\pi x) e^{-\pi^2 t}
 \end{equation}
-By making a slight assumption about the form of the solution and using the initial conditions, one can derive the analytical solution given in Eq. \ref{analytical_sol}. By insertion in the PDE and it's condition it is easily verified. The full derivation as well as verification of the solution can be found in Appendix \ref{appendixB}.
+By insertion in the PDE and it's condition it is easily verified. The full derivation as well as verification of the solution can be found in Appendix \ref{appendixB}.
 
 \subsection{Finite difference schemes}\label{sec:FD}
 \gaute{Include discussion on numerical stability for each method used}
