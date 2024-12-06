@@ -213,7 +213,7 @@ if __name__ == "__main__":
     final_layer_size = 1
 
     learning_rate = 1e-3
-    epochs = 2
+    epochs = 1000
     batch_size = 3000
     Nx = 100
     Nt = 100
