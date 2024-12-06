@@ -54,6 +54,7 @@ class FiniteDifference:
         plt.contourf(X, Y, Z, cmap="hot", levels=500, vmin=0, vmax=1)
         
         plt.colorbar()
+        plt.savefig("../plots/heat_map_finite_difference.png")
         plt.show()
 
     def total_mse(self, data, exact):
