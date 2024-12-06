@@ -3,6 +3,8 @@ import numpy as np
 import json
 import torch 
 import sys
+from scipy.interpolate import interp1d
+import seaborn as sns
 
 from analytic import exact_sol
 from data_gen import RodDataGen
@@ -118,48 +120,48 @@ def time_slices(model_nn, model_fd):
     X, T = np.meshgrid(np.linspace(0, 1, Nx + 1), np.linspace(0, data.T, Nt + 1))
     Z = exact_sol(X, T)
 
+    axs[0].plot(x, Z[int(t1*Nt), :], label="Analytical", color="cornflowerblue")
+    axs[1].plot(x, Z[int(t2*Nt), :], label="Analytical", color="cornflowerblue")
 
-    axs[0].plot(x, Z[int(t1*Nt), :], label="Analytical")
-    axs[1].plot(x, Z[int(t2*Nt), :], label="Analytical")
+    # neural network
+    Nx = 100
+    Nt = 100
 
-    # # neural network
-    # Nx = 100
-    # Nt = 100
+    X = torch.linspace(0, 1, Nx + 1)
+    T = torch.linspace(0, 0.5, Nt + 1)
 
-    # X = torch.linspace(0, 1, Nx + 1)
-    # T = torch.linspace(0, 0.5, Nt + 1)
+    X, T = torch.meshgrid(X, T)
+    X_ = X.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
+    T_ = T.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
 
-    # X, T = torch.meshgrid(X, T)
-    # X_ = X.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
-    # T_ = T.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
+    Z = model_nn(X_, T_).detach().reshape([(Nx + 1), (Nt + 1)])
 
-    # Z = model_nn(X_, T_).detach().reshape([(Nx + 1), (Nt + 1)])
+    axs[0].plot(np.linspace(0, 1, Nx + 1), Z[int(t1 * Nt), :], label="Neural Network", color="orange")
+    axs[1].plot(np.linspace(0, 1, Nx + 1), Z[int(t2 * Nt), :], label="Neural Network", color="orange")
 
-    # axs[0].plot(x, Z[:, int(t1*Nt)], label="Neural Network")
-    # axs[1].plot(x, Z[:, int(t2*Nt)], label="Neural Network")
+    # finite difference
+    X = np.linspace(0, 1, N + 1)  
+    Y = np.array(model_fd["time_steps"])  
+    n = len(Y)
+    Z = np.array(model_fd["values"])  
+   
+    axs[0].plot(X, Z[int(t1 * n), :], label="Finite Difference", color = "hotpink")
+    axs[1].plot(X, Z[int(t2 * n), :], label="Finite Difference", color = "hotpink")
 
-    # # finite difference
-    # X = np.linspace(0, 1, N + 1)
-    # Y = model_fd["time_steps"]
-    # X, Y = np.meshgrid(X, Y)
-    # Z = model_fd["values"]
 
-    # axs[0].plot(x, Z[:, int(t1*len(Y))], label="Finite Difference")
-    # axs[1].plot(x, Z[:, int(t1*len(Y))], label="Finite Difference")
+    axs[0].set_title("Time slice at t = 0.03")
+    axs[1].set_title("Time slice at t = 0.25")
 
-    # axs[0].set_title("Time slice at t = 0.03")
-    # axs[1].set_title("Time slice at t = 0.25")
+    axs[0].set_xlabel("Position x []")
+    axs[1].set_xlabel("Position x []")
 
-    # axs[0].set_xlabel("Position x []")
-    # axs[1].set_xlabel("Position x []")
+    axs[0].set_ylabel("Temperature [Celsius]")
+    axs[1].set_ylabel("Temperature [Celsius]")
 
-    # axs[0].set_ylabel("Temperature [Celsius]")
-    # axs[1].set_ylabel("Temperature [Celsius]")
+    axs[0].legend()
+    axs[1].legend()
 
-    # axs[0].legend()
-    # axs[1].legend()
-
-    # plt.tight_layout()
+    plt.tight_layout()
     plt.savefig("../plots/time_slices_comparison.png")
     plt.show()
 
@@ -172,29 +174,10 @@ if __name__ == "__main__":
     # pass "heatmaps" as argument to make heatmaps
 
     if len(sys.argv) == 1:
-        print("No argument given, pass 'boxplots' and/or 'heatmaps' as argument to make plots")
+        print("No argument given, pass 'boxplots' and/or 'heatmaps' and/or 'time' as argument to make plots")
         sys.exit(1)
 
     else:
-
-        if "boxplots" in sys.argv:
-            # activations
-            with open("../results/activation_search.json", "r") as f:
-                activation_search_results = json.load(f)
-
-            box_plot(activation_search_results, "activation")
-
-            # value layers
-            with open("../results/value_layers_search.json", "r") as f:
-                value_layers_search_results = json.load(f)
-
-            box_plot(value_layers_search_results, "value_layers")
-
-            # n layers
-            with open("../results/n_layers_search.json", "r") as f:
-                n_layers_search_results = json.load(f)
-
-            box_plot(n_layers_search_results, "n_layers")
 
         if "heatmaps" in sys.argv:
 
@@ -220,7 +203,33 @@ if __name__ == "__main__":
             # make plot of all three heatmaps
             heatmaps(model_nn, model_fd)
 
+        if "boxplots" in sys.argv:
+
+            plt.style.use("../plot_settings.mplstyle")
+            sns.set()
+
+            # activations
+            with open("../results/activation_search.json", "r") as f:
+                activation_search_results = json.load(f)
+
+            box_plot(activation_search_results, "activation")
+
+            # value layers
+            with open("../results/value_layers_search.json", "r") as f:
+                value_layers_search_results = json.load(f)
+
+            box_plot(value_layers_search_results, "value_layers")
+
+            # n layers
+            with open("../results/n_layers_search.json", "r") as f:
+                n_layers_search_results = json.load(f)
+
+            box_plot(n_layers_search_results, "n_layers")
+
         if "time" in sys.argv: 
+
+            plt.style.use("../plot_settings.mplstyle")
+            sns.set()
 
             with open("../results/grid_search.json", "r") as f:
                 grid_search_results = json.load(f)
