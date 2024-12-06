@@ -2,11 +2,7 @@ import numpy as np
 from scipy import sparse
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-
-def exact_sol(x, t):
-    # Probably move to separate file, as it will be used other places
-    return np.sin(np.pi * x) * np.exp(-np.pi**2 * t)
+from analytic import exact_sol
 
 
 class FiniteDifference:

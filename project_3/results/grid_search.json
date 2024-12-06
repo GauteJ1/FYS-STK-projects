@@ -3,7 +3,7 @@
         "n_layers": 2,
         "value_layers": 10,
         "activation": "tanh",
-        "final_loss": 9.382970809936523
+        "final_loss": 4.550659894943237
     },
     {
         "n_layers": 2,
@@ -15,7 +15,7 @@
         "n_layers": 2,
         "value_layers": 50,
         "activation": "tanh",
-        "final_loss": 9.237312316894531
+        "final_loss": 4.545974493026733
     },
     {
         "n_layers": 2,
@@ -27,24 +27,24 @@
         "n_layers": 3,
         "value_layers": 10,
         "activation": "tanh",
-        "final_loss": 1.1924417614936829
+        "final_loss": 0.16334328055381775
     },
     {
         "n_layers": 3,
         "value_layers": 10,
         "activation": "ReLU",
-        "final_loss": 0.9482357800006866
+        "final_loss": 0.005575454095378518
     },
     {
         "n_layers": 3,
         "value_layers": 50,
         "activation": "tanh",
-        "final_loss": 0.8375539779663086
+        "final_loss": 0.0890020951628685
     },
     {
         "n_layers": 3,
         "value_layers": 50,
         "activation": "ReLU",
-        "final_loss": 0.5081607401371002
+        "final_loss": 0.49151816964149475
     }
 ]

@@ -16,7 +16,7 @@ axes.titlesize: 20
 axes.labelsize: 18    
 axes.spines.top: False  
 axes.spines.right: False 
-axes.grid: True         
+axes.grid: False         
 axes.grid.axis: both
 axes.grid.which: major
 axes.linewidth: 1.2
