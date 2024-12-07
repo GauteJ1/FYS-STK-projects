@@ -77,7 +77,7 @@ def plot_heatmap(nn_model):
     plt.contourf(X, T, Z, cmap="hot", levels=500, vmin=0, vmax=1)
 
     plt.colorbar()
-    plt.savefig("../plots/heat_map.png")
+    # plt.savefig("../plots/heat_map.png")
     plt.show()
 
 if __name__ == "__main__":

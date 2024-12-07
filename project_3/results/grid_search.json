@@ -1,50 +1,290 @@
 [
     {
-        "n_layers": 2,
+        "n_layers": 1,
+        "value_layers": 10,
+        "activation": "leakyReLU",
+        "final_mse": 0.31251972913742065
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 10,
+        "activation": "ReLU",
+        "final_mse": 0.31262606382369995
+    },
+    {
+        "n_layers": 1,
         "value_layers": 10,
         "activation": "tanh",
-        "final_loss": 4.550659894943237
+        "final_mse": 0.019139690324664116
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 10,
+        "activation": "sigmoid",
+        "final_mse": 0.020164838060736656
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 25,
+        "activation": "leakyReLU",
+        "final_mse": 0.34110569953918457
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 25,
+        "activation": "ReLU",
+        "final_mse": 0.3390411138534546
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 25,
+        "activation": "tanh",
+        "final_mse": 0.01430393848568201
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 25,
+        "activation": "sigmoid",
+        "final_mse": 0.01706521399319172
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 50,
+        "activation": "leakyReLU",
+        "final_mse": 0.3427051901817322
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 50,
+        "activation": "ReLU",
+        "final_mse": 0.3431374728679657
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 50,
+        "activation": "tanh",
+        "final_mse": 0.008553358726203442
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 50,
+        "activation": "sigmoid",
+        "final_mse": 0.027219152078032494
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 100,
+        "activation": "leakyReLU",
+        "final_mse": 0.34302055835723877
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 100,
+        "activation": "ReLU",
+        "final_mse": 0.34285083413124084
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 100,
+        "activation": "tanh",
+        "final_mse": 0.012998891994357109
+    },
+    {
+        "n_layers": 1,
+        "value_layers": 100,
+        "activation": "sigmoid",
+        "final_mse": 0.016055485233664513
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 10,
+        "activation": "leakyReLU",
+        "final_mse": 0.34493589401245117
     },
     {
         "n_layers": 2,
         "value_layers": 10,
         "activation": "ReLU",
-        "final_loss": 0.49178212881088257
+        "final_mse": 0.34443745017051697
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 10,
+        "activation": "tanh",
+        "final_mse": 0.0023250929079949856
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 10,
+        "activation": "sigmoid",
+        "final_mse": 0.03671851381659508
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 25,
+        "activation": "leakyReLU",
+        "final_mse": 0.34499943256378174
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 25,
+        "activation": "ReLU",
+        "final_mse": 0.34529605507850647
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 25,
+        "activation": "tanh",
+        "final_mse": 0.0008519638795405626
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 25,
+        "activation": "sigmoid",
+        "final_mse": 0.015926465392112732
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 50,
+        "activation": "leakyReLU",
+        "final_mse": 0.34545987844467163
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 50,
+        "activation": "ReLU",
+        "final_mse": 0.3451913297176361
     },
     {
         "n_layers": 2,
         "value_layers": 50,
         "activation": "tanh",
-        "final_loss": 4.545974493026733
+        "final_mse": 0.0003072780673392117
     },
     {
         "n_layers": 2,
         "value_layers": 50,
+        "activation": "sigmoid",
+        "final_mse": 0.01547111477702856
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 100,
+        "activation": "leakyReLU",
+        "final_mse": 0.3555402159690857
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 100,
         "activation": "ReLU",
-        "final_loss": 0.4956967383623123
+        "final_mse": 0.3480861485004425
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 100,
+        "activation": "tanh",
+        "final_mse": 0.0005358185153454542
+    },
+    {
+        "n_layers": 2,
+        "value_layers": 100,
+        "activation": "sigmoid",
+        "final_mse": 0.015294439159333706
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 10,
+        "activation": "leakyReLU",
+        "final_mse": 0.34521862864494324
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 10,
+        "activation": "ReLU",
+        "final_mse": 0.34447237849235535
     },
     {
         "n_layers": 3,
         "value_layers": 10,
         "activation": "tanh",
-        "final_loss": 0.16334328055381775
+        "final_mse": 4.054568853462115e-05
     },
     {
         "n_layers": 3,
         "value_layers": 10,
+        "activation": "sigmoid",
+        "final_mse": 0.017556091770529747
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 25,
+        "activation": "leakyReLU",
+        "final_mse": 0.34484320878982544
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 25,
         "activation": "ReLU",
-        "final_loss": 0.005575454095378518
+        "final_mse": 0.3447054922580719
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 25,
+        "activation": "tanh",
+        "final_mse": 1.688043812464457e-05
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 25,
+        "activation": "sigmoid",
+        "final_mse": 0.03685459494590759
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 50,
+        "activation": "leakyReLU",
+        "final_mse": 0.3458486497402191
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 50,
+        "activation": "ReLU",
+        "final_mse": 0.3453159034252167
     },
     {
         "n_layers": 3,
         "value_layers": 50,
         "activation": "tanh",
-        "final_loss": 0.0890020951628685
+        "final_mse": 6.851205853308784e-06
     },
     {
         "n_layers": 3,
         "value_layers": 50,
+        "activation": "sigmoid",
+        "final_mse": 0.0133686987683177
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 100,
+        "activation": "leakyReLU",
+        "final_mse": 0.3448329567909241
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 100,
         "activation": "ReLU",
-        "final_loss": 0.49151816964149475
+        "final_mse": 0.34470146894454956
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 100,
+        "activation": "tanh",
+        "final_mse": 1.012156189972302e-05
+    },
+    {
+        "n_layers": 3,
+        "value_layers": 100,
+        "activation": "sigmoid",
+        "final_mse": 0.017668945714831352
     }
 ]

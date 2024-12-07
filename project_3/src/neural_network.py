@@ -21,13 +21,15 @@ class NeuralNetwork(nn.Module):
                         layers_list.append(nn.Tanh())
                     case "leakyReLU":
                         layers_list.append(nn.LeakyReLU())
+                    case "identity": 
+                        layers_list.append(nn.Identity())
 
         self.nn_model = nn.Sequential(*layers_list)
 
         def init_weights(m):
             if init == "xavier" or init == None:
                 if isinstance(m, nn.Linear):
-                    torch.nn.init.xavier_uniform_(m.weight)
+                    torch.nn.init.xavier_normal_(m.weight)
             elif init == "he":
                 if isinstance(m, nn.Linear):
                     torch.nn.init.kaiming_normal_(m.weight)

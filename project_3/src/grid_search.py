@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import json 
 import sys
+import numpy as np
 
 from neural_network import NeuralNetwork
 from cost_pinn import total_cost
 from data_gen import RodDataGen
+from analytic import exact_sol
 
 #torch.manual_seed(123)
 
@@ -27,7 +29,7 @@ def train_loop(dataloader, model_nn, loss_fn, optimizer):
 
         epoch_loss_train += loss.item()
 
-    return epoch_loss_train / len(dataloader)  
+    #return epoch_loss_train / len(dataloader)  
 
 
 def test_loop(dataloader, model_nn, loss_fn):
@@ -40,15 +42,31 @@ def test_loop(dataloader, model_nn, loss_fn):
         loss = loss_fn(x_batch, t_batch, model_nn)
         epoch_loss_test += loss.item()
 
-    return epoch_loss_test / len(dataloader)  
+    #return epoch_loss_test / len(dataloader)  
 
+def mse_against_analytic(model_nn):
 
-def train(seed, n_layers, value_layers, activation):
+    X = torch.linspace(0, 1, Nx + 1)
+    T = torch.linspace(0, 0.5, Nt + 1)
 
-    print(f"Seed: {seed}, Layers: {n_layers}, Value layers: {value_layers}, Activation: {activation}")
+    X, T = torch.meshgrid(X, T)
+    X_ = X.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
+    T_ = T.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
 
-    layers = [initial_layer_size] + [value_layers] * (n_layers - 2) + [final_layer_size]
-    activations = [activation] * (n_layers - 1)
+    Z = model_nn(X_, T_).detach().reshape([(Nx + 1), (Nt + 1)])
+    
+    Z_analytic = exact_sol(X, T)
+
+    mse = torch.mean((Z - Z_analytic)**2)
+
+    return mse
+
+def train(seed, n_layers, value_layers, activation, return_model=False):
+
+    print(f"Seed: {seed}, Hidden layers: {n_layers}, Value layers: {value_layers}, Activation: {activation}")
+
+    layers = [initial_layer_size] + [value_layers] * (n_layers) + [final_layer_size]
+    activations = [activation] * n_layers + ["identity"]
 
     model_nn = NeuralNetwork(layers, activations, initialization)
     optimizer = torch.optim.Adam(model_nn.parameters(), lr=learning_rate)
@@ -62,27 +80,28 @@ def train(seed, n_layers, value_layers, activation):
     train_data = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_data = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
         
-    loss_history_train = []
-    loss_history_test = []
+    # loss_history_train = []
+    # loss_history_test = []
 
     for epoch in tqdm(range(epochs)):
-        train_loss = train_loop(train_data,  model_nn, total_cost, optimizer)
-        loss_history_train.append(train_loss)
+        train_loop(train_data, model_nn, total_cost, optimizer) # train_loss = 
+        # loss_history_train.append(train_loss)
 
-        test_loss = test_loop(test_data, model_nn, total_cost)
-        loss_history_test.append(test_loss)
+        test_loop(test_data, model_nn, total_cost) # test_loss = 
+        # loss_history_test.append(test_loss)
 
         # check if test loss is increasing the 10 last epochs
-        if epoch > 10: 
-            if (loss_history_test[-1] > loss_history_test[-11]):
-                print("Early stopping")
-                break
+        # if epoch > 10: 
+        #     if (loss_history_test[-1] > loss_history_test[-11]):
+        #         print("Early stopping")
+        #         break
 
-    model_nn.eval()
-
-    final_loss = loss_history_test[-1]
-
-    return final_loss
+    if return_model:
+        return model_nn
+    else:
+        model_nn.eval()
+        mse_final = mse_against_analytic(model_nn)
+        return mse_final
 
 def plot_heatmap_nn(nn_model):
 
@@ -111,21 +130,21 @@ def grid_search(n_layers, value_layers, activation):
         for value_layers in layer_sizes:
             for activation in activation_funcs:
 
-                loss_seeds = []
+                list_seeds = []
 
                 for seed in seeds:
                     torch.manual_seed(seed)
+                    
+                    mse_final = train(seed, n_layers, value_layers, activation)
 
-                    final_loss = train(seed, n_layers, value_layers, activation)
+                    list_seeds.append(mse_final)
 
-                    loss_seeds.append(final_loss)
-
-                final_loss = sum(loss_seeds) / len(loss_seeds)
+                mse_final = float(np.mean(list_seeds))
                 grid_search_results.append({
                     "n_layers": n_layers,
                     "value_layers": value_layers,
                     "activation": activation,
-                    "final_loss": final_loss
+                    "final_mse": mse_final
                 })
 
     # save grid search results as json
@@ -140,23 +159,23 @@ def activations_search(best_n_layers, best_value_layers):
     for activation in activation_funcs:
         print(f"Activation: {activation}")
 
-        loss_seeds_act = []
+        list_seeds_act = []
 
         for seed in seeds: 
             torch.manual_seed(seed)
 
-            final_loss = train(seed, best_n_layers, best_value_layers, activation)
-            loss_seeds_act.append(final_loss)
+            final_mse = train(seed, best_n_layers, best_value_layers, activation)
+            list_seeds_act.append(final_mse)
             
         new_search_activations_results.append({
             "activation": activation,
-            "final_loss": loss_seeds_act
+            "final_mse": list_seeds_act
             })
             
     with open("../results/activation_search.json", "w") as f:
         json.dump(new_search_activations_results, f, indent=4)
 
-def layers_search(best_value_layers, best_activation):
+def layers_search(best_n_layers, best_activation):
 
     # keeping n_layers and activation constant
     new_search_value_layers_results = []
@@ -164,17 +183,17 @@ def layers_search(best_value_layers, best_activation):
     for value_layers in layer_sizes:
         print(f"Value layers: {value_layers}")
 
-        loss_seeds_val = []
+        list_seeds_val = []
 
         for seed in seeds: 
             torch.manual_seed(seed)
 
-            final_loss = train(seed, best_value_layers, value_layers, best_activation)
-            loss_seeds_val.append(final_loss)
+            final_mse = train(seed, best_n_layers, value_layers, best_activation)
+            list_seeds_val.append(final_mse)
             
         new_search_value_layers_results.append({
             "value_layers": value_layers,
-            "final_loss": loss_seeds_val
+            "final_mse": list_seeds_val
             })
 
 def n_layers_search(best_value_layers, best_activation):
@@ -185,17 +204,17 @@ def n_layers_search(best_value_layers, best_activation):
     for n_layers in layers_num:
         print(f"Number of layers: {n_layers}")
 
-        loss_seeds_n = []
+        list_seeds_n = []
 
         for seed in seeds: 
             torch.manual_seed(seed)
 
-            final_loss = train(seed, n_layers, best_value_layers, best_activation)
-            loss_seeds_n.append(final_loss)
+            finalmse = train(seed, n_layers, best_value_layers, best_activation)
+            list_seeds_n.append(finalmse)
             
         new_search_n_layers_results.append({
             "n_layers": n_layers,
-            "final_loss": loss_seeds_n
+            "final_mse": list_seeds_n
             })
         
     with open("../results/n_layers_search.json", "w") as f:
@@ -204,10 +223,10 @@ def n_layers_search(best_value_layers, best_activation):
 
 if __name__ == "__main__":
 
-    seeds = [123, 426, 47]
-    layers_num = [2, 3, 4]
-    layer_sizes = [10, 25, 50, 100]
-    activation_funcs = ["tanh", "ReLU", "sigmoid", "leakyReLU"]
+    seeds = [123]
+    layers_num = [1, 2, 3] # number of hidden layers 
+    layer_sizes = [10, 25, 50, 100] # size of hidden layers
+    activation_funcs = ["leakyReLU", "ReLU", "tanh", "sigmoid"]
 
     initial_layer_size = 2
     final_layer_size = 1
@@ -218,7 +237,7 @@ if __name__ == "__main__":
     Nx = 100
     Nt = 100
 
-    initialization = "he"
+    initialization = "xavier"
 
     if "grid" in sys.argv:
         grid_search(layers_num, layer_sizes, activation_funcs)
@@ -227,7 +246,7 @@ if __name__ == "__main__":
         with open("../results/grid_search.json", "r") as f:
             grid_search_results = json.load(f)
 
-        best_result = min(grid_search_results, key=lambda x: x['final_loss'])
+        best_result = min(grid_search_results, key=lambda x: x['final_mse'])
         best_n_layers = best_result['n_layers']
         best_value_layers = best_result['value_layers']
         best_activation = best_result['activation']
@@ -238,7 +257,7 @@ if __name__ == "__main__":
         activations_search(best_n_layers, best_value_layers)
 
     if "value_layers" in sys.argv:
-        layers_search(best_value_layers, best_activation)
+        layers_search(best_n_layers, best_activation)
 
     if "n_layers" in sys.argv:
         n_layers_search(best_value_layers, best_activation)

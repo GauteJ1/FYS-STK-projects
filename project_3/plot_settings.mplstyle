@@ -26,4 +26,4 @@ grid.linewidth: 0.5
 grid.color: lightgray
 
 # Legend
-legend.fontsize: 16
+legend.fontsize: 25
