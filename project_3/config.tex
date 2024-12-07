@@ -127,3 +127,10 @@ apsrev41Control%
 \makeatother
 
 \newcommand{\f}[1]{\boldsymbol{#1}}
+
+\usepackage{tikz}
+\usetikzlibrary{fit}
+
+\tikzset{every label/.style={font=\normalfont, inner sep=1.5pt}}
+
+\newcommand{\stencilpt}[5][]{\node[circle,fill=blue,draw=black, label={#5:#4},#1] at (#2) (#3) {}}

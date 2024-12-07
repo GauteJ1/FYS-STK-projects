@@ -1,16 +1,18 @@
 \subsection{Partial differential equations}
 A differential equation is an expression of a function in terms of it's derivative(s), in such a way that the function itself can be determined through solving the equation \citep[p. 1-4]{tveitoPDE}. I.e. the solution to a differential equation will be the function that satisfies the equation. Differential equations are again split into two main categories, \textit{ordinary differential equations} (ODE) and \textit{partial differential equations} (PDE). An ODE involves only derivatives with regards to a single variable, while PDEs include the partial derivatives of a multi-variable function. This report will only cover PDEs. 
 
-\gaute{Do be fixxez}
-The form of a PDE will vary a lot depending on the expression itself, but broadly speaking they often appear similar to a variant of one of the following generic equations: 
 \begin{equation}
-    \frac{\partial u(\bold{x})}{\partial x_i} = \frac{\partial u(\bold{x})}{\partial x_j}
+\label{eq:gen_pde}
+    (\mathcal{L}u)(x) = f(x), \quad x\in \Omega
 \end{equation}
-\begin{equation}
-    \frac{\partial^2 u(\bold{x})}{\partial^2x_i} - K(u(\bold{x})) \frac{\partial^2u(\bold{x})}{\partial^2x_j} = 0
-\end{equation}
-\gaute{Do be fixxez}
-Here $u$ denotes some multi-variable function with variables $\bold{x}$, where $x_i$ and $x_j$ denote two of these variables. Furthermore $\frac{\partial u(\bold{x})}{\partial x_i}$ denotes the partial derivative of the function with regards to the $i$-th variable. $K(\bold{x})$ is some other function of the variables. The degree of derivation is arbitrarily chosen for the examples above, and may vary in either direction for different equations. Very commonly PDEs will more specifically regard a time-dependent function $u(\bold{x}, t)$. This is especially common for any PDE modelling real-world systems. 
+
+The most general PDE form is often written as Eq. \eqref{eq:gen_pde}.
+In this representation, $\Omega \subset \mathbb{R}^d$ is the domain, $f: \mathbb{R}^d \to \mathbb{R}$ is a (continuous) function, and $u: \mathbb{R}^d \to \mathbb{R}$ is the unknown function.
+$\mathcal{L}$ is a given differential operator.
+In general, $\mathcal{L}$ can contain any combination of partial derivatives of $u$, however most popular PDEs are limited to linear combinations of partial derivatives.
+An example of a possible differential operator is $\mathcal{L}u = \frac{\partial^2 u}{\partial t^2} - c^2 \frac{\partial^2 u}{\partial x^2}$, which, if $f(x) = 0$, leads to the one-dimensional wave equation.
+
+% Here $u$ denotes some multi-variable function with variables $\bold{x}$, where $x_i$ and $x_j$ denote two of these variables. Furthermore $\frac{\partial u(\bold{x})}{\partial x_i}$ denotes the partial derivative of the function with regards to the $i$-th variable. $K(\bold{x})$ is some other function of the variables. The degree of derivation is arbitrarily chosen for the examples above, and may vary in either direction for different equations. Very commonly PDEs will more specifically regard a time-dependent function $u(\bold{x}, t)$. This is especially common for any PDE modelling real-world systems. 
 
 The solution of a PDE can normally be found either analytically by solving the equation directly, or through a broad range of numerical methods. These methods usually provide an approximation of the exact solution, but by tweaking parameters the approximate solution will commonly converge towards the exact. Numerical approximations will be further covered in section \ref{sec:FD}.
 
@@ -39,7 +41,7 @@ Often for such problems the functions $g_1$ and $g_2$ will evaluate to a scalar,
     \end{split}
 \end{equation}
 
-\subsection{Diffusion equation}
+\subsection{Diffusion equation}\label{sec:diffeq}
 \textit{The diffusion equation} is one of the most commonly encountered PDEs, and describes the spread of particles through matter over time \citep[p. 18]{tveitoPDE}. For one dimension, and uniform materials, the general equation is given as:
 \begin{equation}
     \frac{\partial u(x,t)}{\partial t} = D \frac{\partial^2 u(x,t)}{\partial x^2}
@@ -112,24 +114,65 @@ By insertion in the PDE and it's conditions this is easily verified. The full de
 While the analytical solution is relatively simple to find for some PDEs, such as the diffusion equation shown above, other PDEs are difficult or impossible to solve analytically.
 When considering these PDEs, we usually find an approximation to the solution.
 There are many ways of doing this, including collocation methods, Galerkin methods, finite element methods, and finite difference schemes.
-Due to them being easy to implement, flexible, and theoretically approachable, finite difference schemes are very popular.
+Due to them being easy to implement, flexible, and theoretically approachable, finite difference schemes are very popular \citep[p. 119]{tveitoPDE}.
 
 The main idea behind finite difference schemes is to divide your domain into discrete points.
 Given a PDE $\mathcal{L}u=f$, $u : [0, L] \times [0, T] \to \mathbb{R}$, we start by creating discrete points $(x_j, t_n) = (j \Delta x, n\Delta t)$, where $\Delta x = L/N_x$ and $\Delta t = T/N_t$.
 We denote the approximation at each point by $u_j^n = u(x_j, t_n)$.
 
 We proceed by approximating the derivatives of the PDE using Taylor expansions around $u_j^n$.
-For the diffusion equation, we have the following approximations at the point $(x_j, t_n)$.
-
 \begin{align}
-    \frac{\partial u}{\partial t}(x_j, t_n) &= \frac{}{}
+    \label{eq:fd_dt}
+    \frac{\partial u}{\partial t}(x_j, t_n) &= \frac{u_j^{n+1}-u_j^n}{\Delta t} \\
+    \label{eq:fd_dx2}
+    \frac{\partial^2 u}{\partial x^2}(x_j, t_n) &= \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
 \end{align}
 
-
+In the diffusion equation introduced in section \ref{sec:diffeq}, we approximate the two partial differentiation terms as described in Eq. \ref{eq:fd_dt} and Eq. \ref{eq:fd_dx2}.
+The approximation in Eq. \ref{eq:fd_dt} has error term of order $\mathcal{O}(\Delta t)$, while Eq. \ref{eq:fd_dx2} has error term of order $\mathcal{O}(\Delta x^2)$.
+The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \ref{}.
+The derivation of equation 
+\begin{equation}
+    \label{eq:diff_scheme}
+    \frac{u_j^{n+1}-u_j^n}{\Delta t} = \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
+\end{equation}
+Equation \ref{eq:diff_scheme} describes the entire finite difference scheme for the PDE defined in Eq. \ref{eq:diffu}.
+This scheme is a forward Euler scheme, as the approximations of the time derivative between $t_n$ and $t_{n+1}$ are made using values at time $t_n$ on the right side of equation $\ref{eq:diff_scheme}$.
+The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respect to $u_j^{n+1}$.
+\begin{figure}[h]
+        \centering
+        \begin{tikzpicture}
+            \stencilpt{-1,0}{i-1}{$u_{j-1}^n$}{below};
+            \stencilpt{ 0,0}{i}  {$u_{j}^n$}{below};
+            \stencilpt{ 1,0}{i+1}{$u_{j+1}^n$}{below};
+            \stencilpt{ 0,1}{n+1}{$u_{j}^{n+1}$}{right};
+            \draw
+            (i-1) -- (i)
+            (i)   -- (i+1)
+            (i) -- (n+1);
+            
+            % \node[fit=(i-1)(i+1)(n+1), draw=black, inner xsep=6pt, inner ysep=12pt] {};
+        \end{tikzpicture}
+        
+        \caption{The stencil of the scheme defined by Eq. \ref{eq:diff_scheme}.} 
+        \label{fig:fd_stencil}  
+    \end{figure}
+The scheme can be viewed as a stencil, as shown in Fig. \ref{fig:fd_stencil}, where the values at time $t_n$ are known and used to calculate the values at time $t_{n+1}$.
+Note that all values at time $t_0$ are known from the initial condition.
+\subsubsection{Stability}
+Considering the stability of the approximation obtained from the scheme, is important when using finite difference schemes to solve PDEs.
+Using a very small value of $\Delta x$ compared to $\Delta t$, leads to the second derivative of $x$ at the right side of equation \eqref{eq:diff_scheme} being very accurate for a small area of the function, while the time step it is used for is really big.
+This could cause large error, and we might end up with large oscillations that do not match the analytical solution.
+\begin{equation}
+    \label{eq:stability}
+    \frac{\Delta t}{\Delta x^2} \leq \frac{1}{2}
+\end{equation}
+Equation \eqref{eq:stability} is the stability requirement of the scheme defined by equation \eqref{eq:diff_scheme} \citep[p. 130]{tveitoPDE}.
+\gaute{A derivation of this is also included in appendix D}
 \subsection{Neural Networks \julie{copy}} 
 
 % Although methods like linear regression for continuous tasks and logistic regression for classification are suitable for a lot of applications, a more adaptive and versatile method is necessary to broaden the possibilities of use. 
-As an alternative to finding solutions analytically or using numerical approximation methods, which are specialized for the task - it's become widely popular in recent years to utilize \textit{Neural Networks} to solve PDE's.
+As an alternative to finding solutions analytically or using numerical approximation methods, which are specialized for the task, it has become widely popular in recent years to utilize \textit{neural networks} to solve PDE's.
 
 % \textit{Neural networks} (NN) make no assumptions about underlying data-structures, and can be fit for a broad range of tasks, including regression and classification \citep[Neural networks]{morten}. Through \textit{layers} of \textit{nodes} (often called \textit{units}), the network imitates the process of neurons firing in the brain, and can be fit to many complex problems.
 
