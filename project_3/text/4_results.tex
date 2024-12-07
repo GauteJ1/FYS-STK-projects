@@ -1,37 +1,49 @@
 \mia{figures will be updated}
 
-\begin{figure}
+
+
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/heat_map_comparison.png}
-    \caption{Caption}
-    \label{fig:enter-label}
+    \caption{The analytical solution to the heat equation as well as the result from the finite difference method and the neural network model. A common colorbar is displayed. 
+    \mia{fix title sizes and colorbar ++++}}
+    \label{fig:heatmaps}
 \end{figure}
 
-\begin{figure}
+\mia{something about the mse (compared to the analytical solution) for the two}
+Comapred to the analytical solution, the output of the neural network model has a MSE of \mia{??} while the finite difference method yields a MSE of \mia{??}. 
+Looking at the respective methods output in Fig. \ref{fig:heatmaps}, their is no noticeable difference by eye between any of the three.  
+This is well reflected in the very low MSE-value for both methods. 
+
+
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/time_slices_comparison.png}
-    \caption{Caption}
-    \label{fig:enter-label}
+    \caption{The temperate for specific times for the analytical solution, as well as the output from the finite difference method and the neural network predictions. The discretization along the x-axis is different for each method. The analytical one is plotted with 1000 points, the finite difference method with 10 points and the neural network predictions with 100. 
+    \mia{fix title sizes ++++ and consider having the y-axis range equal for both}}
+    \label{fig:timeslices}
 \end{figure}
 
-\begin{figure}
+
+
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/activation_search.png}
-    \caption{Caption}
-    \label{fig:enter-label}
+    \caption{Boxplots showcasing the final MSE value compared to the analytical solution for different activation functions. Each model is ran 10 times. : \mia{fix title sizes ++++}}
+    \label{fig:boxplots_activations}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/value_layers_search.png}
-    \caption{Caption}
-    \label{fig:enter-label}
+    \caption{Boxplots showcasing the final MSE value compared to the analytical solution for different sizes for the hidden layers. Each model is ran 10 times. \mia{fix title sizes ++++}}
+    \label{fig:boxplots_size_of_layers}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/n_layers_search.png}
-    \caption{Caption}
-    \label{fig:enter-label}
+    \caption{Boxplots showcasing the final MSE value compared to the analytical solution for different number of hidden layers. Each model is ran 10 times.\mia{fix title sizes ++++}}
+    \label{fig:boxplots_number_of_hidden_layers}
 \end{figure}
 

@@ -53,7 +53,7 @@ Arguably the most famous among variations of the diffusion equation is one obtai
     \frac{\partial u(x,t)}{\partial t}=\frac{\partial^2 u(x,t)}{\partial x^2} , \ t>0, \ x\in [0, L]
 \end{equation}
 The heat equation (and similarly other PDEs) is also commonly denoted in a short-hand version where the partial derivatives are stated in subscript of $u$:  
-\begin{equation}
+\begin{equation}\label{u_tu_xx}
     u_t = u_{xx}
 \end{equation}
 $\frac{\partial u(x,t)}{\partial t}$ is denoted $u_t$ and $\frac{\partial^2 u(x,t)}{\partial x^2}$ is denoted $u_{xx}$.
@@ -73,17 +73,17 @@ Similarly boundary conditions are given on the form:
     \end{split}
 \end{equation}
 The functions $g$ and $h$, describe how the temperature changes over at time at the ends of the rod (the boundary points). 
-All of the functions $f, g, h$ from Eq. \ref{init_cond} and Eq. \ref{bound_cond}, can be functions dependent on x or constants, conditional to the system described by the PDE. 
+All of the functions $f, g, h$ from Eq. \eqref{init_cond} and Eq. \eqref{bound_cond}, can be functions dependent on x or constants, conditional to the system described by the PDE. 
 
 For a rod of length $L = 1$ the equation becomes:
-Initial conditions:
-\begin{equation}
+\newline Initial conditions:
+\begin{equation}\label{eq:initial_heat_eq}
     u(x, 0) = \sin(\pi x), \quad 0 < x < L
 \end{equation}
 
 Boundary conditions:
 \begin{align}
-\begin{split}
+\begin{split}\label{eq:boundaries_heat_eq}
     u(0,t) &= 0, \quad t\geq 0 \\
     u(L,t) &= 0, \quad t\geq 0
 \end{split}
@@ -128,17 +128,18 @@ We proceed by approximating the derivatives of the PDE using Taylor expansions a
     \frac{\partial^2 u}{\partial x^2}(x_j, t_n) &= \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
 \end{align}
 
-In the diffusion equation introduced in section \ref{sec:diffeq}, we approximate the two partial differentiation terms as described in Eq. \ref{eq:fd_dt} and Eq. \ref{eq:fd_dx2}.
-The approximation in Eq. \ref{eq:fd_dt} has error term of order $\mathcal{O}(\Delta t)$, while Eq. \ref{eq:fd_dx2} has error term of order $\mathcal{O}(\Delta x^2)$.
-The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \ref{}.
+In the diffusion equation introduced in section \ref{sec:diffeq}, we approximate the two partial differentiation terms as described in Eq. \eqref{eq:fd_dt} and Eq. \eqref{eq:fd_dx2}.
+The approximation in Eq. \eqref{eq:fd_dt} has error term of order $\mathcal{O}(\Delta t)$, while Eq. \eqref{eq:fd_dx2} has error term of order $\mathcal{O}(\Delta x^2)$.
+The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \gaute{ref here}\ref{}.
 The derivation of equation 
 \begin{equation}
     \label{eq:diff_scheme}
     \frac{u_j^{n+1}-u_j^n}{\Delta t} = \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
 \end{equation}
-Equation \ref{eq:diff_scheme} describes the entire finite difference scheme for the PDE defined in Eq. \ref{eq:diffu}.
+\gaute{finish sentence}
+Equation \ref{eq:diff_scheme} describes the entire finite difference scheme for the PDE defined in Eq. \eqref{eq:diffu}.
 This scheme is a forward Euler scheme, as the approximations of the time derivative between $t_n$ and $t_{n+1}$ are made using values at time $t_n$ on the right side of equation $\ref{eq:diff_scheme}$.
-The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respect to $u_j^{n+1}$.
+The schemes "step" through time, by solving Eq. \eqref{eq:diff_scheme} with respect to $u_j^{n+1}$.
 \begin{figure}[h]
         \centering
         \begin{tikzpicture}
@@ -154,7 +155,7 @@ The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respec
             % \node[fit=(i-1)(i+1)(n+1), draw=black, inner xsep=6pt, inner ysep=12pt] {};
         \end{tikzpicture}
         
-        \caption{The stencil of the scheme defined by Eq. \ref{eq:diff_scheme}.} 
+        \caption{The stencil of the scheme defined by Eq. \eqref{eq:diff_scheme}.} 
         \label{fig:fd_stencil}  
     \end{figure}
 The scheme can be viewed as a stencil, as shown in Fig. \ref{fig:fd_stencil}, where the values at time $t_n$ are known and used to calculate the values at time $t_{n+1}$.
@@ -197,14 +198,14 @@ Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ i
 
 How many layers an NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[Ch.1]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a "better" architecture, however more complex tasks are commonly better solved by more "complex" networks; i.e. more layers and more nodes. 
 
-The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layers. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f_1$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f_2$, before finally being output from the model. 
+The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layer. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f_1$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f_2$, before finally being output from the model. 
 For each node $n$ the process can be formally expressed as:
 
 
 \begin{equation}
     y = f\left( \sum_{i=0}^N w_{0n}x_i + b\right)
 \end{equation}
-\citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and altering either weights or biases directly is not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
+\citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \eqref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and altering either weights or biases directly is not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
 
 \subsubsection{Activation functions}\label{sec:activation_func}
@@ -237,7 +238,7 @@ One example of a common activation function is the Sigmoid function \citep[Logis
 \begin{equation}\label{sigmoid}
     f(\bold{z})_i=\sigma(z_i)=\frac{1}{1+\exp(-z_i)}=\frac{\exp(z_i)}{1+\exp(z_i)}
 \end{equation}
-$\sigma$ takes in any number on the real number-line, and maps it to the interval $[0,1]$. The Sigmoid is normally used for internal nodes or classification tasks. 
+$\sigma$ takes in any number on the real number-line, and maps it to the interval $(0,1)$. The Sigmoid is normally used for internal nodes or classification tasks. 
 % Alternatively the \textit{softmax} function is another common function for classification \citep[Logistic Regression]{morten}. 
 % This is an extension of the Sigmoid function, and is also what's used in place of the sigmoid function for multinomial linear regression.
 % The softmax function normalizes a vector of input values so that the resulting outputs sum to $1$. While softmax can be used in internal nodes, it is more commonly used for the output layer. For an input vector of size $K$ the softmax function for each element i is given as: 
@@ -302,7 +303,7 @@ Arguably the most common method across the field, is random initialization. As t
 % \begin{equation}\label{he}
 %     W_{i,j} \sim \mathcal{N}\left(0, \frac{2}{\sqrt{n}}\right)
 % \end{equation}
-% Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot, and Eq. \ref{he} the normalized normal distribution from which values are selected in He. In both equations $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the methods were proposed as given above in their respective papers, it is not uncommon to implement Glorot as a normal distribution, and He as a uniform distribution. As of now there exists no common consensus of which versions are better, neither theoretically or empirically, and thus the choice is for each specific case.
+% Eq. \eqref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot, and Eq. \eqref{he} the normalized normal distribution from which values are selected in He. In both equations $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the methods were proposed as given above in their respective papers, it is not uncommon to implement Glorot as a normal distribution, and He as a uniform distribution. As of now there exists no common consensus of which versions are better, neither theoretically or empirically, and thus the choice is for each specific case.
 
 % Glorot is derived specifically for the Sigmoid function, and He for the ReLu function. It often yields faster convergence, and sometimes better performance, using the accompanying initialization methods for networks using the aforementioned activation functions. 
 
@@ -310,7 +311,7 @@ Among more specialized methods we find the methods called \textit{Xavier Glorot}
 \begin{equation}\label{glorot}
     W_{i,j} \sim U\left(-\sqrt{\frac{6}{m+n}},{\sqrt{\frac{6}{m+n}}},\right)
 \end{equation}
-Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in paper piloting this method, it is not uncommon to implement Glorot as a normal distribution. As of now there exists no common consensus of which version is better, neither theoretically or empirically, and thus the choice is left for each specific case.
+Eq. \eqref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in paper piloting this method, it is not uncommon to implement Glorot as a normal distribution. As of now there exists no common consensus of which version is better, neither theoretically or empirically, and thus the choice is left for each specific case.
 
 Glorot is derived specifically for the Sigmoid function, but performs well on other activation functions as well. Especially when accompanying the Sigmoid function, it often yields faster convergence, and sometimes better performance.
 
@@ -371,13 +372,13 @@ By looking at the slope of the landscape one can keep taking steps in the steepe
 \end{bmatrix}
 \end{equation}
 
-More precisely, one finds the gradient of the cost function with respect to the parameters of the model - which provides the direction of steepest increase. The negative of the gradient will then provide the direction of steepest decrease, as given for a general cost function in Eq. \ref{eq:gd}. $\theta$ represent the entire model, while the $\theta_i$s represent each of the parameters present in the model.
+More precisely, one finds the gradient of the cost function with respect to the parameters of the model - which provides the direction of steepest increase. The negative of the gradient will then provide the direction of steepest decrease, as given for a general cost function in Eq. \eqref{eq:gd}. $\theta$ represent the entire model, while the $\theta_i$s represent each of the parameters present in the model.
 
 \begin{equation}\label{eq:updt_std}
     \theta_{t+1} = \theta_t - \eta_t \nabla_{\theta} C(\theta_t)
 \end{equation}
 
-When updating the parameters in the model, we now use this gradient combined with a new parameter $\eta$, as shown in Eq. \ref{eq:updt_std}.
+When updating the parameters in the model, we now use this gradient combined with a new parameter $\eta$, as shown in Eq. \eqref{eq:updt_std}.
 $\eta$ is commonly known as the \textit{learning rate}, which we will discuss further below.
 
 For a model containing only a few data-points and parameters, computing the gradient in each step is feasible.
@@ -408,14 +409,14 @@ The smaller the learning rate, the more iterations are required to approach the 
 % \begin{equation}\label{eq:line_search}
 %     C(\theta_t - \eta \nabla_\theta C(\theta_t))
 % \end{equation}
-% Another approach is calculating the function in Eq. \ref{eq:line_search} for different values of $\eta$, and choosing the $\eta$ resulting in the smallest value. This technique is called \textit{line search} \citep[p. 84]{Goodfellow-et-al-2016}.
+% Another approach is calculating the function in Eq. \eqref{eq:line_search} for different values of $\eta$, and choosing the $\eta$ resulting in the smallest value. This technique is called \textit{line search} \citep[p. 84]{Goodfellow-et-al-2016}.
 % As computing every possible value of $\eta$ would resemble an exhaustive search, line search still requires us to manually choose a set of learning rates, and every step in the iteration is limited to choose one of those learning rates.
 A more common alternative is to opt for \textit{adaptive learning rate} algorithms.
 
 % \subsubsection{Adaptive learning rates}
 % Both regular and stochastic gradient descent faces several issues when trying to approach the global minimum.
 In addition to constant learning rates being hard to tune, problematic points in the loss function such as local minima and saddle points can cause the iterative procedure to lose progress \citep[p. 116-117]{Ketkar2017}.
-To address these issues, a series of algorithmic variations have been proposed to replace the step of updating the model (Eq. \ref{eq:updt_std}).
+To address these issues, a series of algorithmic variations have been proposed to replace the step of updating the model (Eq. \eqref{eq:updt_std}).
 % A common technique in these algorithms, is to utilize information from the previous updates to improve the next one.
 % One of the more simple algorithms achieving this, is the \textit{momentum} algorithm.
 % In this algorithm, one uses a fraction of the update from the previous step, to help us guide the next.
@@ -434,8 +435,8 @@ To address these issues, a series of algorithmic variations have been proposed t
 %     \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
 % \end{split}
 % \end{equation}
-% The update-step of AdaGrad is displayed in Eq. \ref{eq:updt_ada}, where $g_t^2$ is $g_t$ squared element-wise.
-% The $\delta$ in Eq. \ref{eq:updt_ada} is a small constant added for numerical stability.
+% The update-step of AdaGrad is displayed in Eq. \eqref{eq:updt_ada}, where $g_t^2$ is $g_t$ squared element-wise.
+% The $\delta$ in Eq. \eqref{eq:updt_ada} is a small constant added for numerical stability.
 % It is commonly chosen to be around the range $10^{-7}$ to $10^{-8}$ \citep[p. 304]{Goodfellow-et-al-2016}.
 % It is also possible to combine the momentum and AdaGrad algorithms, by replacing the gradient in momentum with the update in the last line of the AdaGrad algorithm.
 % The \textit{RMSProp} algorithm is an improved version of the AdaGrad algorithm, designed to keep the learning rate from shrinking to fast in non-convex areas of the cost function \citep[p. 122]{Ketkar2017}.
@@ -446,7 +447,7 @@ To address these issues, a series of algorithmic variations have been proposed t
 %     \theta_{t+1} &= \theta_t - \eta_t \frac{g_t}{\sqrt{G_t} + \delta}
 % \end{split}
 % \end{equation}
-% RMSProp is implemented by the algorithm described in Eq. \ref{eq:updt_rms}.
+% RMSProp is implemented by the algorithm described in Eq. \eqref{eq:updt_rms}.
 % Compared to AdaGrad, RMSProp uses a exponentially decaying average, discarding history from the extreme past \citep[p. 304]{Goodfellow-et-al-2016}.
 % The algorithm introduces a new parameter $\rho$ controlling this moving average.
 % RMSProp can also be combined with momentum as described for the AdaGrad algorithm.
@@ -466,14 +467,14 @@ $m_t$ gives us the weighted first moment estimate, i.e. the exponentially weight
 
 $m_t$ and $v_t$ are initialized respectively $m_0=0$ and $v_0=0$. This initialization induces a zero-bias, especially present in the earlier stages of the optimization. As a result of this bias, the gradients are underestimated, giving little to no guidance of the steps. To alleviate this bias, the bias-correction terms $\hat{m_t}$ and $\hat{v_t}$ are introduced. The correction-terms $1-\beta_i^t$ will start of small, resulting in significant scaling of the moments. As $t$ increases the term will also increase, giving us a form of simulated annealing. The estimates will gradually be scaled less, in line with the bias decreasing as the set of computed gradients increase. 
 
-The update step in Eq. \ref{eq:updt_std} is then replaced by
+The update step in Eq. \eqref{eq:updt_std} is then replaced by
 \begin{equation}
     \theta_{t} = \theta_{t-1} - \eta_t \frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}
 \end{equation}
 
 While Adam has more hyper-parameters than many other learning-rate algorithms, these parameters have intuitive interpretations and require little tuning. 
 % Adam combines a weighted momentum .
-% This method replaces the update-step of Eq. \ref{eq:updt_std} with Eq. \ref{eq:updt_adam}.
+% This method replaces the update-step of Eq. \eqref{eq:updt_std} with Eq. \eqref{eq:updt_adam}.
 % For an intuitive motivation of the use of momentum, one could imagine going full force down a hill (towards the global minimum); with standard implementations of GD or SGD, one could easily be stopped by local minima along the way. 
 By including some of the previous momentum, one heightens the chance of escaping local minima and continuing toward the global minimum. 
 % While optimization algorithms for adaptive learning rates are widely discussed in the literature, there is no general consensus on what algorithms are best for different applications \cite{schaul2014}.
@@ -490,4 +491,45 @@ By including some of the previous momentum, one heightens the chance of escaping
 % As the most important information supplied by the gradient is the direction towards a lower value of the cost function, this method causes no harm by scaling the gradient.
 % The size of the gradient is used only as a hint to how far we might have to move to find the minima, but if this value proposes a very large step, gradient clipping intervenes, making dangerously large steps less likely to happen \citep[p. 286]{Goodfellow-et-al-2016}.
 
-% \subsection{Physics informed neural networks?}
+\subsection{Physics-informed Neural Networks}
+
+The heat equation (Eq. \eqref{eq:diffu}) is a PDE governed by a number of physical laws. 
+Intuitively it would be favorable to integrate the physical constraints into the NN. 
+This is the idea behind Physics-informed Neural Networks (PINNS) \cite{PINNs}.
+The physics of the problem can be integrated by altering the cost function. 
+
+For the heat equations, there are known boundary conditions, initial conditions, and a governing PDE. 
+This can be translated into a three-part cost function. 
+
+By $n$, we denote the batch size. 
+In the following formulas, the index $i$ therefore run over all pairs $(x,t)$ in the grid of data. 
+For $N_x = 100$ points along the x-axis and $N_t = 100$ points along the t-axis, there are in total $100^2$ pairs of values for $(x,t)$. 
+The batch size is a some value smaller than the total number of points as explain in Sec. \ref{sec:gd}.
+%\mia{do we have to explain that it changes if it does not match the tot number?}
+
+The predictions from the NN should satisfy the heat equation. 
+We therefore want to minimize the residuals $r$. 
+Using the notation from Eq. \eqref{u_tu_xx} we have $r = u_{xx} - u_t$. 
+\begin{equation}
+    C_1(x,t) = \frac{1}{n}\sum_{i=1}^{n}(u_{xx} - u_t)^2\mia{insert i}
+\end{equation}
+
+The initial conditions (Eq. \eqref{eq:initial_heat_eq}) make up the second cost function: 
+
+\begin{equation}
+    C_2(x,t) = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-sin(\pi x_i))^2
+\end{equation}
+
+Lastly, the boundary values should be zero as given in Eq. \eqref{eq:boundaries_heat_eq}. 
+This can be expressed as the following cost function: 
+
+\begin{equation}
+    C_3(x,t) = \frac{1}{n}\sum_{i=1}^{n}\left( \hat{y}_i(x = 0)^2+\hat{y}_i(x = L)^2\right)
+\end{equation}
+
+In total, the three cost functions presented above make up the total cost function, such that:
+
+\begin{equation}
+    C(x,t) = C_1(x,t) + C_2(x,t) + C_3(x,t)
+\end{equation}
+
