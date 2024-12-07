@@ -165,7 +165,7 @@ def activations_search(best_n_layers, best_value_layers):
             torch.manual_seed(seed)
 
             final_mse = train(seed, best_n_layers, best_value_layers, activation)
-            list_seeds_act.append(final_mse)
+            list_seeds_act.append(float(final_mse))
             
         new_search_activations_results.append({
             "activation": activation,
@@ -189,7 +189,7 @@ def layers_search(best_n_layers, best_activation):
             torch.manual_seed(seed)
 
             final_mse = train(seed, best_n_layers, value_layers, best_activation)
-            list_seeds_val.append(final_mse)
+            list_seeds_val.append(float(final_mse))
             
         new_search_value_layers_results.append({
             "value_layers": value_layers,
@@ -209,8 +209,8 @@ def n_layers_search(best_value_layers, best_activation):
         for seed in seeds: 
             torch.manual_seed(seed)
 
-            finalmse = train(seed, n_layers, best_value_layers, best_activation)
-            list_seeds_n.append(finalmse)
+            final_mse = train(seed, n_layers, best_value_layers, best_activation)
+            list_seeds_n.append(float(final_mse))
             
         new_search_n_layers_results.append({
             "n_layers": n_layers,
