@@ -1,3 +1,41 @@
 \subsection{Forward Euler}
 
 \subsection{Neural Networks}
+
+Adam is our optimizer of choice and is used for all model. 
+
+
+\mia{bla bla here, i.e. everything else about our nn, optimizer, init, lr, etc. Early stopping??}
+\mia{Nx, Nt, epochs, batch size, initial layer and final layer size, train test split}
+\mia{how many iterations/seeds, choosing all seeds explicitly in order to be able to run parts of the code over again}
+
+We wanted to find the best neural network model and explore the properties of some different hyperparameters. 
+Firstly, we launched a three-dimensional grid search over the number of hidden layers, the size of the hidden layers, and the activation functions. 
+All possible combinations of the values given in Tab. \ref{tab:hyperparams} were used to train a model. 
+We compared the final output of the model to the analytical solution using mean squared error (MSE). 
+\mia{chose the best one}
+
+To further explore the properties of the hyperparameters in Tab. \ref{tab:hyperparams}, we test all the other values of a hyperparameter while keeping the other two hyperparameter values constant as the best values from the grid search. 
+We train each model ten times with different random seeds.
+\mia{explain better}
+For each of the three hyperparameters \textit{number of hidden layers}, \textit{size of hidden layers}, and \textit{activation functions}, we made boxplots with the different values of the hyperparameter along the x-axis and the MSE between the model and the analytical solution along the y-axis. \mia{megafixxxxx}
+
+
+
+
+
+
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+        Number of hidden layers & 1, 2, 3, 4  \\ \hline
+        Size of hidden layers & 10, 25, 50, 100 \\\hline
+        Activation functions & tanh, ReLU, leaky ReLU, sigmoid \\ \hline
+    \end{tabular}
+    \caption{Hyperparameters used in the grid search for the best neural network model \mia{make sure it is correct}}
+    \label{tab:hyperparams}
+\end{table}
+
+\mia{bla bla here}
