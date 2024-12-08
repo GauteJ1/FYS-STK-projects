@@ -1,4 +1,4 @@
-\subsection{Partial differential equations}
+\subsection{Partial differential equations}\label{sec:PDE}
 A differential equation is an expression of a function in terms of it's derivative(s), in such a way that the function itself can be determined through solving the equation \citep[p. 1-4]{tveitoPDE}. I.e. the solution to a differential equation will be the function that satisfies the equation. Differential equations are again split into two main categories, \textit{ordinary differential equations} (ODE) and \textit{partial differential equations} (PDE). An ODE involves only derivatives with regards to a single variable, while PDEs include the partial derivatives of a multi-variable function. This report will only cover PDEs. 
 
 \begin{equation}
@@ -19,26 +19,22 @@ The solution of a PDE can normally be found either analytically by solving the e
 \subsubsection{Initial and boundary conditions}
 Solving a PDE from only an equation as given above will provide a general solution, often involving non-determinable constant terms or coefficients. To further solve for these and find unique solutions, one requires \textit{initial conditions} or \textit{boundary conditions}. For a problem including such conditions, a solution is only valid when satisfying both the equation and additional conditions. 
 
-Initial conditions are normally associated with time-dependent systems, but can be generalized to other dimensions. Such conditions describe the state of a system at the "beginning" of the relevant dimension. For a time-dependent system the condition will then be for $t=0$. Initial conditions for time-dependent systems are commonly given on the form: 
-\begin{equation}
-    u(\bold{x}, 0) = g(\bold{x})
-\end{equation}
-$g$ represents a general expression and can be a scalar, a function, or a vector - depending on the nature of the problem. 
+Initial conditions are normally associated with time-dependent systems, but can be generalized to other dimensions. Such conditions describe the state of a system at the "beginning" of the relevant dimension. For a time-dependent system the condition will then be for $t=0$. 
+% Initial conditions for time-dependent systems are commonly given on the form: 
+% \begin{equation}
+%     u(\bold{x}, 0) = g(\bold{x})
+% \end{equation}
+% $g$ represents a general expression and can be a scalar, a function, or a vector - depending on the nature of the problem. 
 
-Boundary conditions are similar to initial conditions, but instead of describing a state at some starting point the condition now provides the state of the system at some boundary point. These boundary points commonly describe points at the edges of a functions domain. For a PDE of a function $u(x,t)$ on the domain $[0, L]$, the boundary conditions might be stated
-\begin{equation}
-    \begin{split}
-        u(0, t) &= g_1(t), \quad t\geq0 \\
-        u(L, t) &= g_2(t), \quad t\geq0
-    \end{split}
-\end{equation}
-Often for such problems the functions $g_1$ and $g_2$ will evaluate to a scalar, resulting in the following conditions: 
-\begin{equation}
-    \begin{split}
-        u(0, t) = \alpha, \quad t\geq0 \\
-        u(L, t) = \beta, \quad t\geq0
-    \end{split}
-\end{equation}
+Boundary conditions are similar to initial conditions, but instead of describing a state at some starting point the condition now provides the state of the system at some boundary point. These points describe the states at the edges of a functions domain. 
+% For a PDE of a function $u(x,t)$ on the domain $[0, L]$, the boundary conditions might be stated
+% \begin{equation}
+%     \begin{split}
+%         u(0, t) &= g_1(t), \quad t\geq0 \\
+%         u(L, t) &= g_2(t), \quad t\geq0
+%     \end{split}
+% \end{equation}
+
 
 \subsection{Diffusion equation}\label{sec:diffeq}
 \textit{The diffusion equation} is one of the most commonly encountered PDEs, and describes the spread of particles through matter over time \citep[p. 18]{tveitoPDE}. For one dimension, and uniform materials, the general equation is given as:
@@ -72,23 +68,16 @@ Similarly boundary conditions are given on the form:
     \end{split}
 \end{equation}
 The functions $g$ and $h$, describe how the temperature changes over at time at the ends of the rod (the boundary points). 
-All of the functions $f, g, h$ from Eq. \ref{init_cond} and Eq. \ref{bound_cond}, can be functions dependent on x or constants, conditional to the system described by the PDE. 
-
-For a rod of length $L = 1$ the equation becomes:
-\newline Initial conditions:
-\begin{equation}\label{eq:initial_heat_eq}
-    u(x, 0) = \sin(\pi x), \quad 0 < x < L
+$f, g, h$ from Eq. \ref{init_cond} and Eq. \ref{bound_cond}, can either be functions varying by x or constants, depending on the system described by the PDE. 
+Normally the functions will evaluate to a scalar, resulting in the following conditions: 
+\begin{equation}
+    \begin{split}
+        u(0, t) = \alpha, \quad t\geq0 \\
+        u(L, t) = \beta, \quad t\geq0
+    \end{split}
 \end{equation}
 
-Boundary conditions:
-\begin{align}
-\begin{split}\label{eq:boundaries_heat_eq}
-    u(0,t) &= 0, \quad t\geq 0 \\
-    u(L,t) &= 0, \quad t\geq 0
-\end{split}
-\end{align}
-
-\subsubsection{Analytical solution}
+\subsubsection{Analytical solution}\label{sec:anal_sol}
 This report considers the heat equation with $L=1$, the initial condition
 \begin{equation}
 u(x, 0) = \sin(\pi x)    
@@ -169,7 +158,8 @@ This could cause large error, and we might end up with large oscillations that d
 \end{equation}
 Equation \eqref{eq:stability} is the stability requirement of the scheme defined by equation \eqref{eq:diff_scheme} \citep[p. 130]{tveitoPDE}.
 A derivation of this is also included in Appendix \ref{appendixD}.
-\subsection{Neural Networks} 
+
+\subsection{Neural Networks} \label{sec:NN}
 \textit{Parts of this subsection is reused from our previous work \citep[p. 7-10]{project2}.}
 
 % Although methods like linear regression for continuous tasks and logistic regression for classification are suitable for a lot of applications, a more adaptive and versatile method is necessary to broaden the possibilities of use. 
@@ -497,47 +487,43 @@ By including some of the previous momentum, one heightens the chance of escaping
 % As the most important information supplied by the gradient is the direction towards a lower value of the cost function, this method causes no harm by scaling the gradient.
 % The size of the gradient is used only as a hint to how far we might have to move to find the minima, but if this value proposes a very large step, gradient clipping intervenes, making dangerously large steps less likely to happen \citep[p. 286]{Goodfellow-et-al-2016}.
 
-\subsection{Physics-informed Neural Networks}
+\subsection{Physics-informed Neural Networks}\label{sec:PINNs}
 
-The heat equation (Eq. \ref{eq:diffu}) is a PDE governed by a number of physical laws. 
-Intuitively it would be favorable to integrate the physical constraints into the NN. 
+% The heat equation (Eq. \ref{eq:diffu}) is a 
+A PDE is governed by a number of physical laws. 
+Intuitively, when constructing a NN for solving a PDE it would be favorable to integrate these laws in training. By altering the cost function, these constraints can aid in corrections to the network. 
 This is the idea behind Physics-informed Neural Networks (PINNS) \cite{PINNs}.
-The physics of the problem can be integrated by altering the cost function. 
 
-For the heat equations, there are known boundary conditions, initial conditions, and a governing PDE. 
-This can be translated into a three-part cost function. 
+For a heat equation (Eq. \ref{eq:diffu}), there are known boundary conditions, initial conditions, and a governing PDE. 
+This can be translated into a three-part cost function.
 
-By $n$, we denote the batch size. 
-In the following formulas, the index $i$ therefore run over all pairs $(x,t)$ in the grid of data. 
+In the following formulas, $N_i$ denotes the number of points $(x, t)$ for each area $\Omega_i$. Summed over the three cost functions, all pairs $(x,t)$ in the grid of data will be included. 
 For $N_x = 100$ points along the x-axis and $N_t = 100$ points along the t-axis, there are in total $100^2$ pairs of values for $(x,t)$. 
 The batch size is a some value smaller than the total number of points as explain in Sec. \ref{sec:gd}.
 %\mia{do we have to explain that it changes if it does not match the tot number?}
 
-The predictions from the NN should satisfy the heat equation. 
-We therefore want to minimize the residuals $r$. 
-We denote the inner domain as $\Omega = (0, L) \times (0, T)$, with the initial boundary $\partial\Omega_I = (0, L) \times \{0\}$ and side boundaries $\partial\Omega_0 =  \{0\} \times [0, T]$ and $\partial\Omega_L = \{L\} \times [0, T]$.
-Furthermore, we denote by $N$ the number of points $(x, t) \in \Omega$, by $N_I$ the number of points in the initial condition area $(x,t) \in \Omega_I$ and finally by $N_0$ and $N_L$ the number of points on the left and right side boundary $(x,t) \in \Omega_0$ and $(x, t) \in \Omega_L$ respectively.
-Using the notation from Eq. \ref{u_tu_xx} we have $r = u_{xx} - u_t$. 
+% $N_I$ the number of points in the initial condition area $(x,t) \in \Omega_I$, and finally $N_0$ and $N_L$ the number of points on the left and right side boundary $(x,t) \in \Omega_0$ and $(x, t) \in \Omega_L$ respectively.
+
+The predictions from the NN should satisfy the heat equation, and part of the objective should therefor be to minimize the residuals $r$ in compliance with the equation. Using the notation from Eq. \ref{u_tu_xx} this yields $r = u_{xx} - u_t$. With the inner domain denoted as $\Omega = (0, L) \times (0, T)$, we get the cost function: 
 \begin{equation}
     C_1 = \frac{1}{N}\sum_{i=1}^{N}(u_{xx}(x_i,t_i) - u_t(x_i,t_i))^2, \quad (x_i,t_i) \in \Omega
 \end{equation}
+$\Omega$ denotes the inner domain, $\Omega = (0, L) \times (0, T)$.
 
-The initial conditions (Eq. \ref{eq:initial_heat_eq}) make up the second cost function: 
-
+The initial conditions make up the second part of the objective. With the initial boundary $\partial\Omega_I = (0, L) \times \{0\}$, we get the cost function: 
 \begin{equation}
     C_2 = \frac{1}{N_I}\sum_{i=1}^{N_I}(\hat{y}(x_i, t_i)-sin(\pi x_i))^2, \quad (x_i, t_i) \in \Omega_I
 \end{equation}
 
-Lastly, the boundary values should be zero as given in Eq. \ref{eq:boundaries_heat_eq}. 
-This can be expressed as the following cost function: 
 
+Lastly, the boundary values should be upheld. With side boundaries $\partial\Omega_0 =  \{0\} \times [0, T]$ and $\partial\Omega_L = \{L\} \times [0, T]$, this can be expressed as the following cost function: 
 \begin{align}
 \begin{split}
     C_3 =& \frac{1}{N_0}\sum_{i=1}^{N_0}\hat{y}(x_i,t_i)^2+\frac{1}{N_L}\sum_{j=1}^{N_L}\hat{y}(x_j, t_j)^2 \\ &(x_i, t_i)\in \Omega_0, \ (x_j, t_j) \in \Omega_L 
 \end{split}
 \end{align}
 
-In total, the three cost functions presented above make up the total cost function, such that:
+In total, the sum of the three cost functions presented above make up the total cost function, such that:
 
 \begin{equation}
     C = C_1 + C_2 + C_3

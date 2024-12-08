@@ -1,13 +1,36 @@
 For this report, we have computed the analytical solution to the heat equation for a rod of length $1$. 
-Furthermore, we used the finite difference method and a NN to find a numerical solution to the same problem. 
-In this section, we describe our implementations of the two methods. 
+Furthermore, we used the finite difference method and a NN to find numerical solutions to the same problem. 
+In this section, we describe our implementations of the aforementioned numerical methods. 
 
 \subsection{Finite difference method}
 
-We implement the finite difference method as a stepping algorithm through time.
+We implement the finite difference method as an algorithm using a for-loop to "step" through each discrete time-point.
 Using a discrete mesh with distance $\Delta x$ between nodes in the spatial dimension,
 we have $N+1$ nodes in each time step.
 The values for each time step is represented as a vector $u^n \in \mathbb{R}^{N+1}$.
+\begin{align}
+    \label{eq:vec_diff_scheme}
+    u^{n+1} &= u^n + \frac{\Delta t}{\Delta x^2} D^{(2)}u^n \\
+    \label{eq:diff_matrix}
+    D^{(2)} &= 
+    \begin{bmatrix}
+    -2  & 1     &       &        &   0    \\
+     1 & -2 & 1 &  &        \\
+     & \ddots & \ddots & \ddots & \\
+      &     & 1 & -2 & 1 \\
+     0&           &      & 1     & -2
+    \end{bmatrix}
+    %  \begin{bmatrix}
+    % -2  & 1     &       &        &      &   \\
+    %  1 & -2 & 1 &  &        &  \\
+    %  & \ddots & \ddots & \ddots & &    \\
+    %    &  & \ddots & \ddots & \ddots &   \\
+    %   &        &  & 1 & -2 & 1 \\
+    %  &       &        &      & 1     & -2
+    % \end{bmatrix}
+\end{align}
+Solving Eq. \ref{eq:diff_scheme} for $u_j^{n+1}$, and vectorizing $u^n = (u^n_i)_{i=0}^N$, we get Eq. \ref{eq:vec_diff_scheme}.
+The matrix $D^{(2)}$ is the second order differentiation matrix, defined as in equation \ref{eq:diff_matrix}.
 
 \subsection{Neural Networks}
 
@@ -39,6 +62,7 @@ The values for these hyperparameters are held constant across all models and can
 % \mia{initial layer and final layer size, train test split}
 % \mia{how many iterations/seeds, choosing all seeds explicitly in order to be able to run parts of the code over again}
 
+\mia{synes dette er vanskelig å forklare godt}
 We wanted to find the best NN model and explore the properties of some different hyperparameters. 
 First, we launched a three-dimensional grid search over the \textit{number of hidden layers}, the \textit{size of the hidden layers}, and the \textit{activation functions}. 
 The size of the hidden layers dictates the width of the NN, while the number of (hidden) layers gives the depth. 
