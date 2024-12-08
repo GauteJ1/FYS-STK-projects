@@ -10,7 +10,7 @@ The results from the finite difference method and the NN are presented in Fig. \
 The outputs from the models have been interpolated for the plots. \gaute{more}
 There is no noticeable difference by eye between any of the three.  
 This is well reflected in the very low MSE-value for both methods. 
-Compared to the analytical solution, the output of the neural network model has an MSE of $ 3.41 \times 10^{-5}$ while the finite difference method yields an MSE of $2.52 \times 10^{-7}$. 
+Compared to the analytical solution, the output of the neural network model has an MSE of $ 6.71 \times 10^{-6}$ while the finite difference method yields an MSE of $2.52 \times 10^{-7}$. 
 Since the two methods utilize different discretizations of the $(x,t)$ grid, the analytical solution is evaluated only at the respective grid points of each method. 
 Consequently, the MSE calculation for the neural network involves a greater number of points than that of the finite difference method.
 \mia{impact?}
@@ -26,10 +26,10 @@ Consequently, the MSE calculation for the neural network involves a greater numb
 
 We \textit{"slice"} the heatmaps in Fig. \ref{fig:heatmaps} at two specific times, $t = 0.03 s$ and $t = 0.25 s$. 
 This is illustrated as blue lines in Fig. \ref{fig:heatmaps}.
-The resulting temperature values across the x-range is plotted for all three cases in Fig. \ref{fig:timeslices}.
+The resulting temperature values across the x-range are plotted for all three cases in Fig. \ref{fig:timeslices}.
 \mia{something about the choice of the two times, ref the assignment}
 This serves as an additional verification of the previously presented results. 
-The finite difference method seem to match the analytical solution perfectly \mia{strong word?}.
+The finite difference method seems to match the analytical solution perfectly \mia{strong word?}.
 The NN however, is slightly undershooting. 
 The effect of this is more prominent for the later time stamp $t = 0.25 s$. 
 These results reflect well the lower MSE for the finite difference method compared to the NN. 
@@ -42,6 +42,7 @@ These results reflect well the lower MSE for the finite difference method compar
 
 
 The results from the in-depth investigation of the impact of the hyperparameters \textit{number of hidden layers}, the \textit{size of the hidden layers}, and the \textit{activation functions} are presented in Figs. \ref{fig:boxplots_activations}, \ref{fig:boxplots_size_of_layers} and \ref{fig:boxplots_number_of_hidden_layers} respectively. 
+From the three-dimensional grid search, the best values were found to be three hidden layers with size 50 and tanh as the activation function.
 
 
 \begin{figure}[h!]
@@ -56,7 +57,7 @@ As activation functions, sigmoid and tanh outperform ReLU and leakyReLU.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\linewidth]{project_3/plots/value_layers_search.png}
+    \includegraphics[width=1.0\linewidth]{project_3/plots/value_layers_search.pdf}
     \caption{Boxplots showcasing the final MSE value compared to the analytical solution for different sizes for the hidden layers. Each model is run 10 times. \mia{this is wrong plot for now}}
     \label{fig:boxplots_size_of_layers}
 \end{figure}
