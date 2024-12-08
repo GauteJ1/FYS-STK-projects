@@ -511,20 +511,20 @@ The predictions from the NN should satisfy the heat equation.
 We therefore want to minimize the residuals $r$. 
 Using the notation from Eq. \eqref{u_tu_xx} we have $r = u_{xx} - u_t$. 
 \begin{equation}
-    C_1(x,t) = \frac{1}{n}\sum_{i=1}^{n}(u_{xx} - u_t)^2\mia{insert i}
+    C_1(x,t) = \frac{1}{n}\sum_{i=1}^{n}(u_{xx} - u_t)^2\mia{change notation}
 \end{equation}
 
 The initial conditions (Eq. \eqref{eq:initial_heat_eq}) make up the second cost function: 
 
 \begin{equation}
-    C_2(x,t) = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-sin(\pi x_i))^2
+    C_2(x,t) = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-sin(\pi x_i))^2\mia{change notation}
 \end{equation}
 
 Lastly, the boundary values should be zero as given in Eq. \eqref{eq:boundaries_heat_eq}. 
 This can be expressed as the following cost function: 
 
 \begin{equation}
-    C_3(x,t) = \frac{1}{n}\sum_{i=1}^{n}\left( \hat{y}_i(x = 0)^2+\hat{y}_i(x = L)^2\right)
+    C_3(x,t) = \frac{1}{n}\sum_{i=1}^{n}\left( \hat{y}_i(x = 0)^2+\hat{y}_i(x = L)^2\right)\mia{change notation}
 \end{equation}
 
 In total, the three cost functions presented above make up the total cost function, such that:

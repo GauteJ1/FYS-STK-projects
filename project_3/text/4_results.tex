@@ -10,16 +10,15 @@
     \label{fig:heatmaps}
 \end{figure}
 
-\mia{something about the mse (compared to the analytical solution) for the two}
-Comapred to the analytical solution, the output of the neural network model has a MSE of \mia{??} while the finite difference method yields a MSE of \mia{??}. 
+The results from the finite difference method and the NN are presented in Fig. \ref{fig:heatmaps}.
+Compared to the analytical solution, the output of the neural network model has a MSE of $ 3.41 \times 10^{-5}$ while the finite difference method yields a MSE of $2.52 \times 10^{-7}$
 Looking at the respective methods output in Fig. \ref{fig:heatmaps}, their is no noticeable difference by eye between any of the three.  
 This is well reflected in the very low MSE-value for both methods. 
-
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/time_slices_comparison.png}
-    \caption{The temperate for specific times for the analytical solution, as well as the output from the finite difference method and the neural network predictions. The discretization along the x-axis is different for each method. The analytical one is plotted with 1000 points, the finite difference method with 10 points and the neural network predictions with 100. 
+    \caption{\mia{will go back to old format, this is ugly}The temperate for specific times for the analytical solution, as well as the output from the finite difference method and the neural network predictions. The discretization along the x-axis is different for each method. The analytical one is plotted with 1000 points, the finite difference method with 10 points and the neural network predictions with 100. 
     \mia{fix title sizes ++++ and consider having the y-axis range equal for both}}
     \label{fig:timeslices}
 \end{figure}
