@@ -105,17 +105,34 @@ def train(seed, n_layers, value_layers, activation, return_model=False):
         return mse_final
 
 
+
+
+### PLOTS ### = {"fontname":"Arial", "size":32 = {"fontname":"Arial", "size":25}
+
+# plt.rcParams["legend.fontsize"] = 25
+# plt.rcParams["legend.title_fontsize"] = 25
+# plt.rcParams["axes.labelsize"] = 25
+# plt.rcParams["xtick.labelsize"] = 25
+# plt.rcParams["ytick.labelsize"] = 25
+# plt.rcParams["axes.titlesize"] = 32
+
 def box_plot(data_mse, varying_param):
+
+    sns.set_theme()
+    plt.style.use("../plot_settings.mplstyle")
+
     labels = []
     values = [] # final mse for different seeds 
-    number_of_seeds = len(data_mse)
 
     if varying_param == "activation":
         title = "activation functions"
+        plt.figure(figsize=(10, 8)) 
     elif varying_param == "value_layers":
         title = "size of hidden layers"
+        plt.figure(figsize=(10, 8)) 
     elif varying_param == "n_layers":
         title = "number of hidden layers"
+        plt.figure(figsize=(10, 7)) 
     else: 
         raise ValueError("Invalid varying parameter, must be 'activation', 'value_layers' or 'n_layers'")
 
@@ -123,65 +140,78 @@ def box_plot(data_mse, varying_param):
         labels.append(result[varying_param])
         values.append(result["final_mse"])
 
-    plt.boxplot(values, labels=labels, patch_artist=True)
+    # making the boxes pink with black edges
+    plt.boxplot(values, labels=labels, patch_artist=True, 
+                boxprops=dict(facecolor="hotpink", color="black"),
+                capprops=dict(color="black"),
+                whiskerprops=dict(color="black"),
+                flierprops=dict(color="hotpink", markeredgecolor="black"),
+                medianprops=dict(color="black"))
+    
     plt.xlabel(f"{title}")
     plt.ylabel("Final MSE")
-    plt.title(f"Final MSE for different {title}, {number_of_seeds} seeds")
-    plt.savefig(f"../plots/{varying_param}_search.png")
+    plt.title(f"Final MSE for {title}")
+    plt.savefig(f"../plots/{varying_param}_search.pdf")
     plt.show()
 
 
 def heatmaps(model_nn, model_fd):
-    fig, axs = plt.subplots(3, 1, figsize=(5, 15))
+
+    plt.style.use("../plot_settings.mplstyle")
+    plt.rcParams.update({"axes.grid": False})
+
+    fig, axs = plt.subplots(3, 1, figsize=(10, 22), sharex=True, sharey=True, constrained_layout=False)
     x_ex = np.linspace(0, 1, 1000)
     t_ex = np.linspace(0, 0.5, 1000)
     X_ex, T_ex = np.meshgrid(x_ex, t_ex)
     Z_ex = exact_sol(X_ex, T_ex)
 
-    axs[0].contourf(X_ex, T_ex, Z_ex, cmap="hot", levels=500, vmin=0, vmax=1)
+    norm = plt.Normalize(vmin=0, vmax=1)
+    cmap = "hot"
+
+    # Analytical solution
+    im0 = axs[0].contourf(X_ex, T_ex, Z_ex, cmap=cmap, levels=500, norm=norm)
     axs[0].axhline(y=0.03, color="cyan", linestyle="-")
     axs[0].axhline(y=0.25, color="cyan", linestyle="-")
     axs[0].set_title("Analytical Solution")
     axs[0].set_xlabel("Position x []")
     axs[0].set_ylabel("Time [s]")
 
-    # neural network
+    # NN solution
     Nx_nn = 100
     Nt_nn = 100
-
     X_nn = torch.linspace(0, 1, Nx_nn + 1)
     T_nn = torch.linspace(0, 0.5, Nt_nn + 1)
-
     X_nn, T_nn = torch.meshgrid(X_nn, T_nn)
     X_nn_ = X_nn.flatten().reshape([(Nx_nn + 1) * (Nt_nn + 1), 1])
     T_nn_ = T_nn.flatten().reshape([(Nx_nn + 1) * (Nt_nn + 1), 1])
-
     Z_nn = model_nn(X_nn_, T_nn_).detach().reshape([(Nx_nn + 1), (Nt_nn + 1)])
 
-    axs[1].contourf(X_nn, T_nn, Z_nn, cmap="hot", levels=500, vmin=0, vmax=1)
+    im1 = axs[1].contourf(X_nn, T_nn, Z_nn, cmap=cmap, levels=500, norm=norm)
     axs[1].axhline(y=0.03, color="cyan", linestyle="-")
     axs[1].axhline(y=0.25, color="cyan", linestyle="-")
     axs[1].set_title("Neural Network Solution")
     axs[1].set_xlabel("Position x []")
     axs[1].set_ylabel("Time [s]")
 
-    # finite difference
+    # Finite difference solution
     X_fd = np.linspace(0, 1, N + 1)
     T_fd = model_fd["time_steps"]
     X_fd, T_fd = np.meshgrid(X_fd, T_fd)
     Z_fd = model_fd["values"]
 
-    axs[2].contourf(X_fd, T_fd, Z_fd, cmap="hot", levels=500, vmin=0, vmax=1)
+    im2 = axs[2].contourf(X_fd, T_fd, Z_fd, cmap=cmap, levels=500, norm=norm)
     axs[2].axhline(y=0.03, color="cyan", linestyle="-")
     axs[2].axhline(y=0.25, color="cyan", linestyle="-")
     axs[2].set_title("Finite Difference Solution")
     axs[2].set_xlabel("Position x []")
     axs[2].set_ylabel("Time [s]")
 
-    # common colorbar
-    # fig.colorbar(axs[0].contourf(X, T, Z, cmap="hot", levels=500, vmin=0, vmax=1), ax=axs, orientation="horizontal", label="Temperature")
+    fig.subplots_adjust(right=0.85)
+    cbar_ax = fig.add_axes([0.88, 0.15, 0.03, 0.7]) 
+    cbar = fig.colorbar(im2, cax=cbar_ax)
+    cbar.set_label("Temperature [normalized]")
 
-    plt.tight_layout()
     plt.savefig("../plots/heat_map_comparison.png")
     plt.show()
 
@@ -189,13 +219,17 @@ def heatmaps(model_nn, model_fd):
     print("MSE for finite difference compared to analytical solution: ", np.mean((np.array(Z_fd) - np.array(exact_sol(X_fd, T_fd)))**2))
 
 def time_slices(model_nn, model_fd):
+
+    sns.set_theme()
+    plt.style.use("../plot_settings.mplstyle")
+
     # plot x for t = 0.03 and t = 0.25 for all three methods
     # 2x1 subplot, one for each time slice
 
     t1 = 0.03
     t2 = 0.25
 
-    fig, axs = plt.subplots(2, 1, figsize=(8, 15))
+    fig, axs = plt.subplots(2, 1, figsize=(10, 15), sharex=True, sharey=True)
 
     # exact solution
     x = np.linspace(0, 1, 1000) # high number of points to have a smooth curve
@@ -228,24 +262,24 @@ def time_slices(model_nn, model_fd):
     n = len(Y)
     Z = np.array(model_fd["values"])  
    
-    axs[0].plot(X, Z[int(t1 * n), :], label="Finite Difference", color = "hotpink", linestyle=":")
-    axs[1].plot(X, Z[int(t2 * n), :], label="Finite Difference", color = "hotpink", linestyle=":")
+    axs[0].plot(X, Z[int(t1 * n), :], label="Finite Difference", color = "hotpink", marker="*", linestyle="none")
+    axs[1].plot(X, Z[int(t2 * n), :], label="Finite Difference", color = "hotpink", marker="*", linestyle="none")
 
 
-    axs[0].set_title("Time slice at t = 0.03")
-    axs[1].set_title("Time slice at t = 0.25")
+    axs[0].set_title("Temperature as a function of position at t = 0.03 s")
+    axs[1].set_title("Temperature as a function of position at t = 0.25 s")
 
     axs[0].set_xlabel("Position x []")
     axs[1].set_xlabel("Position x []")
 
-    axs[0].set_ylabel("Temperature [Celsius]")
-    axs[1].set_ylabel("Temperature [Celsius]")
+    axs[0].set_ylabel("Temperature [°C]")
+    axs[1].set_ylabel("Temperature [°C]")
 
     axs[0].legend()
     axs[1].legend()
 
     plt.tight_layout()
-    plt.savefig("../plots/time_slices_comparison.png")
+    plt.savefig("../plots/time_slices_comparison.pdf")
     plt.show()
 
 
@@ -308,9 +342,6 @@ if __name__ == "__main__":
 
         if "boxplots" in sys.argv:
 
-            plt.style.use("../plot_settings.mplstyle")
-            sns.set()
-
             # activations
             with open("../results/activation_search.json", "r") as f:
                 activation_search_results = json.load(f)
@@ -330,9 +361,6 @@ if __name__ == "__main__":
             box_plot(n_layers_search_results, "n_layers")
 
         if "time" in sys.argv: 
-
-            plt.style.use("../plot_settings.mplstyle")
-            sns.set()
 
             model_nn = torch.load("../results/best_model.pt")
             

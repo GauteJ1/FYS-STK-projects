@@ -195,6 +195,9 @@ def layers_search(best_n_layers, best_activation):
             "value_layers": value_layers,
             "final_mse": list_seeds_val
             })
+        
+    with open("../results/value_layers_search.json", "w") as f:
+        json.dump(new_search_value_layers_results, f, indent=4)
 
 def n_layers_search(best_value_layers, best_activation):
 

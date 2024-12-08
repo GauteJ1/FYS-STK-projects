@@ -12,11 +12,13 @@ font.family: STIXGeneral
 font.serif: stix
 
 # Axes
-axes.titlesize: 20      
-axes.labelsize: 18    
+axes.titlesize: 30      
+axes.labelsize: 25    
 axes.spines.top: False  
 axes.spines.right: False 
-axes.grid: False         
+xtick.labelsize: 25
+ytick.labelsize: 25
+axes.grid: True         
 axes.grid.axis: both
 axes.grid.which: major
 axes.linewidth: 1.2
