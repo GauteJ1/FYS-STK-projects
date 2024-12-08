@@ -107,16 +107,9 @@ def train(seed, n_layers, value_layers, activation, return_model=False):
 
 
 
-### PLOTS ### = {"fontname":"Arial", "size":32 = {"fontname":"Arial", "size":25}
+### PLOTS ### 
 
-# plt.rcParams["legend.fontsize"] = 25
-# plt.rcParams["legend.title_fontsize"] = 25
-# plt.rcParams["axes.labelsize"] = 25
-# plt.rcParams["xtick.labelsize"] = 25
-# plt.rcParams["ytick.labelsize"] = 25
-# plt.rcParams["axes.titlesize"] = 32
-
-def box_plot(data_mse, varying_param):
+def box_plot_original(data_mse, varying_param):
 
     sns.set_theme()
     plt.style.use("../plot_settings.mplstyle")
@@ -307,6 +300,8 @@ if __name__ == "__main__":
     else:
 
         if "train_best" in sys.argv:
+
+            torch.manual_seed(seed)
 
             with open("../results/grid_search.json", "r") as f:
                 grid_search_results = json.load(f)
