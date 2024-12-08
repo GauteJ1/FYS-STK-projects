@@ -1,21 +1,19 @@
 For this report, we have computed the analytical solution to the heat equation for a rod of length $1$. 
-Furthermore, we have used the finite difference method and a NN to numerically find the solution to the same problem. 
+Furthermore, we used the finite difference method and a NN to find a numerical solution to the same problem. 
 In this section, we describe our implementations of the two methods. 
 
 \subsection{Finite difference method}
 
-
+\gaute{Gaute}
 
 \subsection{Neural Networks}
 
-\mia{rename neural network to NN as Julie has done in theory section}
-
-We have trained several neural network models to predict the heat diffusion from a rod of length 1. \mia{ref to the problem somehow}
-We utilized the PyTorch library \cite{Ansel_PyTorch_2_Faster_2024} \mia{check the citation, taken from previous project} for the neural network code. 
-Adam is our optimizer of choice and has been used for all models. 
-The weights have been initialized using a Kaiming normal distribution \mia{cite or ref}. 
-Furthermore, we have specified a discretization of the $(x,t)$-grid, the batch size and the number of epochs \mia{more?}. 
-The values for these are held constant and can be found in Tab. \ref{tab:valuesfornn}. 
+We have trained several NN models to predict the heat diffusion from a rod of length 1.
+We utilized the PyTorch library \cite{Ansel_PyTorch_2_Faster_2024} for the neural network code. 
+Adam was our optimizer of choice and has been used for all models. 
+The weights were initialized using a Xavier Glorot normal distribution as described in Sec. \ref{sec:NN_init}. 
+Furthermore, we specified a discretization of the $(x,t)$-grid, the batch size, and the number of epochs. 
+The values for these hyperparameters are held constant across all models and can be found in Tab. \ref{tab:valuesfornn}. 
 % \mia{early stopping if we include it}
 
 \begin{table}[h!]
@@ -26,28 +24,27 @@ The values for these are held constant and can be found in Tab. \ref{tab:valuesf
         Epochs & 1000  \\ \hline
         Batch size & 3000 \\\hline
         Learning rate & 0.001 \\ \hline
-        Number of poitns along x-axis (Nx) & 100 \\ \hline
-        Number of poitns along t-axis (Nt) & 100 \\ \hline
+        Number of points along x-axis ($N_x$) & 100 \\ \hline
+        Number of points along t-axis ($N_t$) & 100 \\ \hline
     \end{tabular}
-    \caption{\mia{make sure it is correct + write caption}}
+    \caption{Values of hyperparameters that are common for all models}
     \label{tab:valuesfornn}
 \end{table}
 
 % \mia{initial layer and final layer size, train test split}
 % \mia{how many iterations/seeds, choosing all seeds explicitly in order to be able to run parts of the code over again}
 
-We wanted to find the best neural network model and explore the properties of some different hyperparameters. 
-Firstly, we launched a three-dimensional grid search over the \textit{number of hidden layers}, the \textit{size of the hidden layers}, and the \textit{activation functions}. 
-All possible combinations of the values given in Tab. \ref{tab:hyperparams} were used to train a model. 
-This again is done for three different random seeds. \mia{different way of saying it?}
+We wanted to find the best NN model and explore the properties of some different hyperparameters. 
+First, we launched a three-dimensional grid search over the \textit{number of hidden layers}, the \textit{size of the hidden layers}, and the \textit{activation functions}. 
+The size of the hidden layers dictate the width of the NN, while the number of (hidden) layers give the depth. 
+All possible combinations of the values given in Tab. \ref{tab:hyperparams} were used to train a NN model. 
 We compared the final output of the model to the analytical solution using mean squared error (MSE). 
-The analytical solution was never used during training and was only utilized to evaluate the final models. 
-We choose the best model in terms of MSE and keep track of the hyperparameters that produced it. 
+The analytical solution was never used during training and only utilized to evaluate the final models. 
+We chose the best model in terms of MSE and kept track of the hyperparameters that produced it. 
 
-To further explore the properties of the hyperparameters in Tab. \ref{tab:hyperparams}, we test all the other values of a hyperparameter while keeping the other two hyperparameter values constant as the best values from the grid search. 
-We train each model ten times with different random seeds.
-\mia{explain better}
-For each of the three hyperparameters \textit{number of hidden layers}, \textit{size of hidden layers}, and \textit{activation functions}, we made boxplots with the different values of the hyperparameter along the x-axis and the MSE between the model and the analytical solution along the y-axis. \mia{megafixxxxx}
+To further explore the properties of the hyperparameters in Tab. \ref{tab:hyperparams}, we trained more models. 
+For one of the three hyperparameters in Tab. \ref{tab:hyperparams} at a time, we kept the the best value (found in the grid search) for the other two, and trained ten models for each of the values for the hyperparameter. 
+I.e. for \textit{activation functions} we trained 10 models for each of the four different alternatives while keeping the width and the depth of the network to the best values. 
 
 
 \begin{table}[h!]
@@ -59,6 +56,6 @@ For each of the three hyperparameters \textit{number of hidden layers}, \textit{
         Size of hidden layers & 10, 25, 50, 100 \\\hline
         Activation functions & tanh, ReLU, leaky ReLU, sigmoid \\ \hline
     \end{tabular}
-    \caption{Hyperparameters used in the grid search for the best neural network model \mia{make sure it is correct}}
+    \caption{Hyperparameters used in the grid search for the best neural network model.}
     \label{tab:hyperparams}
 \end{table}

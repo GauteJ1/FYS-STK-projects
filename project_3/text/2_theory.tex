@@ -17,7 +17,6 @@ An example of a possible differential operator is $\mathcal{L}u = \frac{\partial
 The solution of a PDE can normally be found either analytically by solving the equation directly, or through a broad range of numerical methods. These methods usually provide an approximation of the exact solution, but by tweaking parameters the approximate solution will commonly converge towards the exact. Numerical approximations will be further covered in section \ref{sec:FD}.
 
 \subsubsection{Initial and boundary conditions}
-\julie{Need to locate the specific pages to cite}
 Solving a PDE from only an equation as given above will provide a general solution, often involving non-determinable constant terms or coefficients. To further solve for these and find unique solutions, one requires \textit{initial conditions} or \textit{boundary conditions}. For a problem including such conditions, a solution is only valid when satisfying both the equation and additional conditions. 
 
 Initial conditions are normally associated with time-dependent systems, but can be generalized to other dimensions. Such conditions describe the state of a system at the "beginning" of the relevant dimension. For a time-dependent system the condition will then be for $t=0$. Initial conditions for time-dependent systems are commonly given on the form: 
@@ -130,13 +129,13 @@ We proceed by approximating the derivatives of the PDE using Taylor expansions a
 
 In the diffusion equation introduced in section \ref{sec:diffeq}, we approximate the two partial differentiation terms as described in Eq. \ref{eq:fd_dt} and Eq. \ref{eq:fd_dx2}.
 The approximation in Eq. \ref{eq:fd_dt} has error term of order $\mathcal{O}(\Delta t)$, while Eq. \ref{eq:fd_dx2} has error term of order $\mathcal{O}(\Delta x^2)$.
-The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \gaute{ref here}\ref{}.
-The derivation of equation 
+The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \ref{appendixC}.
+
 \begin{equation}
     \label{eq:diff_scheme}
     \frac{u_j^{n+1}-u_j^n}{\Delta t} = \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
 \end{equation}
-\gaute{finish sentence}
+
 Equation \ref{eq:diff_scheme} describes the entire finite difference scheme for the PDE defined in Eq. \ref{eq:diffu}.
 This scheme is a forward Euler scheme, as the approximations of the time derivative between $t_n$ and $t_{n+1}$ are made using values at time $t_n$ on the right side of equation $\ref{eq:diff_scheme}$.
 The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respect to $u_j^{n+1}$.
@@ -169,9 +168,10 @@ This could cause large error, and we might end up with large oscillations that d
     \frac{\Delta t}{\Delta x^2} \leq \frac{1}{2}
 \end{equation}
 Equation \eqref{eq:stability} is the stability requirement of the scheme defined by equation \eqref{eq:diff_scheme} \citep[p. 130]{tveitoPDE}.
-\gaute{A derivation of this is also included in appendix D}
-\subsection{Neural Network 
+A derivation of this is also included in Appendix \ref{appendixD}.
+\subsection{Neural Networks} 
 \textit{Parts of this subsection is reused from our previous work \citep[p. 7-10]{project2}.}
+
 % Although methods like linear regression for continuous tasks and logistic regression for classification are suitable for a lot of applications, a more adaptive and versatile method is necessary to broaden the possibilities of use. 
 As an alternative to finding solutions analytically or using numerical approximation methods, which are specialized for the task, it has become widely popular in recent years to utilize \textit{neural networks} to solve PDE's.
 
@@ -258,22 +258,23 @@ Alternatively expressed as
    \end{cases}    
 \end{equation}
 As opposed to the sigmoid function, ReLU does not \textit{saturate} for large positive values. The saturation of a function is an issue where the values of the function approaches its maximum or minimum, resulting in vanishing gradients and thereby poor convergence. However, ReLU suffers from an issue called \textit{the dying ReLU}. In essence this refers to nodes stagnating at zero; effectively dying. 
-% One solution to the problem of the dying ReLU is to use \textit{leaky ReLU} \citep[p. 190]{Goodfellow-et-al-2016}; 
-% \begin{equation}
-%     f(\bold{z})_i=\max\{0, z_i\}+\alpha\min\{0,z_i\}
-% \end{equation}
-% Here $\alpha$ is typically sat to a small value, like $0.01$. 
-% Similiar to ReLU, Leaky ReLU can alternatively be expressed as; 
-% \begin{equation}
-%     f(\bold{z})_i = \begin{cases} 
-%       z_i & \text{if } z_i > 0 \\
-%       \alpha z_i & \text{if } z_i \leq 0 
-%    \end{cases}
-% \end{equation}
-% This variation of ReLU allows for some portion of the negative values to be included, mitigating the risk of dying nodes. 
+
+One solution to the problem of the dying ReLU is to use \textit{leaky ReLU} \citep[p. 190]{Goodfellow-et-al-2016}; 
+\begin{equation}
+    f(\bold{z})_i=\max\{0, z_i\}+\alpha\min\{0,z_i\}
+\end{equation}
+Here $\alpha$ is typically sat to a small value, like $0.01$. 
+Similiar to ReLU, Leaky ReLU can alternatively be expressed as; 
+\begin{equation}
+    f(\bold{z})_i = \begin{cases} 
+      z_i & \text{if } z_i > 0 \\
+      \alpha z_i & \text{if } z_i \leq 0 
+   \end{cases}
+\end{equation}
+This variation of ReLU allows for some portion of the negative values to be included, mitigating the risk of dying nodes. 
 % Examples: sigmoid, ReLU, leaky ReLU, softmax, identity in last layer?
 
-A third choice, and arguably the most popular one for deep neural networks, is the \textit{tanh} function - also known as the hyperbolic tangent function \citep[Neural Networks]{morten};
+A fourth choice, and arguably the most popular one for deep neural networks, is the \textit{tanh} function - also known as the hyperbolic tangent function \citep[Neural Networks]{morten};
 \begin{equation}
     f(\bold{z})_i = \tanh(z_i)=\frac{e^{z_i}-e^{-z_i}}{e^{z_i}+e^{-z_i}}
 \end{equation}
@@ -294,7 +295,6 @@ Larger (distinct) initial weights will be more effective against symmetry, but w
 
 Arguably the most common method across the field, is random initialization. As the wording entails, the weights and biases are then randomly initialized. The randomness method alleviates the chances of symmetrical nodes, while the distribution chosen can help mitigating the risk of too large weights. The values are often selected from a Gaussian distribution, with mean zero and standard deviation 1. 
 
-\julie{the rest of this subsub is not copy}
 % https://cs231n.github.io/neural-networks-2/
 % Among more specialized methods we find the methods called \textit{Xavier Glorot} \cite{Glorot} and \textit{Kaiming He} \cite{He}, normally denoted just Glorot and He. These are both variations of random initialization, but are furthermore motivated in ensuring that the variance of input to one layer and output to next is the same. By doing so one prevents the variances from growing or shrinking exponentially as they propagate through the layers, which can lead to exploding or vanishing gradients. In modern machine learning, these are the two most widely used methods.
 % \begin{equation}\label{glorot}
@@ -311,7 +311,11 @@ Among more specialized methods we find the methods called \textit{Xavier Glorot}
 \begin{equation}\label{glorot}
     W_{i,j} \sim U\left(-\sqrt{\frac{6}{m+n}},{\sqrt{\frac{6}{m+n}}},\right)
 \end{equation}
-Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in paper piloting this method, it is not uncommon to implement Glorot as a normal distribution. As of now there exists no common consensus of which version is better, neither theoretically or empirically, and thus the choice is left for each specific case.
+Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in paper piloting this method, it is not uncommon to implement Glorot with a normal distribution. The weights are then drawn from the normalized normal distribution provided as:
+\begin{equation}
+    W_{i,j} \sim \mathcal{N}\left(0, \frac{2}{\sqrt{m+n}}\right).
+\end{equation}
+As of now there exists no common consensus of which version is better, neither theoretically or empirically, and thus the choice is left for each specific case.
 
 Glorot is derived specifically for the Sigmoid function, but performs well on other activation functions as well. Especially when accompanying the Sigmoid function, it often yields faster convergence, and sometimes better performance.
 
@@ -355,8 +359,9 @@ where:
 
 By recursively applying this process from the output layer back to the input layer, back-propagation computes all necessary gradients efficiently, enabling gradient descent to adjust each parameter and reduce the cost.
 
-\subsection{Gradient descent \julie{copy}}\label{sec:gd}
+\subsection{Gradient descent}\label{sec:gd}
 \textit{Parts of this subsection is reused from our previous work \citep[p. 4-6]{project2}.}
+
 %morten lecture notes
 For complicated methods like neural networks, optimal values for our parameters are seldom straight forward to obtain, and often numerical approximation is the only feasible approach \citep[Week 40]{morten}.  
 One method for this type of numeric optimization, and arguably the most popular one, is \textit{gradient descent} (GD). In addition to benefits of efficiency and performance, gradient descent triumphs in it's versatility as it can be used for a wide range of optimization problems - including linear regression, logistic regression, neural networks, and many more. 
@@ -510,27 +515,31 @@ The batch size is a some value smaller than the total number of points as explai
 
 The predictions from the NN should satisfy the heat equation. 
 We therefore want to minimize the residuals $r$. 
+We denote the inner domain as $\Omega = (0, L) \times (0, T)$, with the initial boundary $\partial\Omega_I = (0, L) \times \{0\}$ and side boundaries $\partial\Omega_0 =  \{0\} \times [0, T]$ and $\partial\Omega_L = \{L\} \times [0, T]$.
+Furthermore, we denote by $N$ the number of points $(x, t) \in \Omega$, by $N_I$ the number of points in the initial condition area $(x,t) \in \Omega_I$ and finally by $N_0$ and $N_L$ the number of points on the left and right side boundary $(x,t) \in \Omega_0$ and $(x, t) \in \Omega_L$ respectively.
 Using the notation from Eq. \ref{u_tu_xx} we have $r = u_{xx} - u_t$. 
 \begin{equation}
-    C_1(x,t) = \frac{1}{n}\sum_{i=1}^{n}(u_{xx} - u_t)^2\mia{change notation}
+    C_1 = \frac{1}{N}\sum_{i=1}^{N}(u_{xx}(x_i,t_i) - u_t(x_i,t_i))^2, \quad (x_i,t_i) \in \Omega
 \end{equation}
 
 The initial conditions (Eq. \ref{eq:initial_heat_eq}) make up the second cost function: 
 
 \begin{equation}
-    C_2(x,t) = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-sin(\pi x_i))^2\mia{change notation}
+    C_2 = \frac{1}{N_I}\sum_{i=1}^{N_I}(\hat{y}(x_i, t_i)-sin(\pi x_i))^2, \quad (x_i, t_i) \in \Omega_I
 \end{equation}
 
 Lastly, the boundary values should be zero as given in Eq. \ref{eq:boundaries_heat_eq}. 
 This can be expressed as the following cost function: 
 
-\begin{equation}
-    C_3(x,t) = \frac{1}{n}\sum_{i=1}^{n}\left( \hat{y}_i(x = 0)^2+\hat{y}_i(x = L)^2\right)\mia{change notation}
-\end{equation}
+\begin{align}
+\begin{split}
+    C_3 =& \frac{1}{N_0}\sum_{i=1}^{N_0}\hat{y}(x_i,t_i)^2+\frac{1}{N_L}\sum_{j=1}^{N_L}\hat{y}(x_j, t_j)^2 \\ &(x_i, t_i)\in \Omega_0, \ (x_j, t_j) \in \Omega_L 
+\end{split}
+\end{align}
 
 In total, the three cost functions presented above make up the total cost function, such that:
 
 \begin{equation}
-    C(x,t) = C_1(x,t) + C_2(x,t) + C_3(x,t)
+    C = C_1 + C_2 + C_3
 \end{equation}
 
