@@ -4,7 +4,8 @@ In this section, we describe our implementations of the two methods.
 
 \subsection{Finite difference method}
 
-\gaute{Gaute}
+We implement the finite difference method as a stepping algorithm through time.
+Using a discrete mesh with distance $\Delta x$ between nodes in the spac values for each time step is represented as a vector $$
 
 \subsection{Neural Networks}
 
@@ -12,6 +13,8 @@ We have trained several NN models to predict the heat diffusion from a rod of le
 We utilized the PyTorch library \cite{Ansel_PyTorch_2_Faster_2024} for the neural network code. 
 Adam was our optimizer of choice and has been used for all models. 
 The weights were initialized using a Xavier Glorot normal distribution as described in Sec. \ref{sec:NN_init}. 
+As the activation function for the output layer, $identity$ was used, i.e. no activation. 
+Given the problem at hand, the size of the initial layer was $2$ and the output layer $1$. 
 Furthermore, we specified a discretization of the $(x,t)$-grid, the batch size, and the number of epochs. 
 The values for these hyperparameters are held constant across all models and can be found in Tab. \ref{tab:valuesfornn}. 
 % \mia{early stopping if we include it}
@@ -36,8 +39,9 @@ The values for these hyperparameters are held constant across all models and can
 
 We wanted to find the best NN model and explore the properties of some different hyperparameters. 
 First, we launched a three-dimensional grid search over the \textit{number of hidden layers}, the \textit{size of the hidden layers}, and the \textit{activation functions}. 
-The size of the hidden layers dictate the width of the NN, while the number of (hidden) layers give the depth. 
+The size of the hidden layers dictates the width of the NN, while the number of (hidden) layers gives the depth. 
 All possible combinations of the values given in Tab. \ref{tab:hyperparams} were used to train a NN model. 
+The same activation function was used for all hidden layers, which all had the same size. 
 We compared the final output of the model to the analytical solution using mean squared error (MSE). 
 The analytical solution was never used during training and only utilized to evaluate the final models. 
 We chose the best model in terms of MSE and kept track of the hyperparameters that produced it. 
