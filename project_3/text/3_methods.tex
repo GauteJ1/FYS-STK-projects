@@ -1,13 +1,13 @@
 For this report, we have computed the analytical solution to the heat equation for a rod of length $1$. 
-Furthermore, we used the finite difference method and a neural network to find numerical solutions to the same problem. 
+Furthermore, we used a forward Euler finite difference scheme and a physics-informed neural network to find numerical solutions to the same problem. 
 In this section, we describe our implementations of the aforementioned numerical methods. 
 
 \subsection{Finite difference method}
 
-We implement the finite difference method as an algorithm using a for-loop to "step" through each discrete time-point.
+We have implemented the finite difference method as an algorithm using a for-loop to "step" through each discrete time point.
 Using a discrete mesh with distance $\Delta x$ between nodes in the spatial dimension,
-we have $N+1$ nodes in each time step.
-The values for each time step is represented as a vector $u^n \in \mathbb{R}^{N+1}$.
+we have $N$ nodes in each time step.
+We have implemented the values for each time step as a vector $u^n \in \mathbb{R}^{N}$.
 \begin{align}
     \label{eq:vec_diff_scheme}
     u^{n+1} &= u^n + \frac{\Delta t}{\Delta x^2} D^{(2)}u^n \\
@@ -27,7 +27,7 @@ Note that the $j$-th element in $D^{(2)}u^n$ is $u_{j+1}^n - 2u_n^j + u_{j-1}^n$
 In addition to this, we manually set the first and last element in each $u^n$ to zero at each step, in order to incorporate the boundary conditions.
 
 The model takes as input the number of discrete elements in the $x$-direction, and calculates $\Delta x$ based on that.
-We have implemented the function to either also take an input for $\Delta t$ and verifying that it is within the stability criterion, or, if no $\Delta t$ is given, to calculate and use the largest possible $\Delta t$ within the stability criterion.
+We have implemented the function to either also take an input for $\Delta t$ and verify that it is within the stability criterion, or, if no $\Delta t$ is given, to calculate and use the largest possible $\Delta t$ within the stability criterion.
 While this finite difference scheme only requires us to save the previous time step, in order to calculate the next, we keep all time steps for plotting.
 
 \subsection{Neural Networks}

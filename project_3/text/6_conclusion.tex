@@ -1,8 +1,9 @@
-\mia{something about the properties of the width, depth and activation functions of our NN}
-
-Our analysis of the impact of the depth, width, and activation functions of a physics-informed neural network
+Our analysis of the impact of the depth, width, and activation functions of a physics-informed neural network shows that tanh performed best as activation function.
+For the number and sizes of hidden layers, the pure errors from our experiments suggest that larger networks are better, however the improvement above 3 hidden layers with 50 nodes in each is marginal if existent at all.
+The added computation time for networks of this size causes us to conclude that the slightly smaller network is better.
 
 Inferring from our experiments, we have the general impression that finite difference schemes slightly outperform physics-informed neural networks. 
+Indeed, our finite difference scheme with $\Delta x = 1/10$ achieved an MSE of $2.52\times 10^{-7}$, while our best neural network performed slightly worse with an MSE of $6.71 \times 10^{-6}$.
 We experience that more complex approximation methods are needed to accurately model the system described by the PDE; the finite difference method performs better for a more finely granulated range, and the neural network improves for increasing complexity to a certain point. 
 
 In our analysis, both aforementioned methods perform considerably well compared with an exact analytical solution, with the finite difference method slightly outperforming the neural network. 

@@ -2,11 +2,12 @@
 \subsection{Source code}
 
 The code used for this project is available at \url{https://github.com/GauteJ1/FYS-STK-projects}. Instructions for running the code are located in \texttt{project\_3/README.md}.
-All plots and results in this paper are easily reproducible in the Jupyter notebook files in this repository, by following the instructions mentioned above.
+All plots and results in this paper are easily reproducible in from the plotting files in this repository, by following the instructions mentioned above.
+%the Jupyter notebook files in this repository, by following the instructions mentioned above.
 
 \subsection{Derivation of analytical solution}\label{appendixB}
 %\mia{In this section we will be flexing our mathematical muscles by deriving the analytical solution of the diffusion equation.}
-We want to solve the following equation (Note that this is Eq. \ref{eq:diffu} with $L=1$):
+We want to solve the following equation (note that this is Eq. \ref{eq:diffu} with $L=1$):
 \begin{align}\label{ana:equation}
 \frac{\partial^2 u(x,t)}{\partial x^2}  &=\frac{\partial u(x,t)}{\partial t}, \ t>0, \ x\in [0, 1] \\
 \label{ana:init}
@@ -70,7 +71,7 @@ Combining equations \ref{ana:xsol} and \ref{ana:tsol} (by inserting their values
     u(x,t) = \sin(\pi x) e^{-\pi^2 t}
 \end{equation}
 
-To conclude this appendix, we check our solution by inserting it into equations \ref{ana:equation}, \ref{ana:init} and \ref{ana:bound}.
+To conclude this appendix section, we check our solution by inserting it into equations \ref{ana:equation}, \ref{ana:init} and \ref{ana:bound}.
 
 For equation \ref{ana:equation}, we calculate the left and right sides separately.
 \begin{align}
@@ -92,7 +93,7 @@ This concludes the derivation of the analytic solution.
 \clearpage
 
 \subsection{Derivation of finite difference schemes} \label{appendixC}
-This section derives the approximations used for the finite differences scheme as stated in Eq. \eqref{eq:fd_dt} and Eq. \eqref{eq:fd_dx2}, and shows the order of their error.
+In this section, we derive the approximations used for the finite differences scheme as stated in Eq. \eqref{eq:fd_dt} and Eq. \eqref{eq:fd_dx2}, and show the order of their error.
 
 \begin{equation} \label{taylor_t}
     u_j^{n+1} = u(x_j, t_n + \Delta t)
@@ -106,7 +107,7 @@ From this, we get:
     \frac{u_j^{n+1} - u_j^n}{\Delta t} = \frac{\partial}{\partial t}(x_j, t_n) + \mathcal{O}(\Delta t)
 \end{equation}
 
-Hence, we have shown that the approximation in \eqref{eq:fd_dt}is correct, and has an error of order $\mathcal{O}(\Delta x)$.
+Hence, we have shown that the approximation in \eqref{eq:fd_dt} is correct, and has an error of order $\mathcal{O}(\Delta x)$.
 
 We now consider the approximation for the second derivative on $x$, where we will need the following Taylor expansions.
 
@@ -124,7 +125,7 @@ We now consider the approximation for the second derivative on $x$, where we wil
     + \mathcal{O}(\Delta x^4)
 \end{split}
 \end{align}
-Inputting this in the right side of Eq. \eqref{eq:fd_dx2} and removing opposite terms in the two expression, give:
+Inputting this in the right side of Eq. \eqref{eq:fd_dx2} and removing opposite terms in the two expressions give:
 \begin{equation}
     \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2} =
     \frac{\partial^2}{\partial x^2}(x_j, t_n) + \mathcal{O}(\Delta x^2)
@@ -146,9 +147,9 @@ Here, $e^{i k x_j}$ is a general wave, and $A$ is the amplification factor in th
 By inserting Eq. \ref{eq:stability_ansatz} in Eq. \ref{eq:diff_scheme}, we get:
 
 \begin{equation}
-    \frac{A^{n+1}e^{i k x_j} - A^n e^{i k x_{j+1}}}{\Delta t} = A^n \frac{e^{i k x_j} - 2e^{i k x_j} + e^{i k x_{j-1}}}{\Delta x^2} 
+    \frac{A^{n+1}e^{i k x_j} - A^n e^{i k x_{j}}}{\Delta t} = A^n \frac{e^{i k x_{j+1}} - 2e^{i k x_j} + e^{i k x_{j-1}}}{\Delta x^2} 
 \end{equation}
-Using $x_{j+1} = x_j +\Delta x$ and $x_{j-1} = x_j -\Delta x$, in addition to the trigonometric identity $e^{k\Delta x} + e^{-k \Delta x} = 2\cos (k\Delta x)$, together with some algebra, we get:
+Using $x_{j+1} = x_j +\Delta x$ and $x_{j-1} = x_j -\Delta x$, in addition to the trigonometric identity $e^{ik\Delta x} + e^{-ik \Delta x} = 2\cos (k\Delta x)$, together with some algebra, we get:
 \begin{equation}
     A = \frac{\Delta t}{\Delta x^2}(2 \cos(k \Delta x) - 2) + 1    
 \end{equation}
