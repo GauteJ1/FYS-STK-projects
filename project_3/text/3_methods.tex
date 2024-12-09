@@ -14,23 +14,21 @@ The values for each time step is represented as a vector $u^n \in \mathbb{R}^{N+
     \label{eq:diff_matrix}
     D^{(2)} &= 
     \begin{bmatrix}
-    -2  & 1     &       &        &   0    \\
-     1 & -2 & 1 &  &        \\
+    -2  & 1     &       &    \dots    &   0    \\
+     1 & -2 & 1 &  &    \vdots    \\
      & \ddots & \ddots & \ddots & \\
-      &     & 1 & -2 & 1 \\
-     0&           &      & 1     & -2
+     \vdots &     & 1 & -2 & 1 \\
+     0&     \dots      &      & 1     & -2
     \end{bmatrix}
-    %  \begin{bmatrix}
-    % -2  & 1     &       &        &      &   \\
-    %  1 & -2 & 1 &  &        &  \\
-    %  & \ddots & \ddots & \ddots & &    \\
-    %    &  & \ddots & \ddots & \ddots &   \\
-    %   &        &  & 1 & -2 & 1 \\
-    %  &       &        &      & 1     & -2
-    % \end{bmatrix}
 \end{align}
 Solving Eq. \ref{eq:diff_scheme} for $u_j^{n+1}$, and vectorizing $u^n = (u^n_i)_{i=0}^N$, we get Eq. \ref{eq:vec_diff_scheme}.
 The matrix $D^{(2)}$ is the second order differentiation matrix, defined as in equation \ref{eq:diff_matrix}.
+Note that the $j$-th element in $D^{(2)}u^n$ is $u_{j+1}^n - 2u_n^j + u_{j-1}^n$ for $j = 1,2...,N$, matching the right hand side of Eq. \ref{eq:diff_scheme}.
+In addition to this, we manually set the first and last element in each $u^n$ to zero at each step, in order to incorporate the boundary conditions.
+
+The model takes as input the number of discrete elements in the $x$-direction, and calculates $\Delta x$ based on that.
+We have implemented the function to either also take an input for $\Delta t$ and verifying that it is within the stability criterion, or, if no $\Delta t$ is given, to calculate and use the largest possible $\Delta t$ within the stability criterion.
+While this finite difference scheme only requires us to save the previous time step, in order to calculate the next, we keep all time steps for plotting.
 
 \subsection{Neural Networks}
 
