@@ -2,7 +2,7 @@ Solving partial differential equations (PDEs) is crucial for modeling various ph
 While approaches like traditional finite difference schemes provide accurate solutions, physics-informed neural networks (PINNs) offer a promising alternative with greater flexibility for complex and high-dimensional PDEs.
 This paper will compare the performance of a finite difference scheme and PINNs for solving the heat equation in one spatial dimension.
 This is a much-used PDE within physics and provides a good basis for comparing different numerical solving methods for PDEs.
-We implement a forward Euler finite difference method from scratch and use \texttt{pytorch}'s functionality to implement a physics-informed neural network.
+We implement a forward Euler finite difference method from scratch and use PyTorch's functionality to implement a physics-informed neural network.
 We find that the finite difference method outperforms the neural network. 
 Its MSE compared to the analytical solution is $2.52 \times 10^{-7}$, whereas the neural network achieves $ 6.71 \times 10^{-6}$. 
 We conclude that the finite difference method is the preferred method for solving the heat equation, due to a slightly lower MSE and substantially lower computational cost.

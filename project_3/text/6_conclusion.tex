@@ -1,14 +1,15 @@
-Our analysis of the impact of the depth, width, and activation functions of a physics-informed neural network shows that tanh performed best as activation function.
-For the number and sizes of hidden layers, the pure errors from our experiments suggest that larger networks are better, however the improvement above 3 hidden layers with 50 nodes in each is marginal if existent at all.
-The added computation time for networks of this size causes us to conclude that the slightly smaller network is better.
-
 Inferring from our experiments, we have the general impression that finite difference schemes slightly outperform physics-informed neural networks. 
-Indeed, our finite difference scheme with $\Delta x = 1/10$ achieved an MSE of $2.52\times 10^{-7}$, while our best neural network performed slightly worse with an MSE of $6.71 \times 10^{-6}$.
-We experience that more complex approximation methods are needed to accurately model the system described by the PDE; the finite difference method performs better for a more finely granulated range, and the neural network improves for increasing complexity to a certain point. 
+Our finite difference scheme with $\Delta x = 1/10$ achieved an MSE of $2.52\times 10^{-7}$, while our best neural network performed slightly worse with an MSE of $6.71 \times 10^{-6}$.
 
-In our analysis, both aforementioned methods perform considerably well compared with an exact analytical solution, with the finite difference method slightly outperforming the neural network. 
+% We experience that a certain level of complexity is needed in the approximation methods to accurately model the system described by the PDE. For the finite difference method this entails that it performs better for a more finely granulated range.
+Our analysis of the impact of the depth, width, and activation functions of the physics-informed neural networks shows that tanh performed best as activation function.
+For the number and sizes of hidden layers, the pure errors from our experiments suggest that larger networks are better,  however the improvement beyond 3 hidden layers with 50 nodes in each is marginal if existent at all.
+The added computation time for networks of this size causes us to conclude that the slightly smaller network is better for our application.
+
+In our analysis, both aforementioned methods perform well compared with an exact analytical solution, with the finite difference method slightly outperforming the neural network. 
 The fact that the finite difference method provides a more intuitive approach, and requires less computational power is also to be taken into consideration.
 
-It should be noted that in practical applications the neural network would likely be provided additional data to be trained on, possibly leading to a network outperforming a finite difference scheme. In this case, one might still prefer the finite difference scheme, depending on computational cost and interpretability. 
+It should be noted that in practical applications the neural network would likely be provided additional data to be trained on, possibly leading to the neural network outperforming finite difference schemes.
+One might still prefer the finite difference scheme approach, depending on computational cost and interpretability. 
 
-We conclude that finite difference schemes are preferred over physics-informed neural networks, given that the full equation, and sufficient initial and boundary conditions for the problem, are available. 
+We conclude that finite difference schemes are preferred over physics-informed neural networks, given that the full equation, and sufficient initial and boundary conditions for the problem, are available, and the problem is simple enough to be implemented with finite difference schemes relatively easily.

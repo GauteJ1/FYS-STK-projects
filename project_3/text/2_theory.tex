@@ -60,15 +60,15 @@ Initial conditions for the heat equation are given on the form:
     u(x,0) = f(x),
 \end{equation}
 where $f(x)$ is a function describing how the heat is disbursed through the rod at $t=0$.
-Similarly boundary conditions are given on the form: 
+Similarly, boundary conditions are given on the form: 
 \begin{equation}\label{bound_cond}
     \begin{split}
-        u(0, t) = g(x), \quad t \ge 0 \\
-        u(L, t) = h(x), \quad t \ge 0
+        u(0, t) = g(t), \quad t \ge 0 \\
+        u(L, t) = h(t), \quad t \ge 0
     \end{split}
 \end{equation}
 The functions $g$ and $h$, describe how the temperature changes over at time at the ends of the rod (the boundary points). 
-$f, g, h$ from Eq. \ref{init_cond} and Eq. \ref{bound_cond}, can either be functions varying by x or constants, depending on the system described by the PDE. 
+$f, g, h$ from Eq. \ref{init_cond} and Eq. \ref{bound_cond}, can either be functions varying by x or t respectively, or constants, depending on the system described by the PDE. 
 Normally the functions will evaluate to a scalar, resulting in the following conditions: 
 \begin{equation}
     \begin{split}
@@ -100,15 +100,16 @@ By insertion in the PDE and it's conditions this is easily verified. The full de
 
 \subsection{Finite difference schemes}\label{sec:FD}
 While the analytical solution is relatively simple to find for some PDEs, such as the diffusion equation shown above, other PDEs are difficult or impossible to solve analytically.
-When considering these PDEs, we usually find an approximation to the solution.
+When considering these PDEs, one usually finds an approximation to the solution.
 There are many ways of doing this, including collocation methods, Galerkin methods, finite element methods, and finite difference schemes.
-Due to them being easy to implement, flexible, and theoretically approachable, finite difference schemes are very popular \citep[p. 119]{tveitoPDE}.
+As they are easy to implement, flexible, and theoretically approachable, finite difference schemes are very popular \citep[p. 119]{tveitoPDE}.
 
 The main idea behind finite difference schemes is to divide your domain into discrete points.
-Given a PDE $\mathcal{L}u=f$, $u : [0, L] \times [0, T] \to \mathbb{R}$, we start by creating discrete points $(x_j, t_n) = (j \Delta x, n\Delta t)$, where $\Delta x = L/N_x$ and $\Delta t = T/N_t$.
-We denote the approximation at each point by $u_j^n = u(x_j, t_n)$.
+Given a PDE $\mathcal{L}u=f$, $u : [0, L] \times [0, T] \to \mathbb{R}$, one starts by creating a mesh of discrete points $(x_j, t_n) = (j \Delta x, n\Delta t)$, where $\Delta x = L/N_x$ and $\Delta t = T/N_t$.
+$N_x$ and $N_t$ are the number of elements in each dimension.
+The approximation at each point is denoted by $u_j^n = u(x_j, t_n)$.
 
-We proceed by approximating the derivatives of the PDE using Taylor expansions around $u_j^n$.
+Taylon expansions around $u_j^n$ are then used to approximate the derivatives of the PDE.
 \begin{align}
     \label{eq:fd_dt}
     \frac{\partial u}{\partial t}(x_j, t_n) &= \frac{u_j^{n+1}-u_j^n}{\Delta t} \\
@@ -116,9 +117,9 @@ We proceed by approximating the derivatives of the PDE using Taylor expansions a
     \frac{\partial^2 u}{\partial x^2}(x_j, t_n) &= \frac{u_{j+1}^n - 2u_j^n + u_{j-1}^n}{\Delta x^2}
 \end{align}
 
-In the diffusion equation introduced in section \ref{sec:diffeq}, we approximate the two partial differentiation terms as described in Eq. \ref{eq:fd_dt} and Eq. \ref{eq:fd_dx2}.
+In the diffusion equation introduced in section \ref{sec:diffeq}, the two partial differentiation terms are approximated as described in Eq. \ref{eq:fd_dt} and Eq. \ref{eq:fd_dx2}.
 The approximation in Eq. \ref{eq:fd_dt} has error term of order $\mathcal{O}(\Delta t)$, while Eq. \ref{eq:fd_dx2} has error term of order $\mathcal{O}(\Delta x^2)$.
-The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ are included in Appendix \ref{appendixC}.
+The derivation of both approximations from Taylor expansions of the function $u(x, t)$ around $(x_j, t_n)$ is included in Appendix \ref{appendixC}.
 
 \begin{equation}
     \label{eq:diff_scheme}
@@ -127,7 +128,7 @@ The derivation of both approximations from Taylor expansions of the function $u(
 
 Equation \ref{eq:diff_scheme} describes the entire finite difference scheme for the PDE defined in Eq. \ref{eq:diffu}.
 This scheme is a forward Euler scheme, as the approximations of the time derivative between $t_n$ and $t_{n+1}$ are made using values at time $t_n$ on the right side of equation $\ref{eq:diff_scheme}$.
-The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respect to $u_j^{n+1}$.
+The scheme "steps" through time, by solving Eq. \ref{eq:diff_scheme} with respect to $u_j^{n+1}$.
 \begin{figure}[h]
         \centering
         \begin{tikzpicture}
@@ -146,24 +147,25 @@ The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respec
         \caption{The stencil of the scheme defined by Eq. \ref{eq:diff_scheme}.} 
         \label{fig:fd_stencil}  
     \end{figure}
-The scheme can be viewed as a stencil, as shown in Fig. \ref{fig:fd_stencil}, where the values at time $t_n$ are known and used to calculate the values at time $t_{n+1}$.
+    
+It can be viewed as a stencil on the discrete mesh grid, as shown in Fig. \ref{fig:fd_stencil}, where the values at time $t_n$ are known and used to calculate the values at time $t_{n+1}$.
 Note that all values at time $t_0$ are known from the initial condition.
 \subsubsection{Stability}\label{sec:stability}
-Considering the stability of the approximation obtained from the scheme, is important when using finite difference schemes to solve PDEs.
-Using a very small value of $\Delta x$ compared to $\Delta t$, leads to the second derivative of $x$ at the right side of equation \eqref{eq:diff_scheme} being very accurate for a small area of the function, while the time step it is used for is really big.
-This could cause large error, and we might end up with large oscillations that do not match the analytical solution.
+When using finite difference schemes to solve PDEs, it's important to consider the stability of the approximation obtained from the scheme.
+Using a very small value of $\Delta x$ compared to $\Delta t$, leads to the second derivative of $x$ (at the right side of equation \ref{eq:diff_scheme}) being very accurate for only a small area of the function, while the time step it is used for is really big.
+This could cause large errors, and one might end up with big oscillations that do not match the analytical solution.
 \begin{equation}
     \label{eq:stability}
     \frac{\Delta t}{\Delta x^2} \leq \frac{1}{2}
 \end{equation}
-Equation \eqref{eq:stability} is the stability requirement of the scheme defined by equation \eqref{eq:diff_scheme} \citep[p. 130]{tveitoPDE}.
+Equation \ref{eq:stability} is the stability requirement of the scheme defined by equation \ref{eq:diff_scheme} \citep[p. 130]{tveitoPDE}.
 A derivation of this is also included in Appendix \ref{appendixD}.
 
 \subsection{Neural Networks} \label{sec:NN}
-\textit{Parts of this subsection is reused from our previous work \citep[p. 7-10]{project2}.}
+\textit{Parts of this subsection are reused from our previous work \citep[p. 7-10]{project2}.}
 
 % Although methods like linear regression for continuous tasks and logistic regression for classification are suitable for a lot of applications, a more adaptive and versatile method is necessary to broaden the possibilities of use. 
-As an alternative to finding solutions analytically or using numerical approximation methods, which are specialized for the task, it has become widely popular in recent years to utilize \textit{neural networks} to solve PDE's.
+As an alternative to finding solutions analytically or using numerical approximation methods, which are specialized for the task, it has become widely popular in recent years to utilize \textit{neural networks} (NNs) to solve PDEs.
 
 % \textit{Neural networks} (NN) make no assumptions about underlying data-structures, and can be fit for a broad range of tasks, including regression and classification \citep[Neural networks]{morten}. Through \textit{layers} of \textit{nodes} (often called \textit{units}), the network imitates the process of neurons firing in the brain, and can be fit to many complex problems.
 
@@ -174,7 +176,7 @@ As an alternative to finding solutions analytically or using numerical approxima
     \label{fig:NN}
 \end{figure}
 
-A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes or units, as visualized in Fig. \ref{fig:NN}. The number of nodes in a layer is denoted as the width of the layer, and the number of layers in a network is denoted the depth of the network. 
+A general NN consists of an input layer, $k$ hidden layers and an output layer - all consisting of a varying number of nodes or units, as visualized in Fig. \ref{fig:NN}. The number of nodes in a layer is often called the width of the layer, and the number of layers in a network is referred to as the depth of the network. 
 Hidden layers are not hidden in the sense that they're not a visible part of the model; but rather that when using a trained model one never interacts with anything past the input and output layers, thus the internal nodes appear as hidden. 
 Between the nodes we have connections called \textit{weights}. These determine the influence from one particular node to another. 
 
@@ -186,7 +188,7 @@ The weighted model stems from the mathematical function for an artificial neuron
 
 Here $f$ is some \textit{activation function} that takes a weighted sum of $N$ inputs and maps them to an output. Activation functions are further covered in the next subsection, \ref{sec:activation_func}.
 
-How many layers an NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[Ch.1]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a "better" architecture, however more complex tasks are commonly better solved by more "complex" networks; i.e. more layers and more nodes. 
+How many layers an NN has, how many nodes each layer has and how they're connected make up what's called the \textit{architecture} of the neural network \citep[Ch.1]{nielsen}. These decisions are normally made case-by-case depending on the task at hand, input size, desired output size, etc. Apart from compatible dimensions there are no clear choices for what constitutes a ``better" architecture, however more complex tasks are commonly better solved by more ``complex" networks; i.e. more layers and more nodes. 
 
 The simplest model for an artificial neural network is called a \textit{feed forward neural network} (FFNN), where logically enough the flow of information moves only in one direction; forward. Consider for instance a FFNN with one hidden layer. The input-layer receives the input $X$, which is then passed through the first weights $W_0$ to the second layer. Here the weighted sum is passed through an activation function $f_1$ and passed via $W_1$ to the output layer. In the output layer the weighted sum is passed through $f_2$, before finally being output from the model. 
 For each node $n$ the process can be formally expressed as:
@@ -195,7 +197,7 @@ For each node $n$ the process can be formally expressed as:
 \begin{equation}
     y = f\left( \sum_{i=0}^N w_{0n}x_i + b\right)
 \end{equation}
-\citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew "how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and altering either weights or biases directly is not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
+\citep[p.17]{Ketkar2017}. Here one can clearly see the similarities to Eq. \ref{artifical_neuron}. $b$ represents what is called a \textit{bias term}. Looking back to the structural similarities of a biological NN, the bias allows one to skew ``how easy it is to get the neurons to fire". I.e., by altering the bias terms one can shift the the output values in a desired direction - in theory. This is however easier said than done, and altering either weights or biases directly is not common procedure. Instead one relies on a good choice of cost function and the training of the NN to produce fitting parameters. 
 
 
 \subsubsection{Activation functions}\label{sec:activation_func}
@@ -216,10 +218,10 @@ The entire network could then be expressed:
         &=\bold{W}^T\bold{x}+b
     \end{split}
 \end{align}
-In other words, the entire NN itself is just one big chain of all it's weights and activation functions nested. Were the activation functions to be linear the network itself would be linear, as shown in the example above \citep[p.168]{Goodfellow-et-al-2016}. This undermines the fundamental purpose of using an NN, as it's generally favorable with simpler models for linear problems. 
+In other words, the entire NN itself is just one big chain of all it's weights and activation functions nested. Were the activation functions to be linear the network itself would be linear, as shown in the example above \citep[p.168]{Goodfellow-et-al-2016}. This undermines the fundamental purpose of using an NN, as it's generally favorable with simpler models for linear problems \cite{project2}. 
 
 Beyond non-linearity there are few hard restrictions on the activation functions, granted some are to be preferred.
-The rest of this section will use the convention of $\bold{z}$ representing the vector of "raw output" from the previous layer. Raw output simply refers to the values before they're passed through the activation function. An activation function applied to the entire vector, is simply applied element-wise - i.e. the input and output are congruent and
+The rest of this section will use the convention of $\bold{z}$ representing the vector of ``raw output" from the previous layer. Raw output simply refers to the values before they're passed through the activation function. An activation function applied to the entire vector, is simply applied element-wise - i.e. the input and output are congruent and
 \begin{equation}
     f(\bold{z})_i = f(z_i)
 \end{equation}
@@ -301,21 +303,17 @@ Among more specialized methods we find the methods called \textit{Xavier Glorot}
 \begin{equation}\label{glorot}
     W_{i,j} \sim U\left(-\sqrt{\frac{6}{m+n}},{\sqrt{\frac{6}{m+n}}},\right)
 \end{equation}
-Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in paper piloting this method, it is not uncommon to implement Glorot with a normal distribution. The weights are then drawn from the normalized normal distribution provided as:
+Eq. \ref{glorot} shows the normalized uniform distribution from which the weights are selected in Glorot. $W_{i,j}$ denote the weights between the $i$-th and $j$-th layers, and $m$ and $n$ the size of the $i$-th and $j$-th layer respectively. Although the method was proposed as given above in the paper piloting this method, it is not uncommon to implement Glorot with a normal distribution. The weights are then drawn from the normalized normal distribution provided as:
 \begin{equation}
     W_{i,j} \sim \mathcal{N}\left(0, \frac{2}{\sqrt{m+n}}\right).
 \end{equation}
-As of now there exists no common consensus of which version is better, neither theoretically or empirically, and thus the choice is left for each specific case.
+As of now there exists no common consensus of which version is better, neither theoretically nor empirically, and thus the choice is left for each specific case.
 
 Glorot is derived specifically for the Sigmoid function, but performs well on other activation functions as well. Especially when accompanying the Sigmoid function, it often yields faster convergence, and sometimes better performance.
 
 \subsubsection{Choice of cost function for neural networks}
 In addition to initialization of weights and biases, the training of the model largely depends on choice of cost function, which again depends on the task at hand. How a cost function looks has in itself no restrictions, but some are more suited than others.
-The choice of cost function is arbitrarily what dictates the landscape that is navigated in the optimization of a network. Most popular optimization techniques require a cost function that can be expressed in terms of a loss function, i.e. that can be computed for each data point on its own. 
-For networks to be used on regression problems one commonly uses \textit{Mean Squared Error} (MSE), given as: 
-\begin{equation}\label{mse}
-    \text{MSE} = \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y}_i)^2.
-\end{equation}
+The choice of cost function is arbitrarily what dictates the landscape that is navigated in the optimization of a network. Most popular optimization techniques require a cost function that can be expressed in terms of a loss function, i.e. that can be computed for each data point on its own. Commonly the cost function will be chosen in accordance to the problem, allowing penalization specialized for the issue at hand. Specialized cost functions will be further discussed in Sec. \ref{sec:PINNs}.
 
 \subsubsection{Training the network}
 For the actual training of the network, in other words finding the optimal weights and biases, one normally uses gradient descent (see section \ref{sec:gd}). The first step in this process is finding the gradients of the cost function to navigate the parameter landscape. As each layer of a NN can be expressed as a function of its previous layer, one can imagine these expressions to quickly become quite complicated. Furthermore we have to find the partial derivatives for all weights and biases. The most used solution to this intricate problem, is called \textit{backpropagation} \citep[p. 200]{Goodfellow-et-al-2016}. While many libraries provide implementations of automatic gradients, such as PyTorch's Autograd \cite{Ansel_PyTorch_2_Faster_2024} and Tensorflow's GradiantTape \cite{Abadi_TensorFlow_Large-scale_machine_2015}, it is beneficial to understand how manual backpropagation works. Not only is this useful for debugging and ensuring code behaves as expected, but it is essential for understanding the training process. 
@@ -350,11 +348,11 @@ where:
 By recursively applying this process from the output layer back to the input layer, back-propagation computes all necessary gradients efficiently, enabling gradient descent to adjust each parameter and reduce the cost.
 
 \subsection{Gradient descent}\label{sec:gd}
-\textit{Parts of this subsection is reused from our previous work \citep[p. 4-6]{project2}.}
+\textit{Parts of this subsection are reused from our previous work \citep[p. 4-6]{project2}.}
 
 %morten lecture notes
 For complicated methods like neural networks, optimal values for our parameters are seldom straight forward to obtain, and often numerical approximation is the only feasible approach \citep[Week 40]{morten}.  
-One method for this type of numeric optimization, and arguably the most popular one, is \textit{gradient descent} (GD). In addition to benefits of efficiency and performance, gradient descent triumphs in it's versatility as it can be used for a wide range of optimization problems - including linear regression, logistic regression, neural networks, and many more. 
+One method for this type of numeric optimization, and arguably the most popular one, is \textit{gradient descent} (GD). In addition to benefits of efficiency and performance, gradient descent triumphs in it's versatility as it can be used for a wide range of optimization problems - including linear regression, logistic regression, neural networks. 
 
 Imagining the graph of a cost function as a hilly landscape; global and local minima as valleys, poorer solutions as hills - GD seeks to land in the deepest valley, i.e. the global minimum. 
 By looking at the slope of the landscape one can keep taking steps in the steepest descending direction, and this way hopefully end up at the global minimum.
@@ -399,7 +397,7 @@ This learning rate is a positive scalar, usually chosen of small value to make e
 As a gradient is only representative for the change at the exact point of calculation, making too large of an update to the model based on a gradient is risky. By changing the model to much, i.e. moving it too far in the landscape, one could be moving to areas of the function that are topographically very different than the starting point. In the worst case, a large step could overshoot the minimum.
 
 While having too large of a learning rate could result in overshooting the minimum, and hence not reaching convergence; too small of a learning rate also has it's disadvantages. 
-The smaller the learning rate, the more iterations are required to approach the minima, causing the training to become computationally heavier. To find a balance between the two, some opt for choosing a learning rate by trial error.
+The smaller the learning rate, the more iterations are required to approach the minima, causing the training to become computationally heavier. To find a balance between the two, some opt for choosing a learning rate by trial and error.
 % One might still elect to choose a constant model by trial and error.
 % Since the drawbacks of a low learning rate are most unfavorable in the early iterations, and a too high learning rate mostly causes problems in the later iterations, an intuitive solution is to start with a higher learning rate and reduce it after a set number of iterations.
 % \begin{equation}\label{eq:line_search}
@@ -448,8 +446,8 @@ To address these issues, a series of algorithmic variations have been proposed t
 % The algorithm introduces a new parameter $\rho$ controlling this moving average.
 % RMSProp can also be combined with momentum as described for the AdaGrad algorithm.
 
-One of the most widely used adaptive learning rate optimization algorithms in the recent years is \textit{Adam} - Adaptive Moment Estimation.
-This algorithm computes the updates by maintaining weighted averages of both $g_t$ and $g_t^2$ \citep[p. 123]{Ketkar2017}. 
+One of the most widely used optimization algortihms utilizing an adaptive learning rate is \textit{Adam} - Adaptive Moment Estimation.
+This algorithm computes the updates by maintaining weighted averages of both the gradient $g_t$ and the gradient squared $g_t^2$ \citep[p. 123]{Ketkar2017}. 
 \begin{equation}\label{eq:updt_adam}
 \begin{split}
     g_t &= \nabla_{\theta}C(\theta_{t-1})   \\
@@ -459,7 +457,7 @@ This algorithm computes the updates by maintaining weighted averages of both $g_
     \hat{v}_t &= \frac{v_t}{1-\beta_2^t} \\
 \end{split}
 \end{equation}
-$m_t$ gives us the weighted first moment estimate, i.e. the exponentially weighted moving average of the gradients - essentially the mean of the gradients over time, but giving more importance to later gradients \cite{kingba}. $v_t$ is the second moment estimate, i.e. the exponentially weighted moving average - essentially giving an estimate of the variance of gradients over time, again with more importance to later gradients. $\beta_1$ and $\beta_2$ range between $[0,1]$; the higher the value, the more weight is given to the latest gradient. Commonly values are chosen close to one. 
+$m_t$ gives us the weighted first moment estimate, i.e. the exponentially weighted moving average of the gradients - essentially the mean of the gradients over time, but giving more importance to later gradients \cite{kingba}. $v_t$ is the second moment estimate, i.e. the exponentially weighted moving average of the squared gradients - essentially giving an estimate of the variance of gradients over time, again with more importance to later gradients. $\beta_1$ and $\beta_2$ are called decay parameters, and range between $[0,1]$; the higher the value, the less weight is given to the latest gradient. Commonly values are chosen close to one. 
 
 $m_t$ and $v_t$ are initialized respectively $m_0=0$ and $v_0=0$. This initialization induces a zero-bias, especially present in the earlier stages of the optimization. As a result of this bias, the gradients are underestimated, giving little to no guidance of the steps. To alleviate this bias, the bias-correction terms $\hat{m_t}$ and $\hat{v_t}$ are introduced. The correction-terms $1-\beta_i^t$ will start of small, resulting in significant scaling of the moments. As $t$ increases the term will also increase, giving us a form of simulated annealing. The estimates will gradually be scaled less, in line with the bias decreasing as the set of computed gradients increase. 
 
@@ -492,19 +490,19 @@ By including some of the previous momentum, one heightens the chance of escaping
 % The heat equation (Eq. \ref{eq:diffu}) is a 
 A PDE is governed by a number of physical laws. 
 Intuitively, when constructing a NN for solving a PDE it would be favorable to integrate these laws in training. By altering the cost function, these constraints can aid in corrections to the network. 
-This is the idea behind Physics-informed Neural Networks (PINNs) \cite{PINNs}.
+This is the idea behind physics-informed neural networks (PINNs) \cite{PINNs}.
 
 For the heat equation (Eq. \ref{eq:diffu}), there are known boundary conditions, initial conditions, and a governing PDE. 
 This can be translated into a three-part cost function.
 
-In the following formulas, $N_i$ denotes the number of points $(x, t)$ for each area $\Omega_i$. Summed over the three cost functions, all pairs $(x,t)$ in the grid of data will be included. 
+In the following formulas, $N_i$ denotes the number of points $(x, t)$ for each area $\Omega_i$. Summed over the three cost functions, all points $(x,t)$ in the grid of data will be included. 
 For $N_x = 100$ points along the x-axis and $N_t = 100$ points along the t-axis, there are in total $100^2$ pairs of values for $(x,t)$. 
-The batch size is a some value smaller than the total number of points as explain in Sec. \ref{sec:gd}.
+The batch size is some value smaller than the total number of points as explained in Sec. \ref{sec:gd}.
 %\mia{do we have to explain that it changes if it does not match the tot number?}
 
 % $N_I$ the number of points in the initial condition area $(x,t) \in \Omega_I$, and finally $N_0$ and $N_L$ the number of points on the left and right side boundary $(x,t) \in \Omega_0$ and $(x, t) \in \Omega_L$ respectively.
 
-The predictions from the NN should satisfy the heat equation, and part of the objective should therefor be to minimize the residuals $r$ in compliance with the equation. Using the notation from Eq. \ref{u_tu_xx} this yields $r = u_{xx} - u_t$. With the inner domain denoted as $\Omega = (0, L) \times (0, T)$, we get the cost function: 
+The predictions from the NN should satisfy the heat equation, and part of the objective should therefore be to minimize the residuals $r$ in compliance with the equation. Using the notation from Eq. \ref{u_tu_xx} this yields $r = u_{xx} - u_t$. With the inner domain denoted as $\Omega = (0, L) \times (0, T)$, we get the cost function: 
 \begin{equation}
     C_1 = \frac{1}{N}\sum_{i=1}^{N}(u_{xx}(x_i,t_i) - u_t(x_i,t_i))^2, \quad (x_i,t_i) \in \Omega
 \end{equation}

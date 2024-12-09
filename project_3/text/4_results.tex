@@ -2,7 +2,7 @@
 
 To obtain the optimal neural network, we need to tune a series of hyperparameters, namely the \textit{number of hidden layers}, the \textit{size of the hidden layers}, as well as the choice of \textit{activation function}. The results from the in-depth exploration of these are presented in Figs. \ref{fig:boxplots_activations}, \ref{fig:boxplots_size_of_layers} and \ref{fig:boxplots_number_of_hidden_layers} respectively. 
 From the three-dimensional grid search, the best values were found to be three hidden layers with size 50, and tanh as activation function.
-Each of the figures (\ref{fig:boxplots_activations}, \ref{fig:boxplots_size_of_layers}, \ref{fig:boxplots_number_of_hidden_layers}) are made by keeping two of the three abovementioned hyperparameters constant, while varying the third as described on each $x$-axis.
+Each of the figures (\ref{fig:boxplots_activations}, \ref{fig:boxplots_size_of_layers}, \ref{fig:boxplots_number_of_hidden_layers}) are made by keeping two of the three aforementioned hyperparameters constant, while varying the third as described on each $x$-axis.
 The values for the constant hyperparameters are those producing the best model in the 3D grid search, i.e. layer size 50, 3 hidden layers, and tanh as activation function in the hidden layers.
 The MSE of the best neural network is $ 6.71 \times 10^{-6}$.\label{best_nn_mse}
 For each configuration, we have trained 10 separate models, using different seeds.
@@ -21,7 +21,7 @@ Hence the results should be robust with respect to random initializations.
 % Mean MSE for activation = sigmoid: 0.010715706355404109
 
 As activation functions, sigmoid and tanh outperform ReLU and leakyReLU. 
-The two former force the raw output from a node to a set range of values, $(0,1)$ and $(-1,1)$ respectively. 
+The two former force the raw output from a node to a set range of values, $(0,1)$ for sigmoid and $(-1,1)$ for tanh. 
 The variants of ReLU, however, do not truncate the high positive values of the outputs from the nodes. 
 Given the nature of the problem, it is highly intuitive that the ReLU-variants perform poorly. 
 Furthermore, the analytical solution is known to have an output range [0,1]. 
@@ -51,7 +51,7 @@ The rest of this sub-section will by MSE refer to this mean MSE for the 10 model
 For hidden layers of size $25$ the MSE is $2.32 \times 10^{-5}$, for $50$ the MSE is $1.57 \times 10^{-5}$ and lastly, for 100 it is $3.00 \times 10^{-5}$.
 There is an increase in performance as the width of the NN increases up to $50$. 
 As the models do not seem to improve at all past this point, we conclude that $50$ nodes per hidden layer is optimal.
-We in general favor smaller, simpler networks when the performance is similar.
+In general we favor smaller, simpler networks when the performance is similar.
 
 \begin{figure}[h!]
     \centering
@@ -65,7 +65,7 @@ We in general favor smaller, simpler networks when the performance is similar.
 % Mean MSE for n_layers = 3: 1.579682736974064e-05
 
 The depth of the neural network is dictated by the number of hidden layers.
-As seen in Fig. \ref{fig:boxplots_number_of_hidden_layers} one hidden layer yields the highest mean MSE among the tested numbers. 
+As seen in Fig. \ref{fig:boxplots_number_of_hidden_layers} one hidden layer yields the highest mean MSE among the tested options. 
 Both two and three hidden layers (with 50 nodes in each) perform way better, suggesting more layers are necessary to properly capture the complexity of the task. 
 While two hidden layers yield an MSE of $4.96 \times 10^{-4}$, three hidden layers result in an MSE of $1.58 \times 10^{-5}$.
 
@@ -84,7 +84,7 @@ This makes us confident that the result from the grid search is not due to rando
 We compute finite difference approximations with two values of $\Delta x$; $1/10$ and $1/100$.
 From theory, we know that the smaller $\Delta x$ will produce a better model, as long as $\Delta t$ is chosen appropriately (as discussed in section \ref{sec:stability}).
 The MSE for $\Delta x = 1/10$ is $2.52\times 10^{-7}$, while $\Delta x = 1/100$ gives an MSE of $6.77\times 10^{-10}$.
-We note that while the latter model has a lower MSE, it uses about 100 times as many points, and thus requires way more computational power.
+We note that while the latter model has a lower MSE, it uses about 1000 times as many points, and thus requires way more computational power.
 The absolute difference in MSE is rather small compared to the MSE of our best neural network (see \ref{best_nn_mse}), hence we use the model with $\Delta x = 1/10$ in further discussions.
 
 We will later refer to the models by number of points along the $x$-axis, i.e. $\Delta x = 1/10 \ \implies N = 11$ and $\Delta x = 1/100 \ \implies N = 101$.
@@ -127,20 +127,20 @@ These results reflect the difference in MSE between the finite difference method
 % In comparison of the two we also consider that the finite difference method is designed specifically for approximating partial differential equations, while neural networks can approximate more or less any function.
 In comparison of the two we take into consideration that the construction of the finite difference scheme relies on deeper mathematical knowledge about partial derivatives, such as Taylor series.
 Opposingly, the neural network only has the exact equation with initial and boundary conditions, which in practice means it has less information than the finite difference method.
-Additionally, the finite difference scheme is designed to approximate a finite selection of discrete points, while the neural network attempts a continuous approximation for the entire function. This might favor the finite difference model in the comparison, as it has no constraints for a smooth prediction across the domain. 
+Additionally, the finite difference scheme is designed to approximate a finite selection of discrete points, while the neural network attempts a continuous approximation for the entire function. This might favor the finite difference model in the comparison, as it has no constraints for a smooth prediction across the domain, and is only evaluated on its discrete mesh. 
 
-It should be noted that we are not feeding the neural network any actual data points, only the pure PDE problem through the cost function.
-In practical application of PDEs, one would combine data with a tailor-made cost-function in order to obtain the best physics-informed neural network possible.
+It should also be noted that we are not feeding the neural network any actual data points, only the pure PDE problem through the cost function.
+In practical PDE-related problems, one would combine data with a tailor-made cost-function in order to obtain the best physics-informed neural network possible.
 That said, the finite difference scheme does neither receive any other data than the PDE itself combined with its initial conditions and boundary values, hence we conclude that this does not skew the comparison.
 
 The finite difference method requires a larger process of programming based on the specific PDE problem it is made to solve.
-That said, after the problem is implemented, there is no need for further tuning of any hyperparameters.
-The method is however limited to only solving PDE problems based on known PDEs, initial conditions and boundary values.
+Although, after the problem is implemented there is no need for further tuning of any hyperparameters.
+The method is however limited to only solving PDE problems for known PDEs, initial conditions and boundary values.
 
 Physics-informed neural networks on the other hand, offers a more flexible type of model where one neural network can solve a number of PDE problems only by changing the cost function.
-They can also combine other types of problem structures, such as a PDE with unknown coefficients, or missing initial or boundary values, by combining that information with sampled points form the solution (e.g. some measured values in physical experiments).
+They can also combine other types of problem structures, such as a PDE with unknown coefficients, or missing initial or boundary values, by combining that information with sampled points from the solution (e.g. measured values in physical experiments).
 This makes them more versatile for different real life application.
 
 Still, they do have some major disadvantages: They require far more computational power than most finite difference models, as well as needing a lot of hyperparameter tuning.
 Furthermore, the fact that they output a continuous function is not a big advantage, as this function is complex and hard to interpret.
-In the case that one seeks a continuous result, the function one obtains from interpolating the values of a finite difference method might be just as good, given a fine enough granularity. 
+In the case that one seeks a continuous result, the function one obtains from interpolating the values of a finite difference method might be just as good, assuming that the granularity is sufficiently high. 
