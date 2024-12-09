@@ -1,0 +1,10 @@
+Inferring from our experiments, we have the general impression that finite difference schemes slightly outperform physics-informed neural networks. 
+We experience that more complex approximation methods are needed to accurately model the system described by the PDE; the finite difference method performing better for a more finely granulated range, and the neural network improving for increasing complexity to a certain point. 
+
+In our analysis both aforementioned methods perform considerably well compared with an exact analytical solution, the finite difference method slightly outperforming the neural network. 
+The fact that the finite difference method provides a more intuitive approach, and requires less computational power is also to be taken into consideration.
+
+It should be noted that in practical applications the neural network would likely be provided additional data to be trained on, possibly leading to a network outperforming a finite difference scheme. In this case one might still prefer the finite difference scheme, depending on computational cost and interpretability. 
+
+
+We conclude that finite difference schemes are preferred over physics-informed neural networks, given that the full equation, and sufficient initial and boundary conditions for the problem, are available. 
