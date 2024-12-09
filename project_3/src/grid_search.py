@@ -169,6 +169,7 @@ def grid_search(n_layers, value_layers, activation):
     """
     Perform a 3d grid search over three of the hyperparameters of the neural network model
     Saves the resulting mse and hyperparameters in a json file for each combination of hyperparameters
+    Trains one model with the best hyperparameters and saves the model
 
     Parameters
     ----------
@@ -204,8 +205,20 @@ def grid_search(n_layers, value_layers, activation):
                 })
 
     # save grid search results as json
-    with open("../results/grid_search.json", "w") as f:
+    with open("results/grid_search.json", "w") as f:
         json.dump(grid_search_results, f, indent=4)
+
+    # train one model with the best hyperparameters and save the model
+    with open("results/grid_search.json", "r") as f:
+        grid_search_results = json.load(f)
+
+        best_result = min(grid_search_results, key=lambda x: x['final_mse'])
+        best_n_layers = best_result['n_layers']
+        best_value_layers = best_result['value_layers']
+        best_activation = best_result['activation']
+
+        model = train(seed, best_n_layers, best_value_layers, best_activation, return_model=True)
+        torch.save(model, "results/best_model.pt")
 
 ### CODE FOR THE 1D SEARCHES ###
 
@@ -244,7 +257,7 @@ def activations_search(best_n_layers, best_value_layers, activation_funcs):
             "final_mse": list_seeds_act
             })
             
-    with open("../results/activation_search.json", "w") as f:
+    with open("results/activation_search.json", "w") as f:
         json.dump(new_search_activations_results, f, indent=4)
 
 def layers_search(best_n_layers, best_activation, layer_sizes):
@@ -282,7 +295,7 @@ def layers_search(best_n_layers, best_activation, layer_sizes):
             "final_mse": list_seeds_val
             })
         
-    with open("../results/value_layers_search.json", "w") as f:
+    with open("results/value_layers_search.json", "w") as f:
         json.dump(new_search_value_layers_results, f, indent=4)
 
 def n_layers_search(best_value_layers, best_activation, layers_num):
@@ -320,7 +333,7 @@ def n_layers_search(best_value_layers, best_activation, layers_num):
             "final_mse": list_seeds_n
             })
         
-    with open("../results/n_layers_search.json", "w") as f:
+    with open("results/n_layers_search.json", "w") as f:
         json.dump(new_search_n_layers_results, f, indent=4)
 
 
@@ -335,7 +348,7 @@ if __name__ == "__main__":
     final_layer_size = 1
 
     learning_rate = 1e-3
-    epochs = 1
+    epochs = 1000
     batch_size = 3000
     Nx = 100
     Nt = 100
@@ -349,7 +362,7 @@ if __name__ == "__main__":
             grid_search(layers_num, layer_sizes, activation_funcs)
 
         print("Loading best hyperparameters from 3d grid search")
-        with open("../results/grid_search.json", "r") as f:
+        with open("results/grid_search.json", "r") as f:
             grid_search_results = json.load(f)
 
         best_result = min(grid_search_results, key=lambda x: x['final_mse'])
@@ -381,7 +394,7 @@ if __name__ == "__main__":
         grid_search(layers_num, layer_sizes, activation_funcs)
 
         print("Loading best hyperparameters from 3d grid search")
-        with open("../results/grid_search.json", "r") as f:
+        with open("results/grid_search.json", "r") as f:
             grid_search_results = json.load(f)
 
             best_result = min(grid_search_results, key=lambda x: x['final_mse'])

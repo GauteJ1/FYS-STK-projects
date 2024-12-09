@@ -135,7 +135,7 @@ def box_plot(data_mse, varying_param):
     """
 
     sns.set_theme()
-    plt.style.use("../plot_settings.mplstyle")
+    plt.style.use("plot_settings.mplstyle")
 
     labels = []
     values = [] 
@@ -174,7 +174,7 @@ def box_plot(data_mse, varying_param):
     plt.xlabel(f"{x_label}")
     plt.ylabel("Final MSE")
     plt.title(f"Final MSE for {title}")
-    plt.savefig(f"../plots/{varying_param}_search.pdf")
+    plt.savefig(f"plots/{varying_param}_search.pdf")
     plt.show()
 
     # print the mean of the final mse for each parameter
@@ -201,7 +201,7 @@ def heatmaps(model_nn, model_fd, model_fd_100):
         Finite difference solution for N = 100  
     """
 
-    plt.style.use("../plot_settings.mplstyle")
+    plt.style.use("plot_settings.mplstyle")
     plt.rcParams.update({"axes.grid": False}) # turning off grid
 
     # colormap settings
@@ -259,7 +259,7 @@ def heatmaps(model_nn, model_fd, model_fd_100):
     cbar = fig.colorbar(im2, cax=cbar_ax)
     #cbar.set_label("Temperature [normalized]") # taken out because it is cut of when saving the figure 
 
-    plt.savefig("../plots/heat_map_comparison.png")
+    plt.savefig("plots/heat_map_comparison.png")
     plt.show()
 
     # fd for N = 100 as well, in order to calculate the MSE, not included in the plot
@@ -296,7 +296,7 @@ def time_slices(model_nn, model_fd, model_fd_100, t1 = 0.03, t2 = 0.40):
     """
 
     sns.set_theme()
-    plt.style.use("../plot_settings.mplstyle")
+    plt.style.use("plot_settings.mplstyle")
 
     fig, axs = plt.subplots(2, 1, figsize=(10, 15), sharex=True, sharey=True)
 
@@ -360,10 +360,8 @@ def time_slices(model_nn, model_fd, model_fd_100, t1 = 0.03, t2 = 0.40):
     axs[1].legend()
 
     plt.tight_layout()
-    plt.savefig("../plots/time_slices_comparison.pdf")
+    plt.savefig("plots/time_slices_comparison.pdf")
     plt.show()
-
-
 
 
 if __name__ == "__main__":
@@ -382,30 +380,10 @@ if __name__ == "__main__":
 
     else:
 
-        if "train_best" in sys.argv:
-
-            torch.manual_seed(seed)
-
-            with open("../results/grid_search.json", "r") as f:
-                grid_search_results = json.load(f)
-
-            with open("../results/grid_search.json", "r") as f:
-                grid_search_results = json.load(f)
-
-            # best neural network model
-            best_result = min(grid_search_results, key=lambda x: x['final_mse'])
-            best_n_layers = best_result['n_layers']
-            best_value_layers = best_result['value_layers']
-            best_activation = best_result['activation']
-
-            model = train(seed, best_n_layers, best_value_layers, best_activation, return_model=True)
-            # save model 
-            torch.save(model, "../results/best_model.pt")
-
         if "heatmaps" in sys.argv:
 
             # nn model, load best model
-            model_nn = torch.load("../results/best_model.pt")
+            model_nn = torch.load("results/best_model.pt")
             
             # finite difference method
             init = lambda x: np.sin(np.pi * x)
@@ -423,26 +401,26 @@ if __name__ == "__main__":
         if "boxplots" in sys.argv:
 
             # activations
-            with open("../results/activation_search.json", "r") as f:
+            with open("results/activation_search.json", "r") as f:
                 activation_search_results = json.load(f)
 
             box_plot(activation_search_results, "activation")
 
             # value layers
-            with open("../results/value_layers_search.json", "r") as f:
+            with open("results/value_layers_search.json", "r") as f:
                 value_layers_search_results = json.load(f)
 
             box_plot(value_layers_search_results, "value_layers")
 
             # n layers
-            with open("../results/n_layers_search.json", "r") as f:
+            with open("results/n_layers_search.json", "r") as f:
                 n_layers_search_results = json.load(f)
 
             box_plot(n_layers_search_results, "n_layers")
 
         if "time" in sys.argv: 
 
-            model_nn = torch.load("../results/best_model.pt")
+            model_nn = torch.load("results/best_model.pt")
             
             # finite difference method
             init = lambda x: np.sin(np.pi * x)
