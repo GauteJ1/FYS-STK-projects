@@ -2,7 +2,24 @@ import torch
 from torch import nn
 
 class NeuralNetwork(nn.Module):
+
     def __init__(self, layers, activations, init):
+
+        """ 
+        Neural network model 
+
+        Parameters
+        ----------
+        layers : list[int]
+            List of layer sizes, including input and output layer
+
+        activations : list[str]
+            List of activation functions as str, one for each layer
+
+        init : str
+            Initialization method for the weights, "xavier" or "he"
+        """
+
         super().__init__()
         self.flatten = nn.Flatten()
 
@@ -27,6 +44,19 @@ class NeuralNetwork(nn.Module):
         self.nn_model = nn.Sequential(*layers_list)
 
         def init_weights(m):
+            """
+            Initialize the weights of the neural network
+
+            Parameters
+            ----------
+            m : torch.nn.Module
+                Module of the neural network
+
+            Raises
+            ------
+            ValueError
+                If the initialization method is not valid
+            """
             if init == "xavier" or init == None:
                 if isinstance(m, nn.Linear):
                     torch.nn.init.xavier_normal_(m.weight)
@@ -40,6 +70,22 @@ class NeuralNetwork(nn.Module):
 
     def forward(self, x, t):
 
+        """
+        Forward pass of the neural network
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Position
+        t : torch.Tensor
+            Time
+
+        Returns
+        -------
+        logits : torch.Tensor
+            Output of the neural network
+        """
+        
         X = torch.cat((x,t),axis = 1)
         logits = self.nn_model(X)
         

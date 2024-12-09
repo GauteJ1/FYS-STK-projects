@@ -1,21 +1,43 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from data_gen import RodDataGen
-import json 
+
+from data_gen import RodDataGen 
 
 def exact_sol(x, t):
-    # Analytical solution for the heat equation
-    return np.sin(np.pi * x) * np.exp(-np.pi**2 * t)
+
+    """
+    Analytical solution for the heat equation
+
+    Returns
+    -------
+    x : np.ndarray or torch.Tensor
+        Position 
+    t : np.ndarray or torch.Tensor
+        Time
+
+    Returns
+    -------
+    sol : np.ndarray or torch.Tensor
+        Analytical solution of the heat equation
+    """
+    sol = np.sin(np.pi * x) * np.exp(-np.pi**2 * t)
+    
+    return sol
 
 def plot_heatmap(data):
+    """
+    Plot heatmap of the analytical solution
+
+    Parameters
+    ----------
+    data : RodDataGen
+        Data object containing the meshgrid of x and t
+    """
 
     x = data.x
     t = data.t
 
-    Nx = len(x) - 1
-    Nt = len(t) - 1
-
-    X, T = np.meshgrid(np.linspace(0, 1, Nx + 1), np.linspace(0, data.T, Nt + 1))
+    X, T = np.meshgrid(x, t)
     Z = exact_sol(X, T)
 
     plt.figure(figsize=(8, 6))
@@ -24,7 +46,6 @@ def plot_heatmap(data):
     plt.xlabel("Position (x)")
     plt.ylabel("Time (t)")
     plt.title("Heatmap of Analytical Solution")
-    plt.savefig("../plots/heat_map_analytic.png")
     plt.show()
     
 

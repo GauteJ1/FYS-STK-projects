@@ -1,9 +1,27 @@
 import torch
-from torch.autograd import grad
-from neural_network import NeuralNetwork
 
 
 def cost_PDE(x, t, nn_pred):
+
+    """
+    Cost function for the PDE
+    Cost = the mean squared residuals of the PDE
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Position
+    t : torch.Tensor
+        Time
+    nn_pred : NeuralNetwork 
+        Neural network model
+
+    Returns
+    -------
+    cost : torch.Tensor
+        Cost function for the PDE
+    """
+
     x = x.clone().detach().requires_grad_(True)
     t = t.clone().detach().requires_grad_(True)
 
@@ -21,6 +39,25 @@ def cost_PDE(x, t, nn_pred):
 
 def cost_initial(x, t, nn_pred):
 
+    """ 
+    Cost function for the initial condition
+    Cost = the mean squared residuals of the initial condition
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Position
+    t : torch.Tensor
+        Time
+    nn_pred : NeuralNetwork
+        Neural network model
+
+    Returns
+    -------
+    cost : torch.Tensor
+        Cost function for the initial condition
+    """
+
     x = x.clone().detach().requires_grad_(True)
     t = t.clone().detach().requires_grad_(True)
 
@@ -29,10 +66,31 @@ def cost_initial(x, t, nn_pred):
     nn_out = nn_pred(x, t)
     initial = torch.sin(torch.pi * x)
 
-    return torch.mean((nn_out - initial) ** 2)
+    cost = torch.mean((nn_out - initial) ** 2)
+
+    return cost
 
 
 def cost_boundary(x, t, nn_pred):
+
+    """
+    Cost function for the boundary condition
+    Cost = the mean squared residuals of the boundary condition
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Position
+    t : torch.Tensor
+        Time
+    nn_pred : NeuralNetwork
+        Neural network model
+
+    Returns
+    -------
+    cost : torch.Tensor
+        Cost function for the boundary condition
+    """
 
     x = x.clone().detach().requires_grad_(True)
     t = t.clone().detach().requires_grad_(True)
@@ -45,25 +103,34 @@ def cost_boundary(x, t, nn_pred):
     x0_out = nn_pred(x0, t)
     x1_out = nn_pred(x1, t)
 
-    return torch.mean(x0_out**2 + x1_out**2)
+    cost = torch.mean(x0_out**2 + x1_out**2)
+
+    return cost
 
 
 def total_cost(x, t, nn_pred):
+
+    """
+    Total cost function
+    Cost = cost_PDE + cost_initial + cost_boundary
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Position
+    t : torch.Tensor
+        Time
+    nn_pred : NeuralNetwork
+        Neural network model
+
+    Returns
+    -------
+    cost : torch.Tensor
+        Total cost function
+    """
 
     return (
         cost_PDE(x, t, nn_pred)
         + cost_initial(x, t, nn_pred)
         + cost_boundary(x, t, nn_pred)
     )
-
-
-if __name__ == "__main__":
-    def dummy(x, t):
-        return x**2 * 4*t
-    
-    x = torch.linspace(0, 9, steps= 10)
-    t = torch.linspace(0, 9, steps= 10)
-    
-    x, t = torch.meshgrid(x, t)
-
-    print(cost_PDE(x, t, dummy))

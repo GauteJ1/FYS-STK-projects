@@ -26,8 +26,8 @@ class RodDataGen(DataGen):
         self.__generate_data()
 
     def __generate_data(self) -> None:
-        self.x = torch.linspace(0, self.L, self.Nx)  # .reshape(-1, 1)
-        self.t = torch.linspace(0, self.T, self.Nt)  # .reshape(-1, 1)
+        self.x = torch.linspace(0, self.L, self.Nx) 
+        self.t = torch.linspace(0, self.T, self.Nt) 
 
         self.xx, self.tt = torch.meshgrid(self.x, self.t, indexing="ij")
 

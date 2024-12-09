@@ -13,9 +13,26 @@ from cost_pinn import total_cost
 from data_gen import RodDataGen
 from analytic import exact_sol
 
-#torch.manual_seed(123)
+
+### CODE FOR TRAINING THE NEURAL NETWORK MODEL ###
+
 
 def train_loop(dataloader, model_nn, loss_fn, optimizer):
+
+    """
+    Training loop for the neural network model
+
+    Parameters
+    ----------
+    dataloader : DataLoader
+        DataLoader object containing the training data
+    model_nn : NeuralNetwork
+        Neural network model
+    loss_fn : function
+        Loss function for the neural network model
+    optimizer : torch.optim
+        Optimizer for the neural network model
+    """
     
     model_nn.train()  
     epoch_loss_train = 0
@@ -29,10 +46,21 @@ def train_loop(dataloader, model_nn, loss_fn, optimizer):
 
         epoch_loss_train += loss.item()
 
-    #return epoch_loss_train / len(dataloader)  
-
 
 def test_loop(dataloader, model_nn, loss_fn):
+
+    """
+    Testing loop for the neural network model
+
+    Parameters
+    ----------
+    dataloader : DataLoader
+        DataLoader object containing the testing data
+    model_nn : NeuralNetwork
+        Neural network model
+    loss_fn : function
+        Loss function for the neural network model
+    """
     
     model_nn.eval()
     epoch_loss_test = 0
@@ -42,9 +70,26 @@ def test_loop(dataloader, model_nn, loss_fn):
         loss = loss_fn(x_batch, t_batch, model_nn)
         epoch_loss_test += loss.item()
 
-    #return epoch_loss_test / len(dataloader)  
+def mse_against_analytic(model_nn, Nx=100, Nt=100):
 
-def mse_against_analytic(model_nn):
+    """
+    Calculate the mean squared error (MSE) between the neural network model and the analytical solution
+
+    Parameters
+    ----------
+    model_nn : NeuralNetwork
+        Neural network model
+    Nx : int
+        Number of spatial points, default is 100
+    Nt : int
+        Number of temporal points, default is 100
+
+    Returns
+    -------
+    mse : torch.Tensor
+        Mean squared error between the neural network model and the analytical solution 
+
+    """
 
     X = torch.linspace(0, 1, Nx + 1)
     T = torch.linspace(0, 0.5, Nt + 1)
@@ -63,6 +108,30 @@ def mse_against_analytic(model_nn):
 
 def train(seed, n_layers, value_layers, activation, return_model=False):
 
+    """
+    Train the neural network model
+    Starts by printing the hyperparameters used for the training
+
+    Parameters
+    ----------
+    seed : int
+        Seed for the random number generator
+    n_layers : int
+        Number of hidden layers
+    value_layers : int
+        Size of the hidden layers
+    activation : str
+        Activation function for the hidden layers
+    
+    return_model : bool
+        If True, return the trained model, default is False
+
+    Returns
+    -------
+    mse_final : torch.Tensor
+        Mean squared error between the neural network model and the analytical solution
+    """
+
     print(f"Seed: {seed}, Hidden layers: {n_layers}, Value layers: {value_layers}, Activation: {activation}")
 
     layers = [initial_layer_size] + [value_layers] * (n_layers) + [final_layer_size]
@@ -80,50 +149,37 @@ def train(seed, n_layers, value_layers, activation, return_model=False):
     train_data = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_data = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
         
-    # loss_history_train = []
-    # loss_history_test = []
-
     for epoch in tqdm(range(epochs)):
-        train_loop(train_data, model_nn, total_cost, optimizer) # train_loss = 
-        # loss_history_train.append(train_loss)
-
-        test_loop(test_data, model_nn, total_cost) # test_loss = 
-        # loss_history_test.append(test_loss)
-
-        # check if test loss is increasing the 10 last epochs
-        # if epoch > 10: 
-        #     if (loss_history_test[-1] > loss_history_test[-11]):
-        #         print("Early stopping")
-        #         break
+        train_loop(train_data, model_nn, total_cost, optimizer) 
+        test_loop(test_data, model_nn, total_cost) 
 
     if return_model:
         return model_nn
+    
     else:
         model_nn.eval()
         mse_final = mse_against_analytic(model_nn)
         return mse_final
+    
 
-def plot_heatmap_nn(nn_model):
-
-    Nx = 100
-    Nt = 100
-
-    X = torch.linspace(0, 1, Nx + 1)
-    T = torch.linspace(0, 0.5, Nt + 1)
-
-    X, T = torch.meshgrid(X, T)
-    X_ = X.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
-    T_ = T.flatten().reshape([(Nx + 1) * (Nt + 1), 1])
-
-    Z = nn_model(X_, T_).detach().reshape([(Nx + 1), (Nt + 1)])
-
-    plt.contourf(X, T, Z, cmap="hot", levels=500, vmin=0, vmax=1)
-
-    plt.colorbar()
-    plt.savefig("../plots/heat_map.png")
-    plt.show()
+### CODE FOR THE 3D GRID SEARCH ###
 
 def grid_search(n_layers, value_layers, activation):
+
+    """
+    Perform a 3d grid search over three of the hyperparameters of the neural network model
+    Saves the resulting mse and hyperparameters in a json file for each combination of hyperparameters
+
+    Parameters
+    ----------
+    n_layers : list[int]
+        List of number of hidden layers
+    value_layers : list[int]
+        List of size of hidden layers
+    activation : list[str]
+        List of activation functions for the hidden layers
+    """
+
     grid_search_results = []
 
     for n_layers in layers_num:
@@ -151,7 +207,23 @@ def grid_search(n_layers, value_layers, activation):
     with open("../results/grid_search.json", "w") as f:
         json.dump(grid_search_results, f, indent=4)
 
-def activations_search(best_n_layers, best_value_layers):
+### CODE FOR THE 1D SEARCHES ###
+
+def activations_search(best_n_layers, best_value_layers, activation_funcs):
+
+    """
+    Using the best width and depth from the grid search, tests 10 models for each of the activation functions in the activation_funcs list
+    Saving the final mse for each model in a json file
+
+    Parameters
+    ----------
+    best_n_layers : int
+        Best number of hidden layers from the 3d grid search
+    best_value_layers : int
+        Best size of hidden layers from the 3d grid search
+    activation_funcs : list[str]
+        List of activation functions for the hidden layers
+    """
     
     # keeping n_layers and value_layers constant
     new_search_activations_results = []
@@ -175,7 +247,21 @@ def activations_search(best_n_layers, best_value_layers):
     with open("../results/activation_search.json", "w") as f:
         json.dump(new_search_activations_results, f, indent=4)
 
-def layers_search(best_n_layers, best_activation):
+def layers_search(best_n_layers, best_activation, layer_sizes):
+
+    """
+    Using the best depth and activation function from the grid search, tests 10 models for each of the hidden layer sizes (width) in the layer_sizes list
+    Saving the final mse for each model in a json file
+
+    Parameters
+    ----------
+    best_n_layers : int
+        Best number of hidden layers from the 3d grid search
+    best_activation : str
+        Best activation function from the 3d grid search
+    layer_sizes : list[int]
+        List of size of hidden layers
+    """
 
     # keeping n_layers and activation constant
     new_search_value_layers_results = []
@@ -199,7 +285,21 @@ def layers_search(best_n_layers, best_activation):
     with open("../results/value_layers_search.json", "w") as f:
         json.dump(new_search_value_layers_results, f, indent=4)
 
-def n_layers_search(best_value_layers, best_activation):
+def n_layers_search(best_value_layers, best_activation, layers_num):
+
+    """
+    Using the best width and activation function from the grid search, tests 10 models for each of the number of hidden layers (depth) in the layers_num list
+    Saving the final mse for each model in a json file
+
+    Parameters
+    ----------
+    best_value_layers : int
+        Best size of hidden layers from the 3d grid search
+    best_activation : str
+        Best activation function from the 3d grid search
+    layers_num : list[int]
+        List of number of hidden layers
+    """
 
     # keeping value_layers and activation constant
     new_search_n_layers_results = []
@@ -226,7 +326,7 @@ def n_layers_search(best_value_layers, best_activation):
 
 if __name__ == "__main__":
 
-    seeds = [123]
+    seeds = [123] # for the 3d grid search
     layers_num = [1, 2, 3] # number of hidden layers 
     layer_sizes = [10, 25, 50, 100] # size of hidden layers
     activation_funcs = ["leakyReLU", "ReLU", "tanh", "sigmoid"]
@@ -235,17 +335,20 @@ if __name__ == "__main__":
     final_layer_size = 1
 
     learning_rate = 1e-3
-    epochs = 1000
+    epochs = 1
     batch_size = 3000
     Nx = 100
     Nt = 100
 
     initialization = "xavier"
 
-    if "grid" in sys.argv:
-        grid_search(layers_num, layer_sizes, activation_funcs)
+    if len(sys.argv) > 1:
 
-    else: 
+        if "grid" in sys.argv:
+            print("Running 3d grid search")
+            grid_search(layers_num, layer_sizes, activation_funcs)
+
+        print("Loading best hyperparameters from 3d grid search")
         with open("../results/grid_search.json", "r") as f:
             grid_search_results = json.load(f)
 
@@ -254,20 +357,41 @@ if __name__ == "__main__":
         best_value_layers = best_result['value_layers']
         best_activation = best_result['activation']
 
-    seeds = [981, 123, 42, 7, 81, 23, 1, 261, 928, 77]
+        seeds = [981, 123, 42, 7, 81, 23, 1, 261, 928, 77]
 
-    if "activations" in sys.argv:
-        activations_search(best_n_layers, best_value_layers)
+        if "activations" in sys.argv:
+            print("Running 1d search for activation functions")
+            activations_search(best_n_layers, best_value_layers, activation_funcs)
 
-    if "value_layers" in sys.argv:
-        layers_search(best_n_layers, best_activation)
+        if "value_layers" in sys.argv:
+            print("Running 1d search for hidden layer sizes")
+            layers_search(best_n_layers, best_activation, layer_sizes)
 
-    if "n_layers" in sys.argv:
-        n_layers_search(best_value_layers, best_activation)
+        if "n_layers" in sys.argv:
+            print("Running 1d search for number of hidden layers")
+            n_layers_search(best_value_layers, best_activation, layers_num)
 
-    if len(sys.argv) == 1: 
+    elif len(sys.argv) == 1: 
 
+        print("No command line arguments given")
+        print(f"Running 3d grid search and three 1d searches with the best parameters from the grid search")
+        print(f"To only run some of the searches, use one or more of the following command line arguments: 'grid', 'activations', 'value_layers', 'n_layers'")
+
+        print("3d grid search")
         grid_search(layers_num, layer_sizes, activation_funcs)
-        activations_search(best_n_layers, best_value_layers)
-        layers_search(best_value_layers, best_activation)
-        n_layers_search(best_value_layers, best_activation)
+
+        print("Loading best hyperparameters from 3d grid search")
+        with open("../results/grid_search.json", "r") as f:
+            grid_search_results = json.load(f)
+
+            best_result = min(grid_search_results, key=lambda x: x['final_mse'])
+            best_n_layers = best_result['n_layers']
+            best_value_layers = best_result['value_layers']
+            best_activation = best_result['activation']
+
+        seeds = [981, 123, 42, 7, 81, 23, 1, 261, 928, 77]
+        
+        print("Running 1d searches")
+        activations_search(best_n_layers, best_value_layers, activation_funcs)
+        layers_search(best_value_layers, best_activation, layer_sizes)
+        n_layers_search(best_value_layers, best_activation, layers_num)

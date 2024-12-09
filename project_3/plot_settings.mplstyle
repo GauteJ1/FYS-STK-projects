@@ -14,14 +14,11 @@ font.serif: stix
 # Axes
 axes.titlesize: 28      
 axes.labelsize: 20    
-#axes.spines.top: False  
-#axes.spines.right: False
 xtick.labelsize: 20
 ytick.labelsize: 20
 axes.grid: True         
 axes.grid.axis: both
 axes.grid.which: major
-#axes.linewidth: 1.2
 
 # Grid line settings 
 grid.linewidth: 0.5

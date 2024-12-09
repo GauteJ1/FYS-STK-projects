@@ -15,37 +15,31 @@ from neural_network import NeuralNetwork
 from finite_difference import ForwardEuler
 from cost_pinn import total_cost
 from data_gen import RodDataGen
-
-def train_loop(dataloader, model_nn, loss_fn, optimizer):
-    
-    model_nn.train()  
-    epoch_loss_train = 0
-
-    for x_batch, t_batch in dataloader:
-        
-        optimizer.zero_grad()
-        loss = loss_fn(x_batch, t_batch, model_nn)
-        loss.backward()
-        optimizer.step()
-
-        epoch_loss_train += loss.item()
-
-    #return epoch_loss_train / len(dataloader)  
+from grid_search import train_loop, test_loop, mse_against_analytic
 
 
-def test_loop(dataloader, model_nn, loss_fn):
-    
-    model_nn.eval()
-    epoch_loss_test = 0
+### Functions to be able to train the best model and save it given the best parameters from the grid search ###
 
-    for x_batch, t_batch in dataloader:
+def mse_against_analytic_nn(model_nn, Nx=100, Nt=100):
 
-        loss = loss_fn(x_batch, t_batch, model_nn)
-        epoch_loss_test += loss.item()
+    """
+    Calculate the mean squared error (MSE) between the neural network model and the analytical solution
 
-    #return epoch_loss_test / len(dataloader)  
+    Parameters
+    ----------
+    model_nn : NeuralNetwork
+        Neural network model
+    Nx : int
+        Number of spatial points, default is 100
+    Nt : int
+        Number of temporal points, default is 100
 
-def mse_against_analytic(model_nn):
+    Returns
+    -------
+    mse : torch.Tensor
+        Mean squared error between the neural network model and the analytical solution 
+
+    """
 
     X = torch.linspace(0, 1, Nx + 1)
     T = torch.linspace(0, 0.5, Nt + 1)
@@ -62,7 +56,35 @@ def mse_against_analytic(model_nn):
 
     return mse
 
-def train(seed, n_layers, value_layers, activation, return_model=False):
+def train(seed, n_layers, value_layers, activation, return_model=False, Nx = 100, Nt = 100):
+
+    """
+    Train the neural network model
+    Starts by printing the hyperparameters used for the training
+
+    Parameters
+    ----------
+    seed : int
+        Seed for the random number generator
+    n_layers : int
+        Number of hidden layers
+    value_layers : int
+        Size of the hidden layers
+    activation : str
+        Activation function for the hidden layers
+    
+    return_model : bool
+        If True, return the trained model, default is False
+    Nx : int
+        Number of spatial points, default is 100
+    Nt : int
+        Number of temporal points, default is 100
+
+    Returns
+    -------
+    mse_final : torch.Tensor
+        Mean squared error between the neural network model and the analytical solution
+    """
 
     print(f"Seed: {seed}, Hidden layers: {n_layers}, Value layers: {value_layers}, Activation: {activation}")
 
@@ -74,31 +96,17 @@ def train(seed, n_layers, value_layers, activation, return_model=False):
 
     # data 
     data = RodDataGen(Nx=Nx, Nt=Nt, T = 0.5)
-    test_x, train_x, test_t, train_t = train_test_split(data.x, data.t, test_size=0.4)
+    test_x, train_x, test_t, train_t = train_test_split(data.x, data.t, test_size=0.4) # we only need train data, but here in case one wants to study the loss for the test data
     train_dataset = TensorDataset(train_x, train_t)
-    test_dataset = TensorDataset(test_x, test_t)
 
     train_data = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_data = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-        
-    # loss_history_train = []
-    # loss_history_test = []
 
     for epoch in tqdm(range(epochs)):
-        train_loop(train_data, model_nn, total_cost, optimizer) # train_loss = 
-        # loss_history_train.append(train_loss)
-
-        test_loop(test_data, model_nn, total_cost) # test_loss = 
-        # loss_history_test.append(test_loss)
-
-        # check if test loss is increasing the 10 last epochs
-        # if epoch > 10: 
-        #     if (loss_history_test[-1] > loss_history_test[-11]):
-        #         print("Early stopping")
-        #         break
+        train_loop(train_data, model_nn, total_cost, optimizer) 
 
     if return_model:
         return model_nn
+    
     else:
         model_nn.eval()
         mse_final = mse_against_analytic(model_nn)
@@ -107,25 +115,47 @@ def train(seed, n_layers, value_layers, activation, return_model=False):
 
 
 
-### PLOTS ### 
+### Plotting code ### 
 
-def box_plot_original(data_mse, varying_param):
+def box_plot(data_mse, varying_param):
+
+    """
+    Create boxplots for the final mean squared error (MSE) for different values of a hyperparameter
+    Must be "activation", "value_layers" or "n_layers"
+
+    Save the plot as a pdf file
+
+    Parameters
+    ----------
+    data_mse : list[dict]
+        List of dictionaries containing the hyperparameters and the final MSE
+
+    varying_param : str
+        The hyperparameter that is varied, must be "activation", "value_layers" or "n_layers"
+    """
 
     sns.set_theme()
     plt.style.use("../plot_settings.mplstyle")
 
     labels = []
-    values = [] # final mse for different seeds 
+    values = [] 
 
     if varying_param == "activation":
         title = "activation functions"
+        x_label = "Activation function"
         plt.figure(figsize=(10, 8)) 
+
     elif varying_param == "value_layers":
         title = "size of hidden layers"
-        plt.figure(figsize=(10, 8)) 
+        plt.figure(figsize=(10, 7)) 
+        plt.ylim(0, 0.0015)
+        x_label = "Size of hidden layers"
+    
     elif varying_param == "n_layers":
         title = "number of hidden layers"
         plt.figure(figsize=(10, 7)) 
+        x_label = "Number of hidden layers"
+    
     else: 
         raise ValueError("Invalid varying parameter, must be 'activation', 'value_layers' or 'n_layers'")
 
@@ -141,31 +171,54 @@ def box_plot_original(data_mse, varying_param):
                 flierprops=dict(color="hotpink", markeredgecolor="black"),
                 medianprops=dict(color="black"))
     
-    plt.xlabel(f"{title}")
+    plt.xlabel(f"{x_label}")
     plt.ylabel("Final MSE")
     plt.title(f"Final MSE for {title}")
     plt.savefig(f"../plots/{varying_param}_search.pdf")
     plt.show()
 
+    # print the mean of the final mse for each parameter
+    for i in range(len(labels)):
+        print(f"Mean MSE for {varying_param} = {labels[i]}: {np.mean(values[i])}")
 
-def heatmaps(model_nn, model_fd):
+
+def heatmaps(model_nn, model_fd, model_fd_100):
+
+    """
+    Plot heatmaps of the analytical solution, the neural network solution and the finite difference solution for N = 10
+    Printing the MSE for the neural network compared to the analytical solution 
+    Printing the MSE for the finite difference solution for N = 10 and N = 100 
+
+    Save the plot as a png file
+
+    Parameters
+    ----------
+    model_nn : NeuralNetwork
+        Neural network model
+    model_fd : dict
+        Finite difference solution for N = 10
+    model_fd_100 : dict
+        Finite difference solution for N = 100  
+    """
 
     plt.style.use("../plot_settings.mplstyle")
-    plt.rcParams.update({"axes.grid": False})
+    plt.rcParams.update({"axes.grid": False}) # turning off grid
+
+    # colormap settings
+    norm = plt.Normalize(vmin=0, vmax=1)
+    cmap = "hot"
 
     fig, axs = plt.subplots(3, 1, figsize=(10, 22), sharex=True, sharey=True, constrained_layout=False)
+
+    # analytical solution
     x_ex = np.linspace(0, 1, 1000)
     t_ex = np.linspace(0, 0.5, 1000)
     X_ex, T_ex = np.meshgrid(x_ex, t_ex)
     Z_ex = exact_sol(X_ex, T_ex)
 
-    norm = plt.Normalize(vmin=0, vmax=1)
-    cmap = "hot"
-
-    # Analytical solution
     im0 = axs[0].contourf(X_ex, T_ex, Z_ex, cmap=cmap, levels=500, norm=norm)
     axs[0].axhline(y=0.03, color="cyan", linestyle="-")
-    axs[0].axhline(y=0.25, color="cyan", linestyle="-")
+    axs[0].axhline(y=0.40, color="cyan", linestyle="-")
     axs[0].set_title("Analytical Solution")
     axs[0].set_xlabel("Position x []")
     axs[0].set_ylabel("Time [s]")
@@ -182,45 +235,68 @@ def heatmaps(model_nn, model_fd):
 
     im1 = axs[1].contourf(X_nn, T_nn, Z_nn, cmap=cmap, levels=500, norm=norm)
     axs[1].axhline(y=0.03, color="cyan", linestyle="-")
-    axs[1].axhline(y=0.25, color="cyan", linestyle="-")
+    axs[1].axhline(y=0.40, color="cyan", linestyle="-")
     axs[1].set_title("Neural Network Solution")
     axs[1].set_xlabel("Position x []")
     axs[1].set_ylabel("Time [s]")
 
     # Finite difference solution
-    X_fd = np.linspace(0, 1, N + 1)
+    X_fd = np.linspace(0, 1, 10 + 1)
     T_fd = model_fd["time_steps"]
     X_fd, T_fd = np.meshgrid(X_fd, T_fd)
     Z_fd = model_fd["values"]
 
     im2 = axs[2].contourf(X_fd, T_fd, Z_fd, cmap=cmap, levels=500, norm=norm)
     axs[2].axhline(y=0.03, color="cyan", linestyle="-")
-    axs[2].axhline(y=0.25, color="cyan", linestyle="-")
+    axs[2].axhline(y=0.40, color="cyan", linestyle="-")
     axs[2].set_title("Finite Difference Solution")
     axs[2].set_xlabel("Position x []")
     axs[2].set_ylabel("Time [s]")
 
+    # common colorbar
     fig.subplots_adjust(right=0.85)
     cbar_ax = fig.add_axes([0.88, 0.15, 0.03, 0.7]) 
     cbar = fig.colorbar(im2, cax=cbar_ax)
-    cbar.set_label("Temperature [normalized]")
+    #cbar.set_label("Temperature [normalized]") # taken out because it is cut of when saving the figure 
 
     plt.savefig("../plots/heat_map_comparison.png")
     plt.show()
 
-    print("MSE for neural network compared to analytical solution: ", np.mean((np.array(Z_nn) - np.array(exact_sol(X_nn, T_nn)))**2))
-    print("MSE for finite difference compared to analytical solution: ", np.mean((np.array(Z_fd) - np.array(exact_sol(X_fd, T_fd)))**2))
+    # fd for N = 100 as well, in order to calculate the MSE, not included in the plot
+    X_fd_100 = np.linspace(0, 1, 100 + 1)
+    T_fd_100 = model_fd_100["time_steps"]
+    X_fd_100, T_fd_100 = np.meshgrid(X_fd_100, T_fd_100)
+    Z_fd_100 = model_fd_100["values"]
 
-def time_slices(model_nn, model_fd):
+    # printting MSE values
+    print("MSE for neural network compared to analytical solution: ", np.mean((np.array(Z_nn) - np.array(exact_sol(X_nn, T_nn)))**2))
+    print("MSE for finite difference with N = 10 compared to analytical solution: ", np.mean((np.array(Z_fd) - np.array(exact_sol(X_fd, T_fd)))**2))
+    print("MSE for finite difference with N = 100 compared to analytical solution: ", np.mean((np.array(Z_fd_100) - np.array(exact_sol(X_fd_100, T_fd_100)))**2))
+
+def time_slices(model_nn, model_fd, model_fd_100, t1 = 0.03, t2 = 0.40):
+
+    """
+    Plot temperature as a function of position at two different time slices t1 and t2
+    for the analytical solution, the neural network solution and the finite difference solution for N = 10 and N = 100
+
+    Save the plot as a pdf file
+
+    Parameters
+    ----------  
+    model_nn : NeuralNetwork
+        Neural network model
+    model_fd : dict
+        Finite difference solution for N = 10
+    model_fd_100 : dict
+        Finite difference solution for N = 100
+    t1 : float
+        Time slice 1, default is 0.03
+    t2 : float
+        Time slice 2, default is 0.40
+    """
 
     sns.set_theme()
     plt.style.use("../plot_settings.mplstyle")
-
-    # plot x for t = 0.03 and t = 0.25 for all three methods
-    # 2x1 subplot, one for each time slice
-
-    t1 = 0.03
-    t2 = 0.25
 
     fig, axs = plt.subplots(2, 1, figsize=(10, 15), sharex=True, sharey=True)
 
@@ -249,18 +325,30 @@ def time_slices(model_nn, model_fd):
     axs[0].plot(np.linspace(0, 1, Nx + 1), Z[:,int(t1 * Nt)], label="Neural Network", color="orange", linestyle="--")
     axs[1].plot(np.linspace(0, 1, Nx + 1), Z[:,int(t2 * Nt)], label="Neural Network", color="orange", linestyle="--")
 
-    # finite difference
-    X = np.linspace(0, 1, N + 1)  
+    # finite difference with N = 100
+
+    X = np.linspace(0, 1, 100 + 1)  
+    Y = np.array(model_fd_100["time_steps"])  
+    n = len(Y)
+    Z = np.array(model_fd_100["values"])  
+   
+    axs[0].plot(X, Z[int(t1 * n), :], label=r"Finite Difference, N = 101", color = "green", marker="o", linestyle="none", markersize=2)
+    axs[1].plot(X, Z[int(t2 * n), :], label=r"Finite Difference, N = 101", color = "green", marker="o", linestyle="none", markersize=2)
+
+  
+    # finite difference with N = 10
+    X = np.linspace(0, 1, 10 + 1)  
     Y = np.array(model_fd["time_steps"])  
     n = len(Y)
     Z = np.array(model_fd["values"])  
    
-    axs[0].plot(X, Z[int(t1 * n), :], label="Finite Difference", color = "hotpink", marker="*", linestyle="none")
-    axs[1].plot(X, Z[int(t2 * n), :], label="Finite Difference", color = "hotpink", marker="*", linestyle="none")
+    axs[0].plot(X, Z[int(t1 * n), :], label=r"Finite Difference, N = 11", color = "hotpink", marker="*", linestyle="none", markersize=8)
+    axs[1].plot(X, Z[int(t2 * n), :], label=r"Finite Difference, N = 11", color = "hotpink", marker="*", linestyle="none", markersize=8)
 
-
-    axs[0].set_title("Temperature as a function of position at t = 0.03 s")
-    axs[1].set_title("Temperature as a function of position at t = 0.25 s")
+   
+   # common settings for title and axis labels
+    axs[0].set_title(r"Temperature as a function of position at $t_1$ = 0.03 s")
+    axs[1].set_title(r"Temperature as a function of position at $t_2$ = 0.40 s")
 
     axs[0].set_xlabel("Position x []")
     axs[1].set_xlabel("Position x []")
@@ -287,14 +375,9 @@ if __name__ == "__main__":
     learning_rate = 1e-3
     epochs = 1000
     batch_size = 3000
-    Nx = 100
-    Nt = 100
-
-    # pass "boxplots" as argument to make boxplots
-    # pass "heatmaps" as argument to make heatmaps
 
     if len(sys.argv) == 1:
-        print("No argument given, pass 'boxplots' and/or 'heatmaps' and/or 'time' as argument to make plots")
+        print("No command line argument given, use 'train_best', 'boxplots', 'heatmaps' and/or 'time'")
         sys.exit(1)
 
     else:
@@ -325,15 +408,17 @@ if __name__ == "__main__":
             model_nn = torch.load("../results/best_model.pt")
             
             # finite difference method
-            N = 10 
-            dt = 0.001
             init = lambda x: np.sin(np.pi * x)
-            model = ForwardEuler(N, dt)
+            model = ForwardEuler(N=10, dt=0.001)
             model.set_init(init)
             model_fd = model(0.5)
 
-            # make plot of all three heatmaps
-            heatmaps(model_nn, model_fd)
+            model_100 = ForwardEuler(N=100)
+            model_100.set_init(init)
+            model_fd_100 = model_100(0.5)
+
+            # plotting heatmaps
+            heatmaps(model_nn, model_fd, model_fd_100)
 
         if "boxplots" in sys.argv:
 
@@ -360,11 +445,14 @@ if __name__ == "__main__":
             model_nn = torch.load("../results/best_model.pt")
             
             # finite difference method
-            N = 10 
-            dt = 0.001
             init = lambda x: np.sin(np.pi * x)
-            model = ForwardEuler(N, dt)
+            model = ForwardEuler(N=10, dt=0.001)
             model.set_init(init)
             model_fd = model(0.5)
 
-            time_slices(model_nn, model_fd)
+            model_100 = ForwardEuler(N=100)
+            model_100.set_init(init)
+            model_fd_100 = model_100(0.5)
+
+            # make time slice plots
+            time_slices(model_nn, model_fd, model_fd_100)
