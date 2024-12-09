@@ -1,3 +1,11 @@
+# FYS-STK4155 Project 3
+
+- [Prerequisites](#prequisites)
+- [Tests](#tests)
+- [Running the grid search code](#running-the-grid-search-code)
+- [Plots](#plots)
+
+
 ## Prerequisites
 
 The project with dependencies is installed by running
