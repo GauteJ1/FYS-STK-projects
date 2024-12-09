@@ -41,7 +41,7 @@ python src/grid_search.py n_layers
 ```
 
 If no command line argument is specified when running ```src/grid_search.py```, the program will run all four grid searches.
-The results are saved to the ```results/``` folder.
+The results are saved to the ```results/``` folder as json files. 
 
 ## Plots
 
