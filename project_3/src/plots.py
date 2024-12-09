@@ -350,11 +350,11 @@ def time_slices(model_nn, model_fd, model_fd_100, t1 = 0.03, t2 = 0.40):
     axs[0].set_title(r"Temperature as a function of position at $t_1$ = 0.03 s")
     axs[1].set_title(r"Temperature as a function of position at $t_2$ = 0.40 s")
 
-    axs[0].set_xlabel("Position x []")
-    axs[1].set_xlabel("Position x []")
+    axs[0].set_xlabel("Position x")
+    axs[1].set_xlabel("Position x")
 
-    axs[0].set_ylabel("Temperature [°C]")
-    axs[1].set_ylabel("Temperature [°C]")
+    axs[0].set_ylabel("Temperature T")
+    axs[1].set_ylabel("Temperature T")
 
     axs[0].legend()
     axs[1].legend()
