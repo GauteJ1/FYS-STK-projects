@@ -5,7 +5,7 @@ For instructions on how to run code, where to find figures, etc.; please refer t
 
 PDF documents are compiled automatically, and can be found by clicking "Actions" on the top of the page, then selecting the most recent "Build LaTeX document" workflow, under "Artifacts".
 
-Group for project 1 and 2: Julie Natland Bjørnstad, Mia Merlid and Gaute Johannessen.
+Group: Julie Natland Bjørnstad, Mia Merlid and Gaute Johannessen.
 
 
 ### Compulsory README meme:
