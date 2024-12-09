@@ -4,7 +4,7 @@ In this section, we describe our implementations of the aforementioned numerical
 
 \subsection{Finite difference method}
 
-We have implemented the finite difference method as an algorithm using a for-loop to "step" through each discrete time point.
+We have implemented the finite difference method as an algorithm using a for-loop to ``step" through each discrete time point.
 Using a discrete mesh with distance $\Delta x$ between nodes in the spatial dimension,
 we have $N$ nodes in each time step.
 We have implemented the values for each time step as a vector $u^n \in \mathbb{R}^{N}$.
@@ -22,13 +22,13 @@ We have implemented the values for each time step as a vector $u^n \in \mathbb{R
     \end{bmatrix}
 \end{align}
 Solving Eq. \ref{eq:diff_scheme} for $u_j^{n+1}$, and vectorizing $u^n = (u^n_i)_{i=0}^N$, we get Eq. \ref{eq:vec_diff_scheme}.
-The matrix $D^{(2)}$ is the second order differentiation matrix, defined as in equation \ref{eq:diff_matrix}.
+The matrix $D^{(2)}$ is the second order differentiation matrix, defined as in Eq. \ref{eq:diff_matrix}.
 Note that the $j$-th element in $D^{(2)}u^n$ is $u_{j+1}^n - 2u_n^j + u_{j-1}^n$ for $j = 1,2...,N$, matching the right hand side of Eq. \ref{eq:diff_scheme}.
-In addition to this, we manually set the first and last element in each $u^n$ to zero at each step, in order to incorporate the boundary conditions.
+In addition to this, we manually set the first and last element in each $u^n$ to zero at each time step, in order to incorporate the boundary conditions.
 
 The model takes as input the number of discrete elements in the $x$-direction, and calculates $\Delta x$ based on that.
-We have implemented the function to either also take an input for $\Delta t$ and verify that it is within the stability criterion, or, if no $\Delta t$ is given, to calculate and use the largest possible $\Delta t$ within the stability criterion.
-While this finite difference scheme only requires us to save the previous time step, in order to calculate the next, we keep all time steps for plotting.
+We have also implemented the function to either take an input for $\Delta t$ and verify that it's within the stability criterion, or, if no $\Delta t$ is given, to calculate and use the largest possible $\Delta t$ within the stability criterion.
+While this finite difference scheme only requires us to save the previous time step in order to calculate the next, we keep all time steps for plotting.
 
 \subsection{Neural Networks}
 
@@ -36,7 +36,7 @@ We have trained several physics-informed neural networks (PINNs) to predict the 
 We utilized the PyTorch library \cite{Ansel_PyTorch_2_Faster_2024} for the neural network code. 
 Adam was our optimizer of choice and has been used for all models. 
 The weights were initialized using a Xavier Glorot normal distribution as described in Sec. \ref{sec:NN_init}. 
-As the activation function for the output layer, $identity$ was used, i.e. no activation. 
+As the activation function for the output layer, the $identity$ function was used, i.e. no activation. 
 Given the problem at hand, the size of the initial layer was $2$ and the output layer $1$. 
 Furthermore, we specified a discretization of the $(x,t)$-grid, the batch size, and the number of epochs. 
 The values for these hyperparameters are held constant across all models and can be found in Tab. \ref{tab:valuesfornn}. 
@@ -68,7 +68,7 @@ Our goal being to find the neural network with the best performance, we initiall
 The three dimensions included were \textit{number of hidden layers}, \textit{size of the hidden layers}, and \textit{activation functions}.
 The size of the hidden layers dictates the width of the neural network, while the number of (hidden) layers gives the depth. 
 All possible combinations of the values in Tab. \ref{tab:hyperparams} were used to train in the grid search.
-In order to keep the number of neural networks tested to a manageable level, we opted to use the same activation function for all hidden layers
+In order to keep the number of neural networks tested to a manageable level, we opted to use the same activation function for all hidden layers.
 We also kept the hidden layer size constant within each neural network.
 For each model, we compared the final output to the analytical solution using mean squared error (MSE).
 The analytical solution was never used during training and was only utilized to evaluate the final models.
@@ -85,7 +85,7 @@ We chose the best model in terms of MSE and kept track of its hyperparameters.
 
 To further explore the properties of each hyperparameter in Tab. \ref{tab:hyperparams}, we trained a number of new neural networks where we varied only the hyperparameter to be tested.
 For one of the three hyperparameters in Tab. \ref{tab:hyperparams} at a time, we kept the best value (found in the grid search) for the other two, and trained ten models for each of the values for the hyperparameter. 
-For example in the case of \textit{activation functions}, we trained 10 models for each of the four different activation functions while keeping the width and the depth of the network constant at the optimal values from the grid search.
+In the case of \textit{activation functions}, this means we trained 10 models for each of the four different activation functions while keeping the width and the depth of the network constant at the optimal values from the grid search.
 This also ensures that the result from the grid search is not a fluke due to random initialization.
 
 
