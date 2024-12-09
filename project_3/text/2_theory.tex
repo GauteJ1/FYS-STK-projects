@@ -148,7 +148,7 @@ The schemes "step" through time, by solving Eq. \ref{eq:diff_scheme} with respec
     \end{figure}
 The scheme can be viewed as a stencil, as shown in Fig. \ref{fig:fd_stencil}, where the values at time $t_n$ are known and used to calculate the values at time $t_{n+1}$.
 Note that all values at time $t_0$ are known from the initial condition.
-\subsubsection{Stability}
+\subsubsection{Stability}\label{sec:stability}
 Considering the stability of the approximation obtained from the scheme, is important when using finite difference schemes to solve PDEs.
 Using a very small value of $\Delta x$ compared to $\Delta t$, leads to the second derivative of $x$ at the right side of equation \eqref{eq:diff_scheme} being very accurate for a small area of the function, while the time step it is used for is really big.
 This could cause large error, and we might end up with large oscillations that do not match the analytical solution.
@@ -492,9 +492,9 @@ By including some of the previous momentum, one heightens the chance of escaping
 % The heat equation (Eq. \ref{eq:diffu}) is a 
 A PDE is governed by a number of physical laws. 
 Intuitively, when constructing a NN for solving a PDE it would be favorable to integrate these laws in training. By altering the cost function, these constraints can aid in corrections to the network. 
-This is the idea behind Physics-informed Neural Networks (PINNS) \cite{PINNs}.
+This is the idea behind Physics-informed Neural Networks (PINNs) \cite{PINNs}.
 
-For a heat equation (Eq. \ref{eq:diffu}), there are known boundary conditions, initial conditions, and a governing PDE. 
+For the heat equation (Eq. \ref{eq:diffu}), there are known boundary conditions, initial conditions, and a governing PDE. 
 This can be translated into a three-part cost function.
 
 In the following formulas, $N_i$ denotes the number of points $(x, t)$ for each area $\Omega_i$. Summed over the three cost functions, all pairs $(x,t)$ in the grid of data will be included. 

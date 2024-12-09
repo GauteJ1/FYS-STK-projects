@@ -82,18 +82,18 @@ This makes us confident that the result from the grid search is not due to rando
 \subsubsection{Finite difference method}
 
 We compute finite difference approximations with two values of $\Delta x$; $1/10$ and $1/100$.
-From theory, we know that the smaller $\Delta x$ will produce a better model, as long as $\Delta t$ is chosen appropriately (as discussed in \gaute{ref method/theory}).
+From theory, we know that the smaller $\Delta x$ will produce a better model, as long as $\Delta t$ is chosen appropriately (as discussed in section \ref{sec:stability}).
 The MSE for $\Delta x = 1/10$ is $2.52\times 10^{-7}$, while $\Delta x = 1/100$ gives an MSE of $6.77\times 10^{-10}$.
 We note that while the latter model has a lower MSE, it uses about 100 times as many points, and thus requires way more computational power.
 The absolute difference in MSE is rather small compared to the MSE of our best neural network (see \ref{best_nn_mse}), hence we use the model with $\Delta x = 1/10$ in further discussions.
 
 We will later refer to the models by number of points along the $x$-axis, i.e. $\Delta x = 1/10 \ \implies N = 11$ and $\Delta x = 1/100 \ \implies N = 101$.
 
-\subsubsection{\mia{Comparing stuffs}}
+\subsubsection{Comparing the finite difference method to neural networks}
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/heat_map_comparison.png}
-    \caption{The analytical solution to the heat equation, and the results from the finite difference method and the neural network model. A common color bar is displayed as all three plots have the same range of values [0,1]. The color bar is showing the $Temperature$ [°C] The blue lines indicate the times $t_1 = 0.03 s$ and $t_2 = 0.40 s$.}
+    \caption{The analytical solution to the heat equation, and the results from the finite difference method and the neural network model. A common color bar is displayed as all three plots have the same range of values [0,1]. The color bar is showing the $Temperature$. The blue lines indicate the times $t_1 = 0.03 s$ and $t_2 = 0.40 s$.}
     \label{fig:heatmaps}
 \end{figure}
 
@@ -110,7 +110,7 @@ However, the resolution of points used to calculate the MSE will not have a subs
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\linewidth]{project_3/plots/time_slices_comparison.pdf}
-    \caption{The temperature for specific times for the analytical solution, as well as the output from the finite difference method and the neural network predictions. The discretization along the x-axis is different for each method. The analytical one is plotted with 1000 points, the finite difference method with 11 points \mia{+ ???}, and the neural network predictions with 100. }
+    \caption{The temperature for specific times for the analytical solution, as well as the output from the finite difference method and the neural network predictions. The discretization along the x-axis is different for each method. The analytical one is plotted with 1000 points, the finite difference method with 11 and 101 points, and the neural network predictions with 100. }
     \label{fig:timeslices}
 \end{figure}
 
